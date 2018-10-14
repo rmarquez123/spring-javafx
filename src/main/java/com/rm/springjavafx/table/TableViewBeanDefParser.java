@@ -1,0 +1,90 @@
+package com.rm.springjavafx.table;
+
+import java.util.List;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.stereotype.Component;
+import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
+
+/**
+ *
+ * @author rmarquez
+ */
+@Component
+public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
+
+  /**
+   *
+   * @param elmnt
+   * @param pc
+   * @return
+   */
+  @Override
+  protected AbstractBeanDefinition parseInternal(Element elmnt, ParserContext pc) {
+    BeanDefinitionBuilder result = this.getNewBeanDefBuilder();
+    this.addDataSourceBean(elmnt, result, pc);
+    this.addChildElements(elmnt, result);
+    return result.getBeanDefinition();
+  } 
+  
+  /**
+   * 
+   * @return 
+   */
+  private BeanDefinitionBuilder getNewBeanDefBuilder() {
+    return BeanDefinitionBuilder.rootBeanDefinition(TableViewFactory.class);
+  }
+  
+  /**
+   * 
+   * @param elmnt
+   * @param result
+   * @param pc
+   * @throws NoSuchBeanDefinitionException
+   * @throws BeanDefinitionStoreException 
+   */
+  private void addDataSourceBean(Element elmnt, BeanDefinitionBuilder result, ParserContext pc) throws NoSuchBeanDefinitionException, BeanDefinitionStoreException {
+    String datasource = elmnt.getAttribute("datasource-ref");
+    result.addPropertyValue("datasourceRef", datasource);
+    BeanDefinition datasourceBeanDef = pc.getRegistry().getBeanDefinition(datasource);
+    pc.getRegistry().registerBeanDefinition(datasource, datasourceBeanDef);
+  } 
+  
+  /**
+   * 
+   * @param elmnt
+   * @param result 
+   */
+  private void addChildElements(Element elmnt, BeanDefinitionBuilder result) {
+    List<Element> childEls = DomUtils.getChildElements(elmnt);
+    ManagedList<BeanDefinition> colRenderers = new ManagedList<>();
+    childEls.stream().forEach((c) -> {
+      if (c.getTagName().endsWith("tableview-columndef")) {
+        AbstractBeanDefinition bd = this.getColumnDefBean(c);
+        colRenderers.add(bd); 
+      }
+    });
+    result.addPropertyValue("colRenderers", colRenderers);
+  }
+  
+  /**
+   * 
+   * @param c
+   * @return 
+   */
+  private AbstractBeanDefinition getColumnDefBean(Element c) {
+    BeanDefinitionBuilder beanDefBuilder = BeanDefinitionBuilder.rootBeanDefinition(TableViewRenderer.class);
+    ColumnDefBeanDefParser beanDefParser = new ColumnDefBeanDefParser();
+    beanDefParser.doParse(c, beanDefBuilder);
+    AbstractBeanDefinition bd = beanDefBuilder.getBeanDefinition();
+    return bd;
+  }
+
+}
