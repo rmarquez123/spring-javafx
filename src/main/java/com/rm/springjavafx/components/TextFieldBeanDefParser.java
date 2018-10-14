@@ -1,8 +1,6 @@
 
 package com.rm.springjavafx.components;
 
-import com.rm.springjavafx.table.TableViewFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;

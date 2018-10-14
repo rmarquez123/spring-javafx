@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -95,5 +96,9 @@ public class FxmlInitializer implements InitializingBean {
       this.rootNodes.put(fxml, root);
     });
     return this.rootNodes.get(this.sceneRoot);
+  }
+
+  public Node getNode(String fxml, String fxmlId) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }
