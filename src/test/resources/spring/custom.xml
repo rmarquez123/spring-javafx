@@ -17,6 +17,15 @@
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-5.0.xsd
           http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd">
           
+  
+  <bean class="com.rm.testrmfxmap.javafx.FxmlInitializer"> 
+    <property name="sceneRoot" value="fxml/Sample.fxml"/>
+    <property name="fxmlList"> 
+      <list> 
+      </list>
+    </property>
+  </bean>
+  
   <!-- Connections --> 
   <rm:db-connection id="db-connection"> 
     <rm:db-user value="postgres"/>
@@ -46,11 +55,11 @@
   </rm:sql-datasource>  
   
   <rm:sql-datasource id ="stationsDataSource" dbConnectionRef="db-connection">
-    <rm:query-file value="/sql/01.series.02.stations.sql"/> 
+    <rm:query-file value="sql/01.series.02.stations.sql"/> 
   </rm:sql-datasource>  
   
   <rm:sql-datasource id ="sensorsDataSource" dbConnectionRef="db-connection">
-    <rm:query-file value="/sql/01.series.02.sensors.sql"/> 
+    <rm:query-file value="sql/01.series.02.sensors.sql"/> 
   </rm:sql-datasource>  
   <!-- Data sources --> 
   
@@ -68,13 +77,13 @@
   </rm:tableview>
   
   <rm:combobox id="stationCombobox" 
-                  fxml=""
-                  fxmlId=""
+                  fxml="fxml/Sample.fxml"
+                  fxmlId="stationComboBox"
                   value-ref="stnIdObs" 
                   datasource-ref="stationsDataSource"/> 
   <rm:combobox id="sensorDefComboBox" 
-                  fxml=""
-                  fxmlId=""
+                  fxml="fxml/Sample.fxml"
+                  fxmlId="sensorComboBox"
                   value-ref="sensorDefObs" 
                   datasource-ref="sensorsDataSource"/> 
   <!-- Views --> 

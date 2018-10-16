@@ -1,5 +1,6 @@
 package com.rm.testrmfxmap.javafx;
 
+import com.rm.springjavafx.FxUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class FxmlInitializer implements InitializingBean {
   private final List<String> fxmlList = new ArrayList<>();
   private final Map<String, Parent> rootNodes = new HashMap<>();
   private String sceneRoot;
+  private boolean initialized = false;
 
   /**
    * Public constructor. Set properties using setters.
@@ -80,25 +82,69 @@ public class FxmlInitializer implements InitializingBean {
    * @see FXMLLoader
    */
   public Parent load(ApplicationContext context) {
-    ClassLoader classLoader = this.getClass().getClassLoader();
-    this.fxmlList.stream().forEach((fxml) -> {
-      URL resource = classLoader.getResource(fxml);
-      FXMLLoader loader = new FXMLLoader(resource);
-      loader.setControllerFactory(context::getBean);
-      Parent root;
-      try {
-        root = loader.load();
-      } catch (IOException ex) {
-        throw new RuntimeException("Error loading fxml from resource.  Check args : {"
-                + "fxml = " + fxml
-                + "}", ex);
-      }
-      this.rootNodes.put(fxml, root);
-    });
-    return this.rootNodes.get(this.sceneRoot);
+    if (!this.isInitialized()) {
+      this.initializeRoots(context);
+    }
+    Parent result = this.rootNodes.get(this.sceneRoot);
+    return result;
   }
 
-  public Node getNode(String fxml, String fxmlId) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  /**
+   *
+   * @return
+   */
+  public boolean isInitialized() {
+    return this.initialized;
+  }
+
+  /**
+   *
+   * @param context
+   */
+  public void initializeRoots(ApplicationContext context) {
+    if (!this.isInitialized()) {
+      ClassLoader classLoader = this.getClass().getClassLoader();
+      this.fxmlList.stream().forEach((fxml) -> {
+        URL resource = classLoader.getResource(fxml);
+        FXMLLoader loader = new FXMLLoader(resource);
+        loader.setControllerFactory(context::getBean);
+        Parent root;
+        try {
+          root = loader.load();
+        } catch (IOException ex) {
+          throw new RuntimeException("Error loading fxml from resource.  Check args : {"
+                  + "fxml = " + fxml
+                  + "}", ex);
+        }
+        this.rootNodes.put(fxml, root);
+        this.initialized = true;
+      });
+    }
+
+  }
+
+  /**
+   *
+   * @param fxml
+   * @param fxmlId
+   * @return
+   * @throws java.lang.IllegalAccessException
+   */
+  public Node getNode(String fxml, String fxmlId) throws IllegalAccessException {
+    if (!this.isInitialized()) {
+      throw new IllegalAccessException("Attempting to get node without initializing"); 
+    }
+    Parent root = this.rootNodes.get(fxml);
+    if (root == null) {
+      throw new IllegalArgumentException("Invalid fmxl file : '" + fxml + "'");
+    }
+    Object result = FxUtils.getChildByID(root, fxmlId);
+    if (result == null) {
+      throw new IllegalArgumentException("Component not found. Check args : {"
+              + "fxml = "  + fxml 
+              + ", fxmlId" + fxmlId
+              + "}"); 
+    }
+    return (Node) result;
   }
 }

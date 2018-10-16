@@ -6,6 +6,17 @@ package com.rm.springjavafx.datasources;
  * @param <T0> source
  * @param <T1> destination
  */
-public class Converter<T0, T1> {
+public interface Converter<T0, T1> {
   
+  /**
+   * 
+   */
+  public static Converter NONE = (Converter) (Object source) -> source;
+
+  /**
+   *
+   * @param source
+   * @return
+   */
+  public T1 convert(T0 source);
 }

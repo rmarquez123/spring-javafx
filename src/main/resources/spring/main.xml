@@ -7,24 +7,84 @@
        xmlns:lang="http://www.springframework.org/schema/lang"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:myns="http://www.mycompany.com/schema/myns"
+       xmlns:rm="http://www.mycompany.com/schema/rm"
+       
         
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-5.0.xsd
           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-5.0.xsd
           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-5.0.xsd
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-5.0.xsd
-          http://www.mycompany.com/schema/myns http://www.mycompany.com/schema/myns/myns.xsd  
-">
+          http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd">
+          
   
   <bean class="com.rm.testrmfxmap.javafx.FxmlInitializer"> 
-    <property name="sceneRoot" value="fxml/Main.fxml"/>
+    <property name="sceneRoot" value="fxml/Sample.fxml"/>
     <property name="fxmlList"> 
       <list> 
-        <value>fxml/LayerTreeView.fxml</value>
-        <value>fxml/MapView.fxml</value>
       </list>
     </property>
   </bean>
   
+  <!-- Connections --> 
+  <rm:db-connection id="db-connection"> 
+    <rm:db-user value="postgres"/>
+    <rm:db-password value="postgres"/>
+    <rm:db-port value="5432"/>
+    <rm:db-url value="mydb.com"/>
+    <rm:db-schema value="emissions"/>
+  </rm:db-connection>
+  <!-- Connections --> 
+  
+  <!-- Observables --> 
+  <rm:int-property id="stnIdObs"/> 
+  <rm:int-property id="sensorDefObs"/> 
+  <rm:daterange-property id="dateRangeObs"/> 
+  <!-- Observables --> 
+  
+  
+  <!-- Data sources --> 
+  <rm:sql-datasource id ="seriesDataSource" dbConnectionRef="db-connection">
+    <rm:query-file value="sql/01.series.01.series.sql"/> 
+    <rm:query-params>
+      <rm:query-param name="stnId" valueRef="stnIdObs"/>
+      <rm:query-param name="sensorNum" valueRef="sensorDefObs"/>
+      <rm:query-param name="startDate" valueRef="dateRangeObs#startDateProperty"/>
+      <rm:query-param name="endDate" valueRef="dateRangeObs#endDateProperty"/>
+    </rm:query-params>
+  </rm:sql-datasource>  
+  
+  <rm:sql-datasource id ="stationsDataSource" dbConnectionRef="db-connection">
+    <rm:query-file value="sql/01.series.02.stations.sql"/> 
+  </rm:sql-datasource>  
+  
+  <rm:sql-datasource id ="sensorsDataSource" dbConnectionRef="db-connection">
+    <rm:query-file value="sql/01.series.02.sensors.sql"/> 
+  </rm:sql-datasource>  
+  <!-- Data sources --> 
+  
+  <!-- Views --> 
+  <rm:tableview id="test-tableview"
+                fxml="myfxml"
+                fxmlId="seriesTable"
+                datasource-ref="seriesDataSource"> 
+    <rm:columns>
+      <rm:columndef name="Column 0" column="0" rendererType="Text"/>
+      <rm:columndef name="Column 1" column="1">
+        <rm:render-type class="Currency"/> 
+      </rm:columndef>
+    </rm:columns>
+  </rm:tableview>
+  
+  <rm:combobox id="stationCombobox" 
+               fxml="fxml/Sample.fxml"
+               fxmlId="stationComboBox"
+               value-ref="stnIdObs" 
+               datasource-ref="stationsDataSource"/> 
+  <rm:combobox id="sensorDefComboBox" 
+               fxml="fxml/Sample.fxml"
+               fxmlId="sensorComboBox"
+               value-ref="sensorDefObs" 
+               datasource-ref="sensorsDataSource"/> 
+  <!-- Views --> 
 </beans>

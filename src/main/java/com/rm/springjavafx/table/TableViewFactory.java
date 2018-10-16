@@ -26,6 +26,7 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
   private String selectedRef;
   private String text;
   private List<TableViewRenderer> colRenderers;
+  private Converter converter = Converter.NONE;
 
   public void setDatasourceRef(String datasourceRef) {
     this.datasourceRef = datasourceRef;
@@ -34,6 +35,11 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
   public void setColRenderers(List<TableViewRenderer> colRenderers) {
     this.colRenderers = colRenderers;
   }
+
+  public void setConverter(Converter converter) {
+    this.converter = converter;
+  }
+  
   
   /**
    * 
@@ -97,7 +103,7 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
    */
   private void initDataSourceBinding(TableView result) throws BeansException {
     DataSource dataSource = (DataSource) this.appContext.getBean(this.datasourceRef);
-    dataSource.bind(result.getItems(), new Converter());
+    dataSource.bind(result.getItems(), this.converter);
   }
 
   private void setItems(SetProperty<?> dataSource, TableView result) {
