@@ -22,5 +22,14 @@ public class RecordValue {
     this.values.putAll(values);
   }
   
+  /**
+   * 
+   * @param valueField
+   * @return 
+   */
+  public Object get(String valueField) {
+    return this.values.get(valueField);
+  }
+  
   
 }

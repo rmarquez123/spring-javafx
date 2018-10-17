@@ -1,33 +1,37 @@
 package com.rm.datasources;
 
 import com.rm.springjavafx.datasources.AbstractDataSource;
+import java.util.List;
 
 /**
  *
  * @author rmarquez
  */
-public class SqlDataSource extends AbstractDataSource {
+public class SqlDataSource extends AbstractDataSource<RecordValue> {
 
   private final String query;
   private final QueryParameters queryParams;
   private final DbConnection connection;
-  
-  
+
   /**
-   * 
+   *
    * @param connection
    * @param query
-   * @param queryParams 
+   * @param queryParams
    */
   public SqlDataSource(DbConnection connection, String query, QueryParameters queryParams) {
     this.connection = connection;
     this.query = query;
     this.queryParams = queryParams;
+    this.queryParams.addListener((observable, oldValue, newValue) -> {
+      this.updateResultSet();
+    });
+    this.updateResultSet();
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public QueryParameters getQueryParams() {
     return this.queryParams;
@@ -40,16 +44,25 @@ public class SqlDataSource extends AbstractDataSource {
   public DbConnection getConnection() {
     return connection;
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   */
+  private void updateResultSet() {
+    String queryString = SqlUtils.createQueryString(this.query, this.queryParams);
+    List<RecordValue> resultSet = SqlUtils.executeListQuery(this.connection, queryString);
+    super.setRecords(resultSet);
+  }
+
+  /**
+   *
+   * @return
    */
   @Override
   public String toString() {
     return "SqlDataSource{" + "query=" + query
-            + ", queryParams=" + queryParams 
+            + ", queryParams=" + queryParams
             + ", connection=" + connection + '}';
   }
-  
+
 }

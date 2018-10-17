@@ -5,6 +5,7 @@ import com.rm.datasources.DataSource;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
+import javafx.util.StringConverter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -95,7 +96,17 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
     });
     result.getSelectionModel().select(valueRefProperty.getValue());
     DataSource dataSrc = (DataSource) this.appContext.getBean(this.dataSourceRef);
-    dataSrc.bind(result.getItems(), this.converter);
+    dataSrc.bind(result.getItems(), Converter.NONE);
+    result.setConverter(new StringConverter() {
+      @Override
+      public String toString(Object object) {
+        return (String) converter.convert(object); 
+      }
+      @Override
+      public Object fromString(String string) {
+        return null;
+      }
+    });
     return result;
   }
   

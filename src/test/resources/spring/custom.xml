@@ -82,8 +82,7 @@
                value-ref="stnIdObs" 
                datasource-ref="stationsDataSource">
     
-    <rm:converter class="com.rm.springjavafx.converters.RecordValueIdToLabelAttrConverter">
-      <property name="idField" value="stationId"/>
+    <rm:converter class="com.rm.springjavafx.converters.RecordValueStringConverter">
       <property name="valueField" value="stationName"/>
     </rm:converter> 
     
