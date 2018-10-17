@@ -76,15 +76,29 @@
     </rm:columns>
   </rm:tableview>
   
+  
   <rm:combobox id="stationCombobox" 
                fxml="fxml/Sample.fxml"
                fxmlId="stationComboBox"
                value-ref="stnIdObs" 
-               datasource-ref="stationsDataSource"/> 
+               datasource-ref="stationsDataSource">
+    <rm:converter class="RecordValueIdToLabelAttrConverter">
+      <property name="idField" value="stationId"/>
+      <property name="valueField" value="stationName"/>
+    </rm:converter> 
+  </rm:combobox> 
+  
+  
   <rm:combobox id="sensorDefComboBox" 
                fxml="fxml/Sample.fxml"
                fxmlId="sensorComboBox"
                value-ref="sensorDefObs" 
-               datasource-ref="sensorsDataSource"/> 
+               datasource-ref="sensorsDataSource">
+    <rm:converter class="RecordValueIdToLabelAttrConverter">
+      <property name="idField" value="stationId"/>
+      <property name="valueField" value="stationName"/>
+    </rm:converter> 
+  </rm:combobox> 
+  
   <!-- Views --> 
 </beans>

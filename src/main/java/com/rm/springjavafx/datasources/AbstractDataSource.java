@@ -1,5 +1,7 @@
 package com.rm.springjavafx.datasources;
 
+import com.rm.springjavafx.converters.Converter;
+import com.rm.datasources.DataSource;
 import javafx.collections.ObservableList;
 
 /**

@@ -1,4 +1,4 @@
-package com.rm.springjavafx.datasources;
+package com.rm.datasources;
 
 import javafx.beans.property.Property;
 

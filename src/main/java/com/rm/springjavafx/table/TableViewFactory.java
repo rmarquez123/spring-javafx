@@ -1,7 +1,7 @@
 package com.rm.springjavafx.table;
 
-import com.rm.springjavafx.datasources.Converter;
-import com.rm.springjavafx.datasources.DataSource;
+import com.rm.springjavafx.converters.Converter;
+import com.rm.datasources.DataSource;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

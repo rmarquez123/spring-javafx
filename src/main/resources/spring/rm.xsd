@@ -3,9 +3,23 @@
             xmlns:beans="http://www.springframework.org/schema/beans"
             targetNamespace="http://www.mycompany.com/schema/rm"
             elementFormDefault="qualified"
-            attributeFormDefault="unqualified">
+            attributeFormDefault="unqualified"
+            
 
+>
+  
   <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+  
+  
+  <xsd:element name="converter"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="beans:property"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="class" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
   
   <xsd:element name="num-digits"> 
     <xsd:complexType>
@@ -128,7 +142,7 @@
   <!-- Views --> 
   <xsd:element name="render-type"> 
     <xsd:complexType>
-     <xsd:attribute name="class" type="xsd:string"/>
+      <xsd:attribute name="class" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   
@@ -177,11 +191,15 @@
   
   <xsd:element name="combobox">
     <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element ref="converter"/>
+      </xsd:choice>
       <xsd:attribute name="id" type="xsd:ID"/>
       <xsd:attribute name="fxml" type="xsd:string"/>
       <xsd:attribute name="fxmlId" type="xsd:string"/>
       <xsd:attribute name="datasource-ref" type="xsd:string"/>
       <xsd:attribute name="value-ref" type="xsd:string"/>
+      
     </xsd:complexType>
   </xsd:element>
   <!-- Views --> 

@@ -1,7 +1,7 @@
 
 package com.rm.springjavafx.datasources;
 
-import java.util.ArrayList;
+import com.rm.datasources.QueryParameters;
 import java.util.List;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

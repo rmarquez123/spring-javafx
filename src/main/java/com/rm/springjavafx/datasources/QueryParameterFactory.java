@@ -1,5 +1,6 @@
 package com.rm.springjavafx.datasources;
 
+import com.rm.datasources.QueryParameter;
 import java.lang.reflect.Field;
 import javafx.beans.property.Property;
 import org.springframework.beans.BeansException;

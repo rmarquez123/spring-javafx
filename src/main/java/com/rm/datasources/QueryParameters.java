@@ -1,5 +1,6 @@
-package com.rm.springjavafx.datasources;
+package com.rm.datasources;
 
+import com.rm.datasources.QueryParameter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

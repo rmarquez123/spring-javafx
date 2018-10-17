@@ -1,7 +1,7 @@
 package com.rm.testcustomspring;
 
-import com.rm.springjavafx.datasources.DbConnection;
-import com.rm.springjavafx.datasources.SqlDataSource;
+import com.rm.datasources.DbConnection;
+import com.rm.datasources.SqlDataSource;
 import com.rm.springjavafx.properties.DateRangeProperty;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
 import javafx.beans.property.IntegerProperty;

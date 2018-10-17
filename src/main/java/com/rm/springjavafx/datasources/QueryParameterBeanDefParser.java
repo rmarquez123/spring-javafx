@@ -1,7 +1,6 @@
 package com.rm.springjavafx.datasources;
 
 
-import com.rm.springjavafx.datasources.QueryParameter;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.w3c.dom.Element;

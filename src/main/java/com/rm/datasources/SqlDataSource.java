@@ -1,4 +1,6 @@
-package com.rm.springjavafx.datasources;
+package com.rm.datasources;
+
+import com.rm.springjavafx.datasources.AbstractDataSource;
 
 /**
  *

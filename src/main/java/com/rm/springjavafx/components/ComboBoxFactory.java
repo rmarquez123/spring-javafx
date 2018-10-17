@@ -1,7 +1,7 @@
 package com.rm.springjavafx.components;
 
-import com.rm.springjavafx.datasources.Converter;
-import com.rm.springjavafx.datasources.DataSource;
+import com.rm.springjavafx.converters.Converter;
+import com.rm.datasources.DataSource;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
@@ -29,7 +29,7 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
   private String fxmlId;
   private String dataSourceRef;
   private String valueRef;
-  private Converter listItemConverter = Converter.NONE;
+  private Converter converter = Converter.NONE;
 
   public void setId(String id) {
     this.id = id;
@@ -64,8 +64,8 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
    * 
    * @param listItemConverter 
    */
-  public void setListItemConverter(Converter listItemConverter) {
-    this.listItemConverter = listItemConverter;
+  public void setConverter(Converter listItemConverter) {
+    this.converter = listItemConverter;
   }
   
   
@@ -95,7 +95,7 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
     });
     result.getSelectionModel().select(valueRefProperty.getValue());
     DataSource dataSrc = (DataSource) this.appContext.getBean(this.dataSourceRef);
-    dataSrc.bind(result.getItems(), this.listItemConverter);
+    dataSrc.bind(result.getItems(), this.converter);
     return result;
   }
   

@@ -77,10 +77,18 @@
   </rm:tableview>
   
   <rm:combobox id="stationCombobox" 
-                  fxml="fxml/Sample.fxml"
-                  fxmlId="stationComboBox"
-                  value-ref="stnIdObs" 
-                  datasource-ref="stationsDataSource"/> 
+               fxml="fxml/Sample.fxml"
+               fxmlId="stationComboBox"
+               value-ref="stnIdObs" 
+               datasource-ref="stationsDataSource">
+    
+    <rm:converter class="com.rm.springjavafx.converters.RecordValueIdToLabelAttrConverter">
+      <property name="idField" value="stationId"/>
+      <property name="valueField" value="stationName"/>
+    </rm:converter> 
+    
+  </rm:combobox> 
+  
   <rm:combobox id="sensorDefComboBox" 
                   fxml="fxml/Sample.fxml"
                   fxmlId="sensorComboBox"
