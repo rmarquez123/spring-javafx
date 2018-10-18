@@ -11,7 +11,17 @@
   <xsd:import namespace="http://www.springframework.org/schema/beans"/>
   
   
-  <xsd:element name="converter"> 
+  <xsd:element name="listitem-converter"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="beans:property"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="class" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="selectionitem-converter"> 
     <xsd:complexType>
       <xsd:choice minOccurs="0" maxOccurs="unbounded">
         <xsd:element ref="beans:property"/>
@@ -135,6 +145,7 @@
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:ID"/>
       <xsd:attribute name="dbConnectionRef" type="xsd:string"/>
+      <xsd:attribute name="idField" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   <!-- Datasources --> 
@@ -191,15 +202,19 @@
   
   <xsd:element name="combobox">
     <xsd:complexType>
-      <xsd:choice minOccurs="0" maxOccurs="1">
-        <xsd:element ref="converter"/>
-      </xsd:choice>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element ref="listitem-converter"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element ref="selectionitem-converter"/>
+        </xsd:choice>  
+      </xsd:sequence>
       <xsd:attribute name="id" type="xsd:ID"/>
       <xsd:attribute name="fxml" type="xsd:string"/>
       <xsd:attribute name="fxmlId" type="xsd:string"/>
       <xsd:attribute name="datasource-ref" type="xsd:string"/>
       <xsd:attribute name="value-ref" type="xsd:string"/>
-      
     </xsd:complexType>
   </xsd:element>
   <!-- Views --> 

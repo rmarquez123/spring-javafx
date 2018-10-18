@@ -30,6 +30,11 @@ public class RecordValue {
   public Object get(String valueField) {
     return this.values.get(valueField);
   }
+
+  @Override
+  public String toString() {
+    return "RecordValue{" + "idField=" + idField + ", values=" + values + '}';
+  }
   
   
 }

@@ -26,8 +26,16 @@ public class SqlDataSourceBeanDefParser extends AbstractBeanDefinitionParser {
     BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(SqlDataSourceFactory.class);
     String id = elmnt.getAttribute("id");
     pc.getRegistry().registerBeanDefinition(id, result.getBeanDefinition());
-    
     result.addPropertyValue("dbConnectionRef", elmnt.getAttribute("dbConnectionRef"));
+    String idFieldAttr = elmnt.getAttribute("idField");
+    if (idFieldAttr == null || idFieldAttr.isEmpty()) {
+      String message = "'idField' cannot be empty or undefined.";
+      if (id != null && !id.isEmpty()) {
+        message = "Error in bean '" + id + "', " + message; 
+      }
+      throw new RuntimeException(message); 
+    }
+    result.addPropertyValue("idField", idFieldAttr);
     List<Element> els = DomUtils.getChildElements(elmnt);
     els.stream().forEach((el) -> {
       String tagName = el.getTagName();

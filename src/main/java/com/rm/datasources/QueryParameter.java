@@ -24,8 +24,16 @@ public class QueryParameter {
   public String getName() {
     return name;
   }
-
-  public Property<?> getValue() {
+  
+  /**
+   * 
+   * @return 
+   */
+  public Object getValue() {
+    return this.value.getValue();
+  }
+  
+  public Property<?> getValueProperty() {
     return value;
   }
   

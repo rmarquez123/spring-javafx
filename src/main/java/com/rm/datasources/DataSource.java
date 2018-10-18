@@ -26,4 +26,10 @@ public interface DataSource<T> {
    * @param converter 
    */
   public <E> void bind(ListProperty<E> items, Converter<T, E> converter);
+  
+  /**
+   * 
+   * @return  
+   */
+  public ListProperty<T> listProperty();
 }

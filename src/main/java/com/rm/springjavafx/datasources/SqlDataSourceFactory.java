@@ -2,6 +2,7 @@ package com.rm.springjavafx.datasources;
 
 import com.rm.datasources.QueryParameters;
 import com.rm.datasources.DbConnection;
+import com.rm.datasources.RecordValueQuery;
 import com.rm.datasources.SqlDataSource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,9 +21,11 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, InitializingBean, ApplicationContextAware {
     
-  private QueryParameters queryParams; 
+  
   private String dbConnectionRef;
   private String queryFile; 
+  private String idField; 
+  private QueryParameters queryParams; 
   private ApplicationContext appContext;
   
   /**
@@ -40,6 +43,10 @@ public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, Initial
   public void setQueryFile(String queryFile) {
     this.queryFile = queryFile;
   }
+
+  public void setIdField(String idField) {
+    this.idField = idField;
+  }
   
 
   @Override
@@ -49,6 +56,9 @@ public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, Initial
     }
     if (this.queryFile == null) {
       throw new NullPointerException("query file cannot be null"); 
+    }
+    if (this.idField == null || this.idField.isEmpty()) {
+      throw new IllegalStateException("Id field cannot be null or empty"); 
     }
   }
   
@@ -61,7 +71,8 @@ public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, Initial
   @Override
   public SqlDataSource getObject() throws Exception {
     DbConnection connection = (DbConnection) this.appContext.getBean(this.dbConnectionRef);
-    String query = this.getQueryString();
+    String queryString = this.getQueryString();
+    RecordValueQuery query = new RecordValueQuery(this.idField, queryString); 
     SqlDataSource result = new SqlDataSource(connection, query, this.queryParams); 
     return result; 
   }

@@ -1,5 +1,8 @@
 package com.rm.datasources;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 /**
  *
  * @author rmarquez
@@ -11,6 +14,7 @@ public class DbConnection {
   private final String schema;
   private final String url;
   private final Integer port;
+  private Connection connection;
 
   public DbConnection(String user, String password, String schema, String url, Integer port) {
     this.user = user;
@@ -40,12 +44,32 @@ public class DbConnection {
     return port;
   }
 
+    
   @Override
   public String toString() {
     return "DbConnection{" + "user=" + user + ", password=" + password + ", schema=" + schema + ", url=" + url + ", port=" + port + '}';
   }
-  
-  
+
+  /**
+   * Returns a new connection.
+   *
+   * @return
+   */
+  public Connection getConnection() {
+    Connection result;
+    try {
+      String _url = "jdbc:postgresql://" + this.getUrl()
+              + ":" + this.port
+              + "/" + this.schema;
+      String _username = this.user;
+      String _password = this.password;
+      result = DriverManager.getConnection(_url, _username, _password);
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+    return result;
+  }
+
   /**
    *
    */

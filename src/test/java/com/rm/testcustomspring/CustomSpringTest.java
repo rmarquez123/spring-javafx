@@ -69,18 +69,15 @@ public class CustomSpringTest {
     Assert.assertNotNull("date range property not null", this.sensorDefObs);
     Assert.assertNotNull("date range property not null", this.dateRangeProperty);
     Assert.assertNotNull("dbConnection property not null", this.dbConnection);
-    Assert.assertEquals("check url:", "mydb.com", this.dbConnection.getUrl());
+    Assert.assertEquals("check url:", "localhost", this.dbConnection.getUrl());
     Assert.assertEquals("check user:", "postgres", this.dbConnection.getUser());
     Assert.assertEquals("check password:", "postgres", this.dbConnection.getPassword());
     Assert.assertEquals("check port:", new Integer(5432), this.dbConnection.getPort());
-    Assert.assertEquals("check schema:", "emissions", this.dbConnection.getSchema());
+    Assert.assertEquals("check schema:", "dev_test", this.dbConnection.getSchema());
     Assert.assertNotNull("seriesDataSource is not null", this.seriesDataSource);
     Assert.assertEquals("check size of query params:", 4, this.seriesDataSource.getQueryParams().size());
-    Assert.assertEquals("check size of query params:", "", this.seriesDataSource.getQuery());
     Assert.assertEquals("check size of query params:", this.dbConnection, this.seriesDataSource.getConnection());
-    Assert.assertEquals("check size of query params:", this.stnIdObs, this.seriesDataSource.getQueryParams().get("stnId").getValue());
+    Assert.assertEquals("check size of query params:", this.stnIdObs, this.seriesDataSource.getQueryParams().get("stnId").getValueProperty());
     Assert.assertNotNull("tableview is not null", this.tableView);
-    Thread.sleep(1000);
-    System.out.println("done");
   }
 }

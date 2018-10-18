@@ -30,10 +30,15 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
   private String fxmlId;
   private String dataSourceRef;
   private String valueRef;
-  private Converter converter = Converter.NONE;
+  private Converter listItemConverter = Converter.NONE;
+  private Converter selectionItemConverter = Converter.NONE;
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public void setSelectionItemConverter(Converter selectionItemConverter) {
+    this.selectionItemConverter = selectionItemConverter;
   }
   
   
@@ -65,8 +70,8 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
    * 
    * @param listItemConverter 
    */
-  public void setConverter(Converter listItemConverter) {
-    this.converter = listItemConverter;
+  public void setListItemConverter(Converter listItemConverter) {
+    this.listItemConverter = listItemConverter;
   }
   
   
@@ -94,13 +99,16 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
     valueRefProperty.addListener((obs, oldVal, change)->{
       result.getSelectionModel().select(change);
     });
-    result.getSelectionModel().select(valueRefProperty.getValue());
+    
+    Object selected = this.selectionItemConverter.deconvert(valueRefProperty.getValue());
+    result.getSelectionModel().select(selected);
+    
     DataSource dataSrc = (DataSource) this.appContext.getBean(this.dataSourceRef);
     dataSrc.bind(result.getItems(), Converter.NONE);
     result.setConverter(new StringConverter() {
       @Override
       public String toString(Object object) {
-        return (String) converter.convert(object); 
+        return String.valueOf(listItemConverter.convert(object)); 
       }
       @Override
       public Object fromString(String string) {

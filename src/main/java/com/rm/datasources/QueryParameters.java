@@ -1,6 +1,7 @@
 package com.rm.datasources;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.property.MapProperty;
@@ -13,7 +14,7 @@ import javafx.collections.ObservableMap;
  *
  * @author rmarquez
  */
-public final class QueryParameters {
+public final class QueryParameters implements Iterable<QueryParameter> {
 
   private final MapProperty<String, QueryParameter> queryParam = new SimpleMapProperty<>();
 
@@ -63,5 +64,19 @@ public final class QueryParameters {
   public int size() {
     return this.queryParam.size();
   }
+  
+  /**
+   * 
+   * @return 
+   */
+  @Override
+  public Iterator<QueryParameter> iterator() {
+    return this.queryParam.values().iterator();
+  }
 
+  @Override
+  public String toString() {
+    return "QueryParameters{" + "queryParam=" + queryParam + '}';
+  }
+  
 }

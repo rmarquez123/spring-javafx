@@ -1,6 +1,8 @@
 package com.rm.datasources;
 
 import com.rm.springjavafx.datasources.AbstractDataSource;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  */
 public class SqlDataSource extends AbstractDataSource<RecordValue> {
 
-  private final String query;
+  private final RecordValueQuery query;
   private final QueryParameters queryParams;
   private final DbConnection connection;
 
@@ -19,10 +21,14 @@ public class SqlDataSource extends AbstractDataSource<RecordValue> {
    * @param query
    * @param queryParams
    */
-  public SqlDataSource(DbConnection connection, String query, QueryParameters queryParams) {
+  public SqlDataSource(DbConnection connection, RecordValueQuery query, QueryParameters queryParams ) {
     this.connection = connection;
     this.query = query;
-    this.queryParams = queryParams;
+    if (queryParams != null) {
+      this.queryParams = queryParams; 
+    } else {
+      this.queryParams = new QueryParameters(new ArrayList<>());
+    }
     this.queryParams.addListener((observable, oldValue, newValue) -> {
       this.updateResultSet();
     });
@@ -36,21 +42,30 @@ public class SqlDataSource extends AbstractDataSource<RecordValue> {
   public QueryParameters getQueryParams() {
     return this.queryParams;
   }
-
+  
   public String getQuery() {
-    return query;
+    return query.getQuery();
   }
 
   public DbConnection getConnection() {
     return connection;
   }
+  
 
   /**
    *
    */
   private void updateResultSet() {
-    String queryString = SqlUtils.createQueryString(this.query, this.queryParams);
-    List<RecordValue> resultSet = SqlUtils.executeListQuery(this.connection, queryString);
+    List<RecordValue> resultSet; 
+    try {
+      
+      resultSet = SqlUtils.executeListQuery(
+              this.connection, this.query.getQuery(), 
+              this.queryParams, this.query.getIdField());
+      
+    } catch (SQLException ex) {
+      throw new RuntimeException(ex); 
+    }
     super.setRecords(resultSet);
   }
 

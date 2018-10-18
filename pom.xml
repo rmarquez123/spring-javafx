@@ -12,6 +12,11 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <dependencies>
+    <dependency> 
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.5</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -47,6 +52,8 @@
       <version>2.21.0</version>
       <scope>test</scope>
     </dependency>
+    
+    
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

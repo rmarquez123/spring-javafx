@@ -1,11 +1,10 @@
 
 package com.rm.springjavafx.components;
 
+import com.rm.springjavafx.datasources.ListFromDataSourceFactory;
 import java.util.List;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -32,16 +31,27 @@ public class ComboBoxBeanDefParser extends AbstractBeanDefinitionParser {
     result.addPropertyValue("id", elmnt.getAttribute("id")); 
     result.addPropertyValue("fxml", elmnt.getAttribute("fxml")); 
     result.addPropertyValue("fxmlId", elmnt.getAttribute("fxmlId"));
-    result.addPropertyValue("dataSourceRef", elmnt.getAttribute("datasource-ref")); 
+    String datasource = elmnt.getAttribute("datasource-ref"); 
+    result.addPropertyValue("dataSourceRef", datasource); 
     result.addPropertyValue("valueRef", elmnt.getAttribute("value-ref"));
     List<Element> childEls = DomUtils.getChildElements(elmnt);
     
     for (Element childEl : childEls) {
-      if (childEl.getTagName().endsWith("converter")) {
+      if (childEl.getTagName().endsWith("listitem-converter")) {
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ObjectInstanceFactory.class); 
         new ObjectBeanDefParser().doParse(childEl, builder);
         AbstractBeanDefinition bd = builder.getBeanDefinition(); 
-        result.addPropertyValue("converter", bd); 
+        result.addPropertyValue("listItemConverter", bd); 
+      } else if (childEl.getTagName().endsWith("selectionitem-converter")) {
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ObjectInstanceFactory.class); 
+        new ObjectBeanDefParser().doParse(childEl, builder);
+        BeanDefinitionBuilder listBeanDef = BeanDefinitionBuilder.rootBeanDefinition(ListFromDataSourceFactory.class); 
+        listBeanDef.addPropertyValue("dataSource", datasource);
+        ManagedMap<String, Object> props = (ManagedMap) builder.getBeanDefinition().getPropertyValues().get("properties"); 
+        props.put("list", listBeanDef.getBeanDefinition());
+        builder.addPropertyValue("properties", props);
+        AbstractBeanDefinition bd = builder.getBeanDefinition(); 
+        result.addPropertyValue("selectionItemConverter", bd); 
       }
     }
     result.setLazyInit(false); 

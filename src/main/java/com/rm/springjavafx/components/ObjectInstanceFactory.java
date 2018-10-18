@@ -20,7 +20,7 @@ public class ObjectInstanceFactory implements FactoryBean<Object>, InitializingB
   
   private String className;
   private List<String> constructorArgs = new ArrayList<>();
-  private HashMap<String, String> properties = new HashMap<>();
+  private HashMap<String, Object> properties = new HashMap<>();
   private ApplicationContext appContext;
   
   public ObjectInstanceFactory() {
@@ -35,7 +35,7 @@ public class ObjectInstanceFactory implements FactoryBean<Object>, InitializingB
     this.constructorArgs = constructorArgs;
   }
 
-  public void setProperties(HashMap<String, String> properties) {
+  public void setProperties(HashMap<String, Object> properties) {
     this.properties = properties;
   }
   
@@ -50,10 +50,13 @@ public class ObjectInstanceFactory implements FactoryBean<Object>, InitializingB
     Constructor<?> constructor = clazz.getConstructor();
     constructor.setAccessible(true);
     Object result = constructor.newInstance(this.constructorArgs.toArray(new Object[]{}));
-    for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+    for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
       Field field = clazz.getDeclaredField(entry.getKey()); 
       field.setAccessible(true);
       field.set(result, entry.getValue());
+    }
+    if (InitializingBean.class.isAssignableFrom(clazz)) {
+      ((InitializingBean) result).afterPropertiesSet();
     }
     return result;
   }

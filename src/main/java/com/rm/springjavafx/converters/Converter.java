@@ -11,7 +11,16 @@ public interface Converter<T0, T1> {
   /**
    * 
    */
-  public static Converter NONE = (Converter) (Object source) -> source;
+  public static Converter NONE = new Converter() {
+    @Override
+    public Object convert(Object source) {
+      return source;
+    }
+    @Override
+    public Object deconvert(Object value) {
+      return value;
+    }
+  };
 
   /**
    *
@@ -19,4 +28,6 @@ public interface Converter<T0, T1> {
    * @return
    */
   public T1 convert(T0 source);
+
+  public T0 deconvert(T1 value);
 }
