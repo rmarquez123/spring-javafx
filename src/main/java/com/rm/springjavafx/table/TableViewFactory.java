@@ -22,12 +22,17 @@ import org.springframework.context.ApplicationContextAware;
 public class TableViewFactory implements FactoryBean<TableView>, ApplicationContextAware, InitializingBean {
 
   private ApplicationContext appContext;
+  private String id;
   private String datasourceRef;
   private String selectedRef;
   private String text;
   private List<TableViewRenderer> colRenderers;
   private Converter converter = Converter.NONE;
 
+  public void setId(String id) {
+    this.id = id;
+  }
+  
   public void setDatasourceRef(String datasourceRef) {
     this.datasourceRef = datasourceRef;
   }
@@ -39,17 +44,17 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
   public void setConverter(Converter converter) {
     this.converter = converter;
   }
-  
-  
+
   /**
-   * 
-   * @throws Exception 
+   *
+   * @throws Exception
    */
   @Override
   public void afterPropertiesSet() throws Exception {
     if (this.datasourceRef == null) {
-      throw new NullPointerException("Data source cannot be null"); 
+      throw new NullPointerException("Data source cannot be null");
     }
+    this.appContext.getBean(this.id); 
   }
   
 
@@ -91,7 +96,6 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
           result.getSelectionModel().select(change);
         }
       });
-
     }
 
   }

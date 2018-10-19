@@ -29,6 +29,7 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
   @Override
   protected AbstractBeanDefinition parseInternal(Element elmnt, ParserContext pc) {
     BeanDefinitionBuilder result = this.getNewBeanDefBuilder();
+    result.addPropertyValue("id", elmnt.getAttribute(ID_ATTRIBUTE));
     this.addDataSourceBean(elmnt, result, pc);
     this.addChildElements(elmnt, result);
     return result.getBeanDefinition();
@@ -39,7 +40,8 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
    * @return 
    */
   private BeanDefinitionBuilder getNewBeanDefBuilder() {
-    return BeanDefinitionBuilder.rootBeanDefinition(TableViewFactory.class);
+    BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(TableViewFactory.class);
+    return result;
   }
   
   /**

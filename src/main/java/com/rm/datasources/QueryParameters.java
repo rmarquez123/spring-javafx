@@ -4,20 +4,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  *
  * @author rmarquez
  */
-public final class QueryParameters implements Iterable<QueryParameter> {
+public final class QueryParameters implements Iterable<QueryParameter>, InitializingBean {
 
-  private final MapProperty<String, QueryParameter> queryParam = new SimpleMapProperty<>();
-
+  private final MapProperty<String, QueryParameter> queryParams = new SimpleMapProperty<>();
+  private Invoker invoker;
   /**
    *
    * @param queryParam
@@ -26,12 +28,21 @@ public final class QueryParameters implements Iterable<QueryParameter> {
     this.setQueryParameters(queryParam);
   }
 
+  public Invoker getInvoker() {
+    return invoker;
+  }
+
+  public void setInvoker(Invoker invoker) {
+    this.invoker = invoker;
+  }
+
+  
   /**
    *
    * @param listener
    */
   public void addListener(ChangeListener<? super ObservableMap<String, QueryParameter>> listener) {
-    this.queryParam.addListener(listener);
+    this.queryParams.addListener(listener);
   }
 
   /**
@@ -44,16 +55,26 @@ public final class QueryParameters implements Iterable<QueryParameter> {
       String name = queryParameter.getName();
       map.put(name, queryParameter);
     }
-    this.queryParam.setValue(FXCollections.observableMap(map));
+    this.queryParams.setValue(FXCollections.observableMap(map));
   }
 
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (this.invoker != null) {
+      this.invoker.addListener((e)->{
+        List<QueryParameter> newVal = this.queryParams.values().stream().collect(Collectors.toList());
+        this.setQueryParameters(newVal);
+      }); 
+    }
+  }
+  
   /**
    *
    * @param stnId
    * @return
    */
   public QueryParameter get(String stnId) {
-    QueryParameter result = this.queryParam.get(stnId);
+    QueryParameter result = this.queryParams.get(stnId);
     return result;
   }
 
@@ -62,7 +83,7 @@ public final class QueryParameters implements Iterable<QueryParameter> {
    * @return
    */
   public int size() {
-    return this.queryParam.size();
+    return this.queryParams.size();
   }
   
   /**
@@ -71,12 +92,12 @@ public final class QueryParameters implements Iterable<QueryParameter> {
    */
   @Override
   public Iterator<QueryParameter> iterator() {
-    return this.queryParam.values().iterator();
+    return this.queryParams.values().iterator();
   }
 
   @Override
   public String toString() {
-    return "QueryParameters{" + "queryParam=" + queryParam + '}';
+    return "QueryParameters{" + "queryParam=" + queryParams + '}';
   }
   
 }

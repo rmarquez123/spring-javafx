@@ -130,6 +130,7 @@
         <xsd:element ref="query-param"/>
       </xsd:choice>
       <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="invokerRef" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   
@@ -227,5 +228,14 @@
     </xsd:complexType>
   </xsd:element>
   <!-- Views --> 
-
+  
+  <xsd:element name="button-bind">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="invokerRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
 </xsd:schema>

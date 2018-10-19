@@ -42,6 +42,7 @@ public class ComboBoxBeanDefParser extends AbstractBeanDefinitionParser {
         new ObjectBeanDefParser().doParse(childEl, builder);
         AbstractBeanDefinition bd = builder.getBeanDefinition(); 
         result.addPropertyValue("listItemConverter", bd); 
+        
       } else if (childEl.getTagName().endsWith("selectionitem-converter")) {
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ObjectInstanceFactory.class); 
         new ObjectBeanDefParser().doParse(childEl, builder);

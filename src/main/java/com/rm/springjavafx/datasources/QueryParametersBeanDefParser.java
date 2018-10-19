@@ -32,6 +32,11 @@ public class QueryParametersBeanDefParser extends AbstractSingleBeanDefinitionPa
       new QueryParameterBeanDefParser().doParse(elemen, elBuilder);
       queryParamsList.add(elBuilder.getBeanDefinition());
     }
+    String invokerRef = element.getAttribute("invokerRef");
+    System.out.println(invokerRef);
+    if (invokerRef != null && !invokerRef.isEmpty()) {
+      builder.addPropertyReference("invoker", invokerRef); 
+    }
     builder.addConstructorArgValue(queryParamsList);
   }
 }

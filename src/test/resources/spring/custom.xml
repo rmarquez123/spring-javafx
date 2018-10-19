@@ -110,6 +110,8 @@
   <rm:datepicker id="startDatePicker"
                  fxml="fxml/Sample.fxml"
                  fxmlId="startDatePicker"
-                 value-ref="dateRangeObs#startDateProperty"/> 
+                 value-ref="dateRangeObs#startDateProperty"
+                 
+  /> 
   
 </beans>

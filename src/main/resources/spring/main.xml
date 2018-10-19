@@ -42,18 +42,23 @@
   <rm:daterange-property id="dateRangeObs"/> 
   <!-- Observables --> 
   
+  <!-- Invokers --> 
+  <bean id="seriesDataSourceInvoker" class="com.rm.datasources.Invoker"/> 
+  
+  <!-- Invokers --> 
   
   <!-- Data sources --> 
-  <rm:sql-datasource id ="seriesDataSource" dbConnectionRef="db-connection" idField="sensor_def_id">
+  <rm:sql-datasource id ="seriesDataSource" 
+                     dbConnectionRef="db-connection"                  
+                     idField="sensor_def_id">
     <rm:query-file value="sql/01.series.01.series.sql"/> 
-    
-    <rm:query-params>
-
+    <rm:query-params invokerRef="seriesDataSourceInvoker">
       <rm:query-param name="stnId" valueRef="stnIdObs"/>
       <rm:query-param name="sensorDefId" valueRef="sensorDefObs"/>
       <rm:query-param name="startDate" valueRef="dateRangeObs#startDateProperty"/>
       <rm:query-param name="endDate" valueRef="dateRangeObs#endDateProperty"/>
     </rm:query-params>
+    
   </rm:sql-datasource>  
   
   <rm:sql-datasource id ="stationsDataSource" dbConnectionRef="db-connection" idField="station_id">
@@ -115,4 +120,8 @@
                  fxml="fxml/Sample.fxml"
                  fxmlId="endDatePicker"
                  value-ref="dateRangeObs#endDateProperty"/> 
+  <rm:button-bind id="applySearchBtnBind"
+                  fxml="fxml/Sample.fxml" 
+                  fxmlId="applySearchBtn" 
+                  invokerRef="seriesDataSourceInvoker"/>
 </beans>

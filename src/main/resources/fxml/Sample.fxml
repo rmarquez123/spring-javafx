@@ -46,7 +46,7 @@
                   <Label text="Sensor" GridPane.rowIndex="1" />
                   <Label text="Start Date" GridPane.rowIndex="2" />
                   <Label text="End Date" GridPane.rowIndex="3" />
-                  <Button mnemonicParsing="false" text="Apply" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+                  <Button fx:id="applySearchBtn" mnemonicParsing="false" text="Apply" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
                </children>
                <HBox.margin>
                   <Insets top="10.0" />

@@ -58,7 +58,6 @@ public class SqlDataSource extends AbstractDataSource<RecordValue> {
   private void updateResultSet() {
     List<RecordValue> resultSet; 
     try {
-      
       resultSet = SqlUtils.executeListQuery(
               this.connection, this.query.getQuery(), 
               this.queryParams, this.query.getIdField());

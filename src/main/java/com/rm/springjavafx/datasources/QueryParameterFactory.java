@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContextAware;
 public class QueryParameterFactory implements FactoryBean<QueryParameter>, InitializingBean, ApplicationContextAware {
   private String name;
   private String valueRef;
+  
   private ApplicationContext appContext;
 
   public void setName(String name) {
