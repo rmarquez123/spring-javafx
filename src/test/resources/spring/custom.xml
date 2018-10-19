@@ -97,7 +97,19 @@
                fxml="fxml/Sample.fxml"
                fxmlId="sensorComboBox"
                value-ref="sensorDefObs" 
-               datasource-ref="sensorsDataSource"/> 
-  <!-- Views --> 
+               datasource-ref="sensorsDataSource"> 
+    <!-- Views --> 
+    <rm:listitem-converter class="com.rm.springjavafx.converters.RecordValueStringConverter">
+      <property name="valueField" value="sensor_def"/>
+    </rm:listitem-converter> 
+    <rm:selectionitem-converter class="com.rm.springjavafx.converters.RecordValueStringConverter">
+      <property name="valueField" value="sensor_def_id"/>
+    </rm:selectionitem-converter> 
+  </rm:combobox>
+  
+  <rm:datepicker id="startDatePicker"
+                 fxml="fxml/Sample.fxml"
+                 fxmlId="sensorComboBox"
+                 value-ref="dateRangeObs#startDateProperty"/> 
   
 </beans>

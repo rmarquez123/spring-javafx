@@ -1,6 +1,6 @@
 package com.rm.testrmfxmap.javafx;
 
-import com.rm.springjavafx.FxUtils;
+import com.rm.springjavafx.SpringFxUtils;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public class FxmlInitializer implements InitializingBean {
     if (root == null) {
       throw new IllegalArgumentException("Invalid fmxl file : '" + fxml + "'");
     }
-    Object result = FxUtils.getChildByID(root, fxmlId);
+    Object result = SpringFxUtils.getChildByID(root, fxmlId);
     if (result == null) {
       throw new IllegalArgumentException("Component not found. Check args : {"
               + "fxml = "  + fxml 

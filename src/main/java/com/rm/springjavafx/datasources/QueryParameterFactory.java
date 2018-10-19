@@ -1,7 +1,7 @@
 package com.rm.springjavafx.datasources;
 
 import com.rm.datasources.QueryParameter;
-import java.lang.reflect.Field;
+import com.rm.springjavafx.SpringFxUtils;
 import javafx.beans.property.Property;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
@@ -47,17 +47,8 @@ public class QueryParameterFactory implements FactoryBean<QueryParameter>, Initi
    */
   @Override
   public QueryParameter getObject() throws Exception {
-    Property<?> value;
-    if (!this.valueRef.contains("#")) {
-      value = (Property<?>) this.appContext.getBean(this.valueRef);
-    } else {
-      String[] parts = this.valueRef.split("#"); 
-      Object parent = this.appContext.getBean(parts[0]);
-      Field field = parent.getClass().getDeclaredField(parts[1]);
-      field.setAccessible(true);
-      value = (Property<?>) field.get(parent); 
-    }
-    QueryParameter result = new QueryParameter(this.name, value);
+    Property<?> valueProperty = SpringFxUtils.getValueProperty(appContext, this.valueRef); 
+    QueryParameter result = new QueryParameter(this.name, valueProperty);
     return result;
   }
   
