@@ -142,7 +142,7 @@ public class FxmlInitializer implements InitializingBean {
     if (result == null) {
       throw new IllegalArgumentException("Component not found. Check args : {"
               + "fxml = "  + fxml 
-              + ", fxmlId" + fxmlId
+              + ", fxmlId = " + fxmlId
               + "}"); 
     }
     return (Node) result;

@@ -94,12 +94,13 @@ public class ComboBoxFactory implements FactoryBean<ComboBox>, InitializingBean,
     }
     Property valueRefProperty = (Property) this.appContext.getBean(this.valueRef); 
     result.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, change)->{
-      valueRefProperty.setValue(change);
+      Object newVal = this.selectionItemConverter.convert(change);
+      valueRefProperty.setValue(newVal);
     });
     valueRefProperty.addListener((obs, oldVal, change)->{
-      result.getSelectionModel().select(change);
+      Object newVal = this.selectionItemConverter.deconvert(change);
+      result.getSelectionModel().select(newVal);
     });
-    
     Object selected = this.selectionItemConverter.deconvert(valueRefProperty.getValue());
     result.getSelectionModel().select(selected);
     

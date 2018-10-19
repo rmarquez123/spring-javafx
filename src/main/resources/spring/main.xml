@@ -109,6 +109,6 @@
   
   <rm:datepicker id="startDatePicker"
                  fxml="fxml/Sample.fxml"
-                 fxmlId="sensorComboBox"
+                 fxmlId="startDatePicker"
                  value-ref="dateRangeObs#startDateProperty"/> 
 </beans>

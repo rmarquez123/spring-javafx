@@ -1,6 +1,7 @@
 package com.rm.springjavafx;
 
 import com.rm.springjavafx.components.ComboBoxBeanDefParser;
+import com.rm.springjavafx.components.DatePickerBeanDefParser;
 import com.rm.springjavafx.datasources.DbConnectionBeanDefParser;
 import com.rm.springjavafx.datasources.QueryParameterBeanDefParser;
 import com.rm.springjavafx.datasources.QueryParametersBeanDefParser;
@@ -32,5 +33,6 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     this.registerBeanDefinitionParser("tableview", new TableViewBeanDefParser());
     this.registerBeanDefinitionParser("textfield", new TextFieldBeanDefParser());
     this.registerBeanDefinitionParser("combobox", new ComboBoxBeanDefParser());
+    this.registerBeanDefinitionParser("datepicker", new DatePickerBeanDefParser());
   }
 }

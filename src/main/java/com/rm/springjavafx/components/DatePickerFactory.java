@@ -27,6 +27,23 @@ public class DatePickerFactory implements FactoryBean<DatePicker>, InitializingB
   private String fxmlId;
   private String valueRef;
 
+  public void setFxmlInitializer(FxmlInitializer fxmlInitializer) {
+    this.fxmlInitializer = fxmlInitializer;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setFxml(String fxml) {
+    this.fxml = fxml;
+  }
+
+  public void setFxmlId(String fxmlId) {
+    this.fxmlId = fxmlId;
+  }
+  
+  
   /**
    *
    * @param valueRef

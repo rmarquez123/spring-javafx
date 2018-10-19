@@ -217,6 +217,15 @@
       <xsd:attribute name="value-ref" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
+  
+  <xsd:element name="datepicker">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="value-ref" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
   <!-- Views --> 
 
 </xsd:schema>
