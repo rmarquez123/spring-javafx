@@ -2,7 +2,9 @@ package com.rm.springjavafx.components;
 
 import com.rm.springjavafx.SpringFxUtils;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import javafx.beans.property.Property;
 import javafx.scene.control.DatePicker;
@@ -42,8 +44,7 @@ public class DatePickerFactory implements FactoryBean<DatePicker>, InitializingB
   public void setFxmlId(String fxmlId) {
     this.fxmlId = fxmlId;
   }
-  
-  
+
   /**
    *
    * @param valueRef
@@ -68,16 +69,19 @@ public class DatePickerFactory implements FactoryBean<DatePicker>, InitializingB
       result = new DatePicker();
     }
     Property<Date> valueRefProperty = (Property<Date>) SpringFxUtils
-            .getValueProperty(appContext, this.valueRef); 
-    result.valueProperty().addListener((obs, oldVal, change)->{
-      Date newVal = new Date(change.getYear(), change.getMonthValue(), change.getDayOfMonth()); 
+            .getValueProperty(appContext, this.valueRef);
+    result.valueProperty().addListener((obs, oldVal, change) -> {
+      Date newVal = Date.from(change.atStartOfDay(ZoneId.systemDefault()).toInstant());
       valueRefProperty.setValue(newVal);
     });
-    valueRefProperty.addListener((obs, oldVal, change)->{
-      LocalDate localDate = LocalDate.of(change.getYear(), change.getMonth(), change.getDay());
+    valueRefProperty.addListener((obs, oldVal, change) -> {
+      LocalDate localDate = Instant.ofEpochMilli(change.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
       result.valueProperty().setValue(localDate);
     });
-    
+    if (valueRefProperty.getValue() != null) {
+      LocalDate localDate = Instant.ofEpochMilli(valueRefProperty.getValue().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+      result.valueProperty().setValue(localDate);
+    }
     return result;
   }
 

@@ -39,8 +39,7 @@ public class RecordValueStringConverter implements Converter<RecordValue, Object
   @Override
   public Object convert(RecordValue source) {
     Object value = source.get(this.valueField);
-    String result = String.valueOf(value);
-    return result;
+    return value;
   }
   
   /**

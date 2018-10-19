@@ -111,4 +111,8 @@
                  fxml="fxml/Sample.fxml"
                  fxmlId="startDatePicker"
                  value-ref="dateRangeObs#startDateProperty"/> 
+  <rm:datepicker id="endDatePicker"
+                 fxml="fxml/Sample.fxml"
+                 fxmlId="endDatePicker"
+                 value-ref="dateRangeObs#endDateProperty"/> 
 </beans>

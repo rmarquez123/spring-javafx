@@ -25,12 +25,12 @@ public class DateRangeProperty extends ObjectPropertyBase<DateRange> {
    * @param dateRange
    */
   public DateRangeProperty(DateRange dateRange) {
-    super(dateRange); 
-    this.endDateProperty.addListener((d, oldVal, newVal) -> {
-      this.setValue(new DateRange(startDateProperty.getValue(), newVal));
-    });
+    super(dateRange);
     this.startDateProperty.addListener((d, oldVal, newVal) -> {
-      this.setValue(new DateRange(startDateProperty.getValue(), newVal));
+      this.setValue(new DateRange(startDateProperty.getValue(), endDateProperty.getValue()));
+    });
+    this.endDateProperty.addListener((d, oldVal, newVal) -> {
+      this.setValue(new DateRange(startDateProperty.getValue(), endDateProperty.getValue()));
     });
     this.addListener((obs, oldVal, newVal) -> {
       this.startDateProperty.setValue(newVal.getStartDate());
