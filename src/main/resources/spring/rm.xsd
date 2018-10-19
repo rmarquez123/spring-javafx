@@ -164,8 +164,9 @@
         <xsd:element ref="render-type"/>
       </xsd:choice>
       <xsd:attribute name="id" type="xsd:ID"/>
-      <xsd:attribute name="name" type="xsd:string"/>
-      <xsd:attribute name="column" type="xsd:integer"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+      <xsd:attribute name="columnIndex" type="xsd:integer"/>
+      <xsd:attribute name="propertyName" type="xsd:string"/>
       <xsd:attribute name="rendererType" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>

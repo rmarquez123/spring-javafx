@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +54,12 @@ public class NamedParamStatement {
   public void setObject(String name, Object value) throws SQLException {
     List<Integer> index = getIndex(name);
     for (Integer integer : index) {
-      prepStmt.setObject(integer, value);
+      if (value instanceof Date) {
+        prepStmt.setObject(integer, new java.sql.Date(((Date) value).getTime()));
+      } else {
+        prepStmt.setObject(integer, value);
+      }
+      
     }
   }
 

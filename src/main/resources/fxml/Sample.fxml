@@ -14,7 +14,7 @@
             <VBox HBox.hgrow="ALWAYS">
                <children>
                   <Label text="Series Data" />
-                  <TableView prefHeight="525.0" prefWidth="452.0" tableMenuButtonVisible="true" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="seriesTableView" prefHeight="525.0" prefWidth="452.0" tableMenuButtonVisible="true" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn prefWidth="75.0" text="C1" />
                       <TableColumn prefWidth="75.0" text="C2" />

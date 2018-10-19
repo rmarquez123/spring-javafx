@@ -1,5 +1,7 @@
 select
-  s.*
+  sr.sensor_id
+  , sr.timestamp
+  , sr.value
 from dev_test1.sensor s
 left join dev_test1.sensor_def def
   on def.sensor_def_id = s.sensor_def_id

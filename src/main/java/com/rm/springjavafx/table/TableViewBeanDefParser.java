@@ -30,6 +30,8 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
   protected AbstractBeanDefinition parseInternal(Element elmnt, ParserContext pc) {
     BeanDefinitionBuilder result = this.getNewBeanDefBuilder();
     result.addPropertyValue("id", elmnt.getAttribute(ID_ATTRIBUTE));
+    result.addPropertyValue("fxml", elmnt.getAttribute("fxml"));
+    result.addPropertyValue("fxmlId", elmnt.getAttribute("fxmlId"));
     this.addDataSourceBean(elmnt, result, pc);
     this.addChildElements(elmnt, result);
     return result.getBeanDefinition();
@@ -68,12 +70,15 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
     List<Element> childEls = DomUtils.getChildElements(elmnt);
     ManagedList<BeanDefinition> colRenderers = new ManagedList<>();
     childEls.stream().forEach((c) -> {
-      if (c.getTagName().endsWith("tableview-columndef")) {
-        AbstractBeanDefinition bd = this.getColumnDefBean(c);
-        colRenderers.add(bd); 
+      if (c.getTagName().endsWith("columns")) {
+        List<Element> cChildEls = DomUtils.getChildElements(c); 
+        for (Element cChildEl : cChildEls) {
+          AbstractBeanDefinition bd = this.getColumnDefBean(cChildEl);
+          colRenderers.add(bd);
+        }
       }
     });
-    result.addPropertyValue("colRenderers", colRenderers);
+    result.addPropertyValue("columns", colRenderers);
   }
   
   /**
@@ -82,7 +87,7 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
    * @return 
    */
   private AbstractBeanDefinition getColumnDefBean(Element c) {
-    BeanDefinitionBuilder beanDefBuilder = BeanDefinitionBuilder.rootBeanDefinition(TableViewRenderer.class);
+    BeanDefinitionBuilder beanDefBuilder = BeanDefinitionBuilder.rootBeanDefinition(TableViewColumn.class);
     ColumnDefBeanDefParser beanDefParser = new ColumnDefBeanDefParser();
     beanDefParser.doParse(c, beanDefBuilder);
     AbstractBeanDefinition bd = beanDefBuilder.getBeanDefinition();

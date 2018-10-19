@@ -16,14 +16,15 @@ public class ColumnDefBeanDefParser extends AbstractSingleBeanDefinitionParser {
 
   @Override
   protected void doParse(Element element, BeanDefinitionBuilder builder) {
-    builder.addPropertyValue("column", element.getAttribute("column"));
-    builder.addPropertyValue("name", element.getAttribute("name"));
+    builder.addPropertyValue("columnIndex", element.getAttribute("columnIndex"));
+    builder.addPropertyValue("label", element.getAttribute("label"));
+    builder.addPropertyValue("propertyName", element.getAttribute("propertyName"));
     builder.addPropertyValue("rendererType", element.getAttribute("rendererType"));
   }
 
   @Override
   protected Class<?> getBeanClass(Element element) {
-    return TableViewRenderer.class;
+    return TableViewColumn.class;
   }
 
 }

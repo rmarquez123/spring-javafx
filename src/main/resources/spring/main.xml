@@ -50,7 +50,7 @@
   <!-- Data sources --> 
   <rm:sql-datasource id ="seriesDataSource" 
                      dbConnectionRef="db-connection"                  
-                     idField="sensor_def_id">
+                     idField="sensor_id">
     <rm:query-file value="sql/01.series.01.series.sql"/> 
     <rm:query-params invokerRef="seriesDataSourceInvoker">
       <rm:query-param name="stnId" valueRef="stnIdObs"/>
@@ -72,12 +72,23 @@
   
   <!-- Views --> 
   <rm:tableview id="test-tableview"
-                fxml="myfxml"
-                fxmlId="seriesTable"
+                fxml="fxml/Sample.fxml"
+                fxmlId="seriesTableView"
                 datasource-ref="seriesDataSource"> 
     <rm:columns>
-      <rm:columndef name="Column 0" column="0" rendererType="Text"/>
-      <rm:columndef name="Column 1" column="1">
+      <rm:columndef label="Sensor Id" 
+                    columnIndex="0" 
+                    propertyName="sensor_id" 
+                    rendererType="Text"/>
+      <rm:columndef label="Time Stamp" 
+                    columnIndex="1"
+                    propertyName="timestamp">
+        <rm:render-type class="Currency"/> 
+      </rm:columndef>
+      
+      <rm:columndef label="Value" 
+                    columnIndex="2"
+                    propertyName="value" >
         <rm:render-type class="Currency"/> 
       </rm:columndef>
     </rm:columns>
