@@ -17,7 +17,7 @@ import org.springframework.context.annotation.ImportResource;
  * @author rmarquez
  */
 @SpringBootApplication()
-@ImportResource(locations = {"spring/main.xml"})
+@ImportResource(locations = {"spring/tabsbinding.xml"})
 public class Main extends Application {
 
   private FxmlInitializer fxmlInitializer;

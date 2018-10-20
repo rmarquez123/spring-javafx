@@ -4,18 +4,47 @@ import java.lang.reflect.Field;
 import javafx.beans.property.Property;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import org.springframework.context.ApplicationContext;
 
 public final class SpringFxUtils {
-  
+
   private SpringFxUtils() {
+  }
+  
+  /**
+   * 
+   * @param refPane
+   * @param newNode 
+   */
+  public static void setNodeOnRefPane(Pane refPane, Parent newNode) {
+    refPane.getChildren().clear();
+    refPane.getChildren().add(newNode);
+    if (refPane instanceof AnchorPane) {
+      AnchorPane.setLeftAnchor(newNode, 0d);
+      AnchorPane.setTopAnchor(newNode, 0d);
+      AnchorPane.setRightAnchor(newNode, 0d);
+      AnchorPane.setBottomAnchor(newNode, 0d);
+    } else if (refPane instanceof StackPane) {
+      
+    } else if (refPane instanceof HBox) {
+      HBox.setHgrow(newNode, Priority.ALWAYS);
+    } else if (refPane instanceof VBox) {
+      VBox.setVgrow(newNode, Priority.ALWAYS);
+    }
+    
   }
 
   /**
    *
    * @param appContext
    * @param beanId
-   * @return 
+   * @return
    */
   @SuppressWarnings("UseSpecificCatch")
   public static Property<?> getValueProperty(ApplicationContext appContext, String beanId) {
@@ -29,8 +58,8 @@ public final class SpringFxUtils {
         Field field = parent.getClass().getDeclaredField(parts[1]);
         field.setAccessible(true);
         valueProperty = (Property<?>) field.get(parent);
-      } catch(Exception ex) {
-        throw new RuntimeException("Error parsing property from beanId : '" + beanId + "'", ex); 
+      } catch (Exception ex) {
+        throw new RuntimeException("Error parsing property from beanId : '" + beanId + "'", ex);
       }
     }
     return valueProperty;
@@ -119,4 +148,5 @@ public final class SpringFxUtils {
     }
     return null;
   }
+
 }

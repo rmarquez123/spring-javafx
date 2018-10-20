@@ -47,5 +47,8 @@ public class TabsBindingTest {
     this.fxmlInitializer.load(this.appContext);
     Assert.assertNotNull(this.tabsBinding);
     Assert.assertNotNull(this.windowsgroup);
+    this.windowsgroup.getSelection().select(0);
+    
+    
   }
 }

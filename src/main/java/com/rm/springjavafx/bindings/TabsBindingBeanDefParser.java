@@ -10,7 +10,6 @@ import static org.springframework.beans.factory.xml.AbstractBeanDefinitionParser
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  *
@@ -30,6 +29,7 @@ public class TabsBindingBeanDefParser extends AbstractBeanDefinitionParser {
     
     String id = elmnt.getAttribute(ID_ATTRIBUTE);
     if (id != null && !id.isEmpty()) {
+      result.addPropertyValue(ID_ATTRIBUTE, id); 
       pc.getRegistry().registerBeanDefinition(id, result.getBeanDefinition());
     }
     List<Element> els = DomUtils.getChildElements(elmnt); 
@@ -41,11 +41,12 @@ public class TabsBindingBeanDefParser extends AbstractBeanDefinitionParser {
       } else if (el.getTagName().endsWith("tabs")) {
         List<Element> tabEls = DomUtils.getChildElements(el); 
         for (Element tagEl : tabEls) {
-          BeanDefinitionBuilder tagBeanDefBuilder = BeanDefinitionBuilder.rootBeanDefinition(TabItem.class);
-          tagBeanDefBuilder.addPropertyValue("selectionId", tagEl.getAttribute("selectionId")); 
-          tagBeanDefBuilder.addPropertyValue("fxml", tagEl.getAttribute("fxml")); 
-          tagBeanDefBuilder.addPropertyValue("fxmlId", tagEl.getAttribute("fxmlId")); 
-          tagBeanDefBuilder.addPropertyValue("label", tagEl.getAttribute("label")); 
+          BeanDefinitionBuilder tabBeanDefBuilder = BeanDefinitionBuilder.rootBeanDefinition(TabItem.class);
+          tabBeanDefBuilder.addPropertyValue("selectionId", tagEl.getAttribute("selectionId")); 
+          tabBeanDefBuilder.addPropertyValue("fxml", tagEl.getAttribute("fxml")); 
+          tabBeanDefBuilder.addPropertyValue("fxmlId", tagEl.getAttribute("fxmlId")); 
+          tabBeanDefBuilder.addPropertyValue("label", tagEl.getAttribute("label"));
+          tabBeans.add(tabBeanDefBuilder.getBeanDefinition()); 
         }
       }
     }

@@ -1,5 +1,6 @@
 package com.rm.springjavafx.bindings;
 
+import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.converters.Converter;
 import com.rm.springjavafx.properties.ElementSelectableListProperty;
 import com.rm.springjavafx.properties.ListItem;
@@ -11,6 +12,7 @@ import javafx.scene.layout.Pane;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -30,22 +32,27 @@ public class TabsBinding implements InitializingBean, ApplicationContextAware {
   private ElementSelectableListProperty<TabItem> tabs;
   private ApplicationContext context;
 
+  @Required
   public void setId(String id) {
     this.id = id;
   }
 
+  @Required
   public void setFxml(String fxml) {
     this.fxml = fxml;
   }
 
+  @Required
   public void setFxmlId(String fxmlId) {
     this.fxmlId = fxmlId;
   }
 
+  @Required
   public void setListRef(ElementSelectableListProperty<ListItem> listRef) {
     this.listRef = listRef;
   }
 
+  @Required
   public void setTabs(List<TabItem> tabs) {
     this.tabs = new ElementSelectableListProperty<>();
     this.tabs.setListItems(tabs);
@@ -56,24 +63,52 @@ public class TabsBinding implements InitializingBean, ApplicationContextAware {
     return "TabsBinding{" + "id=" + id + ", fxml=" + fxml + ", fxmlId=" + fxmlId + ", listRef=" + listRef + ", tabs=" + tabs + '}';
   }
 
+  /**
+   *
+   * @throws Exception
+   */
   @Override
   public void afterPropertiesSet() throws Exception {
     if (!this.fxmlInitializer.isInitialized()) {
       this.fxmlInitializer.initializeRoots(context);
     }
-    ElementSelectableListProperty.bind(tabs.getSelection(), listRef.getSelection(), new ConverterImpl());
+    
+    ConverterImpl converter = new ConverterImpl();
+    ElementSelectableListProperty.bind(tabs.getSelection(), listRef.getSelection(), converter);
     for (TabItem tabItem : tabs.getListProperty().getValue()) {
+      ListItem c = converter.convert(tabItem); 
+      if (c == null) {
+        throw new IllegalStateException("Tab item with selection id : '" + tabItem.getSelectionId() + "' does not have an association to the model."); 
+      }
+      tabItem.bindToSelectionModel(tabs.getSelection()); 
       tabItem.setOnAction(() -> {
         tabs.getSelection().select(tabItem);
       });
     }
-    Pane refPane = (Pane) fxmlInitializer.getNode(fxml, fxmlId);
     listRef.getSelection().selectedItemProperty().addListener((obs, old, change) -> {
-      Object newNodeFxml = change.getValue(change.getId());
-      Parent newNode = fxmlInitializer.getRoot(String.valueOf(newNodeFxml));
-      refPane.getChildren().clear();
-      refPane.getChildren().add(newNode);
+      this.setNodeOnRefPane(change);
     });
+    this.setNodeOnRefPane(listRef.getSelection().getSelectedItem());
+  }
+
+  /**
+   *
+   * @param change
+   */
+  private void setNodeOnRefPane(ListItem change) {
+    Pane refPane;
+    try {
+      refPane = (Pane) fxmlInitializer.getNode(fxml, fxmlId);
+    } catch (IllegalAccessException ex) {
+      throw new RuntimeException(ex);
+    }
+    Object newNodeFxml = change.getValue("fxml");
+    Parent newNode = fxmlInitializer.getRoot(String.valueOf(newNodeFxml));
+    if (newNode == null) {
+      throw new NullPointerException("Node doe not exist for fxml : '" + newNodeFxml + "'");
+    }
+    SpringFxUtils.setNodeOnRefPane(refPane, newNode);    
+    System.out.println("Showing node: '" + newNodeFxml + "'");
   }
 
   @Override

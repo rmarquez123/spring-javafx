@@ -42,8 +42,8 @@
   <rm:tabs-binding id="mainTabsBinding" listRef ="windowsgroup">
     <rm:contentpanel fxml="fxml/Main.fxml" fxmlId="contentDiv"/> 
     <rm:tabs>
-      <rm:tab selectionId="home" fxml="fxml/Main.fxml" fxmlId="homeDiv" label="Home" />
-      <rm:tab selectionId="seriesviewer" fxml="fxml/Main.fxml" fxmlId="seriesDiv" label="Series Viewer"/>
+      <rm:tab selectionId="0" fxml="fxml/Main.fxml" fxmlId="homeDiv" label="Home"/>
+      <rm:tab selectionId="1" fxml="fxml/Main.fxml" fxmlId="seriesDiv" label="Series Viewer"/>
     </rm:tabs>
   </rm:tabs-binding> 
 </beans>
