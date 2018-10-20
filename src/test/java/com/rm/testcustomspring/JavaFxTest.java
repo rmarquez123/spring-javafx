@@ -16,11 +16,9 @@ public class JavaFxTest {
   public static void initToolkit() throws InterruptedException {
     final CountDownLatch latch = new CountDownLatch(1);
     SwingUtilities.invokeLater(() -> {
-      new JFXPanel(); // initializes JavaFX environment
+      JFXPanel jfxPanel = new JFXPanel(); 
       latch.countDown();
     });
-
-    // That's a pretty reasonable delay... Right?
     if (!latch.await(5L, TimeUnit.SECONDS)) {
       throw new ExceptionInInitializerError();
     }

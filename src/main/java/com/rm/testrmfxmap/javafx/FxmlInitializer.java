@@ -120,7 +120,16 @@ public class FxmlInitializer implements InitializingBean {
         this.initialized = true;
       });
     }
-
+  }
+  
+    
+  /**
+   * 
+   * @param fxml
+   * @return 
+   */
+  public Parent getRoot(String fxml) {
+    return this.rootNodes.get(fxml); 
   }
 
   /**

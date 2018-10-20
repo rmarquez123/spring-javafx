@@ -51,6 +51,36 @@
     </xsd:complexType>
   </xsd:element>
   
+  <xsd:element name="item"> 
+    <xsd:complexType>
+      
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="beans:property"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:integer"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+      
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="items"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="item"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="list-property"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element ref="items"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
   <!-- Properties --> 
   
   
@@ -236,6 +266,46 @@
       <xsd:attribute name="fxml" type="xsd:string"/>
       <xsd:attribute name="fxmlId" type="xsd:string"/>
       <xsd:attribute name="invokerRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="contentpanel">
+    <xsd:complexType>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+    
+  <xsd:element name="tab">
+    <xsd:complexType>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="selectionId" type="xsd:string"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>  
+  
+  <xsd:element name="tabs">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tab"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="tabs-binding">
+    <xsd:complexType>
+      <xsd:sequence> 
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="contentpanel"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="tabs"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="listRef" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   

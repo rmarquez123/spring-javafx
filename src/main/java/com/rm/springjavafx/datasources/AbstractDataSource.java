@@ -31,7 +31,8 @@ public abstract class AbstractDataSource<T> implements DataSource<T> {
     });
     this.setValues(items, records.getValue(), converter);
   }
-
+  
+  
   private <E> void setValues(ObservableList<E> items, ObservableList<T> change, Converter<T, E> converter) {
     items.clear();
     List<E> mapped = change.stream().map((c)->{

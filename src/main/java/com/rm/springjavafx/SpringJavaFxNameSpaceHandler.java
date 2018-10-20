@@ -1,6 +1,8 @@
 package com.rm.springjavafx;
 
+import com.rm.springjavafx.properties.ListPropertyBeanDefParser;
 import com.rm.springjavafx.bindings.ButtonBindBeanDefParser;
+import com.rm.springjavafx.bindings.TabsBindingBeanDefParser;
 import com.rm.springjavafx.components.ComboBoxBeanDefParser;
 import com.rm.springjavafx.components.DatePickerBeanDefParser;
 import com.rm.springjavafx.datasources.DbConnectionBeanDefParser;
@@ -23,6 +25,7 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
   @Override
   public void init() {
     
+    this.registerBeanDefinitionParser("list-property", new ListPropertyBeanDefParser());
     this.registerBeanDefinitionParser("int-property", new IntegerPropertyBeanDefParser());
     this.registerBeanDefinitionParser("daterange-property", new DateRangeBeanDefParser());
     this.registerBeanDefinitionParser("db-connection", new DbConnectionBeanDefParser());
@@ -37,5 +40,7 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     this.registerBeanDefinitionParser("datepicker", new DatePickerBeanDefParser());
     
     this.registerBeanDefinitionParser("button-bind", new ButtonBindBeanDefParser());
+    this.registerBeanDefinitionParser("tabs-binding", new TabsBindingBeanDefParser());
+    
   }
 }
