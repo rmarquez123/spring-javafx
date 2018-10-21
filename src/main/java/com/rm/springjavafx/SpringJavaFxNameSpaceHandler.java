@@ -15,7 +15,7 @@ import com.rm.springjavafx.table.TableViewBeanDefParser;
 import com.rm.springjavafx.components.TextFieldBeanDefParser;
 import com.rm.springjavafx.tree.TreeBeanDefParser;
 import com.rm.springjavafx.tree.TreeModelBeanDefParser;
-import com.rm.springjavafx.tree.TreeTableBeanDefParser;
+import com.rm.springjavafx.treetable.TreeTableBeanDefParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**

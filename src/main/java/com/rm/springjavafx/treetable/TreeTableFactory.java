@@ -1,6 +1,9 @@
-package com.rm.springjavafx.tree;
+package com.rm.springjavafx.treetable;
 
 import com.rm.datasources.RecordValue;
+import com.rm.springjavafx.tree.LevelCellFactory;
+import com.rm.springjavafx.tree.TreeModel;
+import com.rm.springjavafx.tree.TreeNode;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +11,13 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,8 +69,8 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
 
   @Override
   public TreeTableView getObject() throws Exception {
-    TreeTableView<Object> result = (TreeTableView) this.fxmlInitializer.getNode(fxml, fxmlId);
-    TreeItem<Object> rootItem = new TreeItem<>("Inbox");
+    TreeTableView result = (TreeTableView) this.fxmlInitializer.getNode(fxml, fxmlId);
+    TreeItem rootItem = new TreeItem<>("Inbox");
     this.addTreeItems(rootItem);
     result.setRoot(rootItem);
     this.setColumns(result);
@@ -76,39 +81,37 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
    * 
    * @param result 
    */
-  private void setColumns(TreeTableView<Object> result) {
+  private <T> void setColumns(TreeTableView<T> result) {
     TreeTableColumnDef[] cellFactoriesMap = new TreeTableColumnDef[cellFactories.size()];
     for (TreeTableColumnDef cellFactory : cellFactories) {
       cellFactoriesMap[cellFactory.getColIndex()] = cellFactory;
     }
     result.getColumns().clear();
-    List<TreeTableColumn<Object, Object>> cols = new ArrayList<>();
+    List<TreeTableColumn<?, ?>> cols = new ArrayList<>();
     for (TreeTableColumnDef ttCol : cellFactoriesMap) {
       String label = ttCol.getLabel();
-      TreeTableColumn<Object, Object> col = new TreeTableColumn<>(label);
-      PropertyValueFactory propValFactory = new PropertyValueFactory(ttCol.getLabel()) {
-        private final Property resultProperty = new SimpleObjectProperty();
-        @Override
-        public ObservableValue<?> call(TableColumn.CellDataFeatures param) {
-          Object value = param.getValue();
-          if (value instanceof TreeNode) {
-            int level = ((TreeNode) value).getLevel();
-            LevelCellFactory cellFactory = ttCol.getCellFactory(level);
-            if (cellFactory != null) {
-              String textField = cellFactory.getTextField();
-              RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
-              this.resultProperty.setValue(recordVal.get(textField));
-            }
-          } else {
-            throw new UnsupportedOperationException("not supported");
-          }
-          return this.resultProperty;
-        }
-      };
-      col.setCellValueFactory(propValFactory);
+      TreeTableColumn<T, Object> col = new TreeTableColumn<>(label);
+      col.setCellValueFactory((param) -> {
+        Property<Object> resultProp = new SimpleObjectProperty<>();
+        TreeItem treeItem = param.getValue();
+        Object value = treeItem.getValue();
+        if (value instanceof TreeNode) {
+          int level = ((TreeNode) value).getLevel();
+          LevelCellFactory cellFactory = ttCol.getCellFactory(level);
+          if (cellFactory != null) {
+            String textField = cellFactory.getTextField();
+            RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
+            resultProp.setValue(recordVal.get(textField));
+          } 
+        } 
+        return resultProp;
+      });
       cols.add(col);
     }
-    result.getColumns().addAll(FXCollections.observableArrayList(cols));
+    ObservableList<TreeTableColumn<? extends Object, ?>> colsObs = FXCollections.observableArrayList(cols);
+    for (TreeTableColumn colsOb : colsObs) {
+      result.getColumns().add(colsOb);
+    }
   }
 
   /**

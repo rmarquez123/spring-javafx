@@ -1,5 +1,6 @@
-package com.rm.springjavafx.tree;
+package com.rm.springjavafx.treetable;
 
+import com.rm.springjavafx.tree.LevelCellFactory;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Required;
