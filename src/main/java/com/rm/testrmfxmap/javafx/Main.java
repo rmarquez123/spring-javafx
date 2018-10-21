@@ -51,6 +51,8 @@ public class Main extends Application {
     if (this.root == null) {
       throw new NullPointerException("Root cannot be null");
     }
+    this.root.getStylesheets().add("styles/window-style.css"); 
+    this.root.getStylesheets().add("styles/menu-style.css"); 
   }
 
   /**

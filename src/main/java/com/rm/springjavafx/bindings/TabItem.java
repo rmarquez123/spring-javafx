@@ -86,9 +86,16 @@ public class TabItem implements InitializingBean, ApplicationContextAware {
   }
 
   void bindToSelectionModel(SingleSelectionModel<TabItem> selection) {
+    selection.selectedItemProperty().addListener((e)->{
+      onSelected(selection);
+    });
+    onSelected(selection);
+  }
+
+  private void onSelected(SingleSelectionModel<TabItem> selection) {
     boolean selected = Objects.equals(selection.selectedItemProperty().getValue(), this);
     if (selected) {
-      if (this.node.getStyleClass().contains(SELECTED_CLASS)) {
+      if (!this.node.getStyleClass().contains(SELECTED_CLASS)) {
         this.node.getStyleClass().add(SELECTED_CLASS);
       }
     } else {

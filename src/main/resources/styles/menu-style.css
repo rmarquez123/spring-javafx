@@ -1,0 +1,26 @@
+
+.menu-item {
+  -fx-background-color: black;
+  -fx-text-fill: white;
+  -fx-opacity: 1.0;
+  -fx-padding: 10;
+}
+
+.menu-item:hover {
+  -fx-background-color: #333333;
+
+}
+
+.menu-item.selected {
+  -fx-background-color: lightgray;
+  -fx-text-fill: orangered;
+}
+
+.content-label {
+  -fx-font-size : 16px; 
+}
+
+
+.app-title {
+  -fx-font-size : 2em;
+}
