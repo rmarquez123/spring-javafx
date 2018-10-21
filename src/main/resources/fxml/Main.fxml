@@ -16,6 +16,7 @@
                   <Label fx:id="homeDiv" prefHeight="52.0" prefWidth="137.0" text="Home" />
                   <Label fx:id="seriesDiv" prefHeight="52.0" prefWidth="137.0" text="Series" />
                   <Label fx:id="treeSampleDiv" prefHeight="52.0" prefWidth="137.0" text="Tree Sample" />
+                  <Label fx:id="treeTableDiv" prefHeight="52.0" prefWidth="137.0" text="TreeTable" />
                </children>
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

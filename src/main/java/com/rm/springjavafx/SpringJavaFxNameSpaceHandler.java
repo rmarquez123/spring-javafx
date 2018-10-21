@@ -15,6 +15,7 @@ import com.rm.springjavafx.table.TableViewBeanDefParser;
 import com.rm.springjavafx.components.TextFieldBeanDefParser;
 import com.rm.springjavafx.tree.TreeBeanDefParser;
 import com.rm.springjavafx.tree.TreeModelBeanDefParser;
+import com.rm.springjavafx.tree.TreeTableBeanDefParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -38,6 +39,7 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     
     this.registerBeanDefinitionParser("treemodel", new TreeModelBeanDefParser());
     this.registerBeanDefinitionParser("treeview", new TreeBeanDefParser());
+    this.registerBeanDefinitionParser("treetable", new TreeTableBeanDefParser());
     this.registerBeanDefinitionParser("tableview", new TableViewBeanDefParser());
     this.registerBeanDefinitionParser("textfield", new TextFieldBeanDefParser());
     this.registerBeanDefinitionParser("combobox", new ComboBoxBeanDefParser());

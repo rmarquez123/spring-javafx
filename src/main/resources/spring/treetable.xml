@@ -16,33 +16,31 @@
           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-5.0.xsd
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-5.0.xsd
           http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd">
-      
-      
-          
-  <rm:list-property id="windowsgroup">
-    <rm:items>
-      <rm:item id="0" label="home">
-        <property name="fxml" value="fxml/Home.fxml"/>
-      </rm:item> 
-      <rm:item id="1" label="seriesviewer"> 
-        <property name="fxml" value="fxml/Sample.fxml"/>
-      </rm:item>
-      <rm:item id="2" label="treeSample"> 
-        <property name="fxml" value="fxml/TreeSample.fxml"/>
-      </rm:item>
-      <rm:item id="3" label="treetable"> 
-        <property name="fxml" value="fxml/TreeTable.fxml"/>
-      </rm:item>
-    </rm:items> 
-  </rm:list-property> 
+  
+  <rm:treemodel id="sampletreetablemodel">
+    <rm:datasources> 
+      <rm:datasource-ref level="0" ref="stationsDataSource"/> 
+      <rm:datasource-ref level="1" ref="stationSensorsDataSource"/> 
+    </rm:datasources> 
+    <rm:links>
+      <rm:link childLevel="1" parentField="station_id" childField="station_id"/>
+    </rm:links> 
+  </rm:treemodel>
     
-  <rm:tabs-binding id="mainTabsBinding" listRef ="windowsgroup">
-    <rm:contentpanel fxml="fxml/Main.fxml" fxmlId="contentDiv"/> 
-    <rm:tabs>
-      <rm:tab selectionId="0" fxml="fxml/Main.fxml" fxmlId="homeDiv" label="Home"/>
-      <rm:tab selectionId="1" fxml="fxml/Main.fxml" fxmlId="seriesDiv" label="Series Viewer"/>
-      <rm:tab selectionId="2" fxml="fxml/Main.fxml" fxmlId="treeSampleDiv" label="Tree Sample"/>
-      <rm:tab selectionId="3" fxml="fxml/Main.fxml" fxmlId="treeTableDiv" label="Tree Table"/>
-    </rm:tabs>
-  </rm:tabs-binding> 
+  <rm:treetable id="sampletreetable" 
+               fxml="fxml/TreeTable.fxml"
+               fxmlId="treetable"
+               treemodelRef="sampletreetablemodel">
+    <rm:tt-columns> 
+      <rm:tt-column colindex="0" label="Station"> 
+        <rm:level-cellfactory level="0" textField="station_name"/> 
+      </rm:tt-column>
+      <rm:tt-column colindex="1" label="Sensor"> 
+        <rm:level-cellfactory level="1" textField="sensor_def"/> 
+      </rm:tt-column>
+      <rm:tt-column colindex="2" label="Units"> 
+        <rm:level-cellfactory level="1" textField="units"/> 
+      </rm:tt-column>
+    </rm:tt-columns>
+  </rm:treetable> 
 </beans>

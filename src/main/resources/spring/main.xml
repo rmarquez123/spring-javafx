@@ -25,10 +25,12 @@
         <value>fxml/Sample.fxml</value>
         <value>fxml/Home.fxml</value>
         <value>fxml/TreeSample.fxml</value>
+        <value>fxml/TreeTable.fxml</value>
       </list>
     </property>
   </bean>
   <import resource="seriesview.xml"/>
   <import resource="tabsbinding.xml"/>
   <import resource="tree.xml"/>
+  <import resource="treetable.xml"/>
 </beans>

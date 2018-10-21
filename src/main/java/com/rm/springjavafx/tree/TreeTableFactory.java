@@ -3,12 +3,16 @@ package com.rm.springjavafx.tree;
 import com.rm.datasources.RecordValue;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javafx.scene.control.TreeCell;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,7 +25,7 @@ import org.springframework.context.ApplicationContextAware;
  *
  * @author rmarquez
  */
-public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, ApplicationContextAware {
+public class TreeTableFactory implements FactoryBean<TreeTableView>, InitializingBean, ApplicationContextAware {
 
   @Autowired
   FxmlInitializer fxmlInitializer;
@@ -30,8 +34,8 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
   private String fxml;
   private String fxmlId;
   private TreeModel treeModel;
-  private List<LevelCellFactory> cellFactories = new ArrayList<>();
-  
+  private List<TreeTableColumnDef> cellFactories = new ArrayList<>();
+
   private ApplicationContext context;
 
   @Required
@@ -54,49 +58,57 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     this.treeModel = treeModel;
   }
 
-  public void setCellFactories(List<LevelCellFactory> cellFactories) {
+  public void setCellFactories(List<TreeTableColumnDef> cellFactories) {
     this.cellFactories = cellFactories;
   }
-  
-  
-  
-  @Override
-  public Class<?> getObjectType() {
-    return TreeView.class;
-  }
-
 
   @Override
-  public TreeView getObject() throws Exception {
-    TreeView<Object> result = (TreeView) this.fxmlInitializer.getNode(fxml, fxmlId);
+  public TreeTableView getObject() throws Exception {
+    TreeTableView<Object> result = (TreeTableView) this.fxmlInitializer.getNode(fxml, fxmlId);
     TreeItem<Object> rootItem = new TreeItem<>("Inbox");
     this.addTreeItems(rootItem);
     result.setRoot(rootItem);
-    Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>(); 
-    for (LevelCellFactory cellFactory : cellFactories) {
-      cellFactoriesMap.put(cellFactory.getLevel(), cellFactory); 
-    }
-    result.setCellFactory((param) -> new TreeCell<Object>(){
-      @Override
-      protected void updateItem(Object item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty) {
-          super.setGraphic(null);
-          super.setText(null);
-        } else {
-          if (item instanceof TreeNode) {
-            TreeNode<RecordValue> treeNode = (TreeNode<RecordValue>) item;
-            int level = treeNode.getLevel();
-            String textField = cellFactoriesMap.get(level).getTextField(); 
-            String textVal = String.valueOf(treeNode.getValueObject().get(textField));
-            super.setText(textVal);
-          } else {
-            super.setText(String.valueOf(item));
-          }
-        }
-      }
-    });
+    this.setColumns(result);
     return result;
+  }
+  
+  /**
+   * 
+   * @param result 
+   */
+  private void setColumns(TreeTableView<Object> result) {
+    TreeTableColumnDef[] cellFactoriesMap = new TreeTableColumnDef[cellFactories.size()];
+    for (TreeTableColumnDef cellFactory : cellFactories) {
+      cellFactoriesMap[cellFactory.getColIndex()] = cellFactory;
+    }
+    result.getColumns().clear();
+    List<TreeTableColumn<Object, Object>> cols = new ArrayList<>();
+    for (TreeTableColumnDef ttCol : cellFactoriesMap) {
+      String label = ttCol.getLabel();
+      TreeTableColumn<Object, Object> col = new TreeTableColumn<>(label);
+      PropertyValueFactory propValFactory = new PropertyValueFactory(ttCol.getLabel()) {
+        private final Property resultProperty = new SimpleObjectProperty();
+        @Override
+        public ObservableValue<?> call(TableColumn.CellDataFeatures param) {
+          Object value = param.getValue();
+          if (value instanceof TreeNode) {
+            int level = ((TreeNode) value).getLevel();
+            LevelCellFactory cellFactory = ttCol.getCellFactory(level);
+            if (cellFactory != null) {
+              String textField = cellFactory.getTextField();
+              RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
+              this.resultProperty.setValue(recordVal.get(textField));
+            }
+          } else {
+            throw new UnsupportedOperationException("not supported");
+          }
+          return this.resultProperty;
+        }
+      };
+      col.setCellValueFactory(propValFactory);
+      cols.add(col);
+    }
+    result.getColumns().addAll(FXCollections.observableArrayList(cols));
   }
 
   /**
@@ -127,6 +139,11 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     return nodes;
   }
 
+  @Override
+  public Class<?> getObjectType() {
+    return TreeTableView.class;
+  }
+
   /**
    *
    * @throws Exception
@@ -136,7 +153,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     if (!this.fxmlInitializer.isInitialized()) {
       this.fxmlInitializer.initializeRoots(context);
     }
-    this.context.getBean(this.id); 
+    this.context.getBean(this.id);
   }
 
   @Override
