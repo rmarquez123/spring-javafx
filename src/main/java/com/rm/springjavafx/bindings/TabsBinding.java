@@ -72,6 +72,16 @@ public class TabsBinding implements InitializingBean, ApplicationContextAware {
     if (!this.fxmlInitializer.isInitialized()) {
       this.fxmlInitializer.initializeRoots(context);
     }
+    for (ListItem listItem : this.listRef.getListProperty().getValue()) {
+      String fxml = String.valueOf(listItem.getValue("fxml"));
+      Parent r = this.fxmlInitializer.getRoot(fxml);
+      if (r == null) {
+        throw new NullPointerException("list item fxml does not exist.  Check args : {"
+                + "listItem =" + listItem
+                + ", fxml = " + fxml
+                + "}"); 
+      }
+    }
     
     ConverterImpl converter = new ConverterImpl();
     ElementSelectableListProperty.bind(tabs.getSelection(), listRef.getSelection(), converter);

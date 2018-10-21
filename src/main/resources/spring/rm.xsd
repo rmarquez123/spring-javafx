@@ -357,8 +357,19 @@
     </xsd:complexType>
   </xsd:element>
   
+  <xsd:element name="level-cellfactory">
+    <xsd:complexType>
+      <xsd:attribute name="level" type="xsd:integer"/>
+      <xsd:attribute name="textField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
   <xsd:element name="treeview"> 
     <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="level-cellfactory"/>
+      </xsd:choice>
       <xsd:attribute name="id" type="xsd:ID"/>
       <xsd:attribute name="fxml" type="xsd:string"/>
       <xsd:attribute name="fxmlId" type="xsd:string"/>

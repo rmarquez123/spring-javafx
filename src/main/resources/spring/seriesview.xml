@@ -60,6 +60,9 @@
   <rm:sql-datasource id ="sensorsDataSource" dbConnectionRef="db-connection" idField="sensor_def_id">
     <rm:query-file value="sql/01.series.02.sensors.sql"/> 
   </rm:sql-datasource>  
+  <rm:sql-datasource id ="stationSensorsDataSource" dbConnectionRef="db-connection" idField="sensor_id">
+    <rm:query-file value="sql/01.series.02.station_sensors.sql"/> 
+  </rm:sql-datasource>  
   <!-- Data sources --> 
   
   <!-- Views --> 

@@ -16,19 +16,27 @@
           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-5.0.xsd
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-5.0.xsd
           http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd">
-          
+      
   
-  <bean class="com.rm.testrmfxmap.javafx.FxmlInitializer"> 
-    <property name="sceneRoot" value="fxml/Main.fxml"/>
-    <property name="fxmlList"> 
-      <list> 
-        <value>fxml/Sample.fxml</value>
-        <value>fxml/Home.fxml</value>
-        <value>fxml/TreeSample.fxml</value>
-      </list>
-    </property>
-  </bean>
-  <import resource="seriesview.xml"/>
-  <import resource="tabsbinding.xml"/>
-  <import resource="tree.xml"/>
+  
+  
+  <!-- Connections --> 
+  <rm:treemodel id="sampletreemodel">
+    <rm:datasources> 
+      <rm:datasource-ref level="0" ref="stationsDataSource"/> 
+      <rm:datasource-ref level="1" ref="stationSensorsDataSource"/> 
+    </rm:datasources> 
+    <rm:links>
+      <rm:link childLevel="1" parentField="station_id" childField="station_id"/>
+    </rm:links> 
+  </rm:treemodel>
+  
+  <rm:treeview id="sampletree" 
+               fxml="fxml/TreeSample.fxml"
+               fxmlId="treeview"
+               treemodelRef="sampletreemodel">
+    <rm:level-cellfactory level="0" textField="station_name"/> 
+    <rm:level-cellfactory level="1" textField="sensor_def"/> 
+    
+  </rm:treeview> 
 </beans>

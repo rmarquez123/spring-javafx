@@ -1,6 +1,7 @@
 package com.rm.springjavafx.tree;
 
 import com.rm.datasources.RecordValue;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,44 +20,44 @@ import javafx.collections.transformation.FilteredList;
  *
  * @author rmarquez
  */
-public class RecordValueListsTreeModel implements TreeModel<RecordValue>{
-  
+public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
+
   private final ListProperty<ListProperty<TreeNode<RecordValue>>> recordValues = new SimpleListProperty<>(FXCollections.observableArrayList());
   private final IntegerProperty numLevelsProperty = new SimpleIntegerProperty();
-  private final Map<Integer, String> idFields = new HashMap<>(); 
-  private final Map<Integer, Link> links = new HashMap<>(); 
-  
+  private final Map<Integer, String> idFields = new HashMap<>();
+  private final Map<Integer, Link> links = new HashMap<>();
+
   /**
-   * 
+   *
    */
   public RecordValueListsTreeModel() {
-    this.recordValues.addListener((obs, old, change)->{
+    this.recordValues.addListener((obs, old, change) -> {
       this.numLevelsProperty.setValue(this.recordValues.size());
     });
   }
-    
+
   /**
-   * 
+   *
    * @param idField
    * @param link
-   * @param records 
+   * @param records
    */
   public void addLevel(String idField, Link link, ListProperty<RecordValue> records) {
     int level = this.getNumberOfLevels();
     if (level > 0) {
       link.setLevel(level);
-      this.links.put(level, link); 
+      this.links.put(level, link);
     }
-    this.idFields.put(level, idField); 
-    List<TreeNode<RecordValue>> a = records.getValue().stream().map((r)->new TreeNode<>(level, r))
+    this.idFields.put(level, idField);
+    List<TreeNode<RecordValue>> a = records.getValue().stream().map((r) -> new TreeNode<>(level, r))
             .collect(Collectors.toList());
     SimpleListProperty<TreeNode<RecordValue>> listProp = new SimpleListProperty<>(FXCollections.observableArrayList(a));
     this.recordValues.getValue().add(listProp);
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   @Override
   public int getNumberOfLevels() {
@@ -67,73 +68,77 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue>{
   public ReadOnlyIntegerProperty getNumberOfLevelsProperty() {
     return this.numLevelsProperty;
   }
-  
+
   @Override
   public String getIdField(int level) {
-    return this.idFields.get(level); 
-  } 
-  
+    return this.idFields.get(level);
+  }
+
   @Override
   public TreeNode<RecordValue> getNode(int level, Object idValue) {
     ListProperty<TreeNode<RecordValue>> levelRecords = this.recordValues.getValue().get(level);
-    TreeNode<RecordValue> result = null; 
+    TreeNode<RecordValue> result = null;
     for (TreeNode<RecordValue> node : levelRecords.getValue()) {
       String idField = this.idFields.get(level);
-      if (Objects.equals(node.getObject().get(idField), idValue) ) {
-        result = node; 
-        break; 
+      if (Objects.equals(node.getObject().get(idField), idValue)) {
+        result = node;
+        break;
       }
     }
     return result;
   }
-  
+
   /**
-   * 
+   *
    * @param parentNode
-   * @return 
+   * @return
    */
   @Override
-  public ObservableList<TreeNode<RecordValue>> getNodes(TreeNode<RecordValue> parentNode) {
+  public List<TreeNode<RecordValue>> getNodes(TreeNode<RecordValue> parentNode) {
     int parentLevel = parentNode.getLevel();
-    int childLevel = parentLevel+1;
-    ObservableList<TreeNode<RecordValue>> allChildren = this.recordValues.getValue().get(childLevel).getValue();
-    Link link = this.links.get(childLevel);
-    FilteredList<TreeNode<RecordValue>> result = allChildren.filtered((TreeNode<RecordValue> child) -> {  
-      return link.isAssociated(parentNode, child); 
-    }); 
-    return result; 
+    int childLevel = parentLevel + 1;
+    List<TreeNode<RecordValue>> result;
+    if (childLevel < this.getNumberOfLevels()) {
+      List<TreeNode<RecordValue>> allChildren = this.recordValues.getValue().get(childLevel).getValue();
+      Link link = this.links.get(childLevel);
+      result = allChildren.stream().filter((TreeNode<RecordValue> child) -> {
+        return link.isAssociated(parentNode, child);
+      }).collect(Collectors.toList());
+    } else {
+      result = Collections.EMPTY_LIST;
+    }
+    return result;
   }
-  
+
   /**
-   * 
+   *
    * @param parentNode
    * @param idValue
-   * @return 
+   * @return
    */
   @Override
   public TreeNode<RecordValue> getNode(TreeNode<RecordValue> parentNode, Object idValue) {
-    ObservableList<TreeNode<RecordValue>> nodes = this.getNodes(parentNode);
+    List<TreeNode<RecordValue>> nodes = this.getNodes(parentNode);
     TreeNode<RecordValue> result = null;
     int childLevel = parentNode.getLevel() + 1;
     String idField = this.idFields.get(childLevel);
     for (TreeNode<RecordValue> node : nodes) {
-      if (Objects.equals(node.getObject().get(idField), idValue) ) {
-        result = node; 
-        break; 
+      if (Objects.equals(node.getObject().get(idField), idValue)) {
+        result = node;
+        break;
       }
     }
-    return result; 
+    return result;
   }
-  
+
   /**
-   * 
+   *
    * @param level
-   * @return 
+   * @return
    */
   @Override
   public List<TreeNode<RecordValue>> getNodes(int level) {
-    return this.recordValues.get(level).getValue(); 
+    return this.recordValues.get(level).getValue();
   }
-  
-  
+
 }

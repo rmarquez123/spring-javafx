@@ -5,8 +5,9 @@ package com.rm.springjavafx.tree;
  * @author rmarquez
  */
 public class TreeNode<T> {
-  private final T valueObject;
   private final int level;
+  private final T valueObject;
+  
   
   /**
    *
@@ -34,5 +35,9 @@ public class TreeNode<T> {
   public T getValueObject() {
     return valueObject;
   }
-  
+
+  @Override
+  public String toString() {
+    return "TreeNode{" + "level=" + level + ", valueObject=" + valueObject + '}';
+  }
 }

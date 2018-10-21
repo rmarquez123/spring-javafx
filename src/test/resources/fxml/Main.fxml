@@ -7,8 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox layoutX="44.0" layoutY="93.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -16,6 +15,7 @@
                <children>
                   <Label fx:id="homeDiv" prefHeight="52.0" prefWidth="137.0" text="Home" />
                   <Label fx:id="seriesDiv" prefHeight="52.0" prefWidth="137.0" text="Series" />
+                  <Label fx:id="treeSampleDiv" prefHeight="52.0" prefWidth="137.0" text="TreeSample" />
                </children>
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

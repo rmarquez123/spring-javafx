@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 /**
  * Helper class for initializing fxml with controllers instantiated through

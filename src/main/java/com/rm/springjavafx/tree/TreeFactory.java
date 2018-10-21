@@ -1,9 +1,16 @@
 package com.rm.springjavafx.tree;
 
+import com.rm.datasources.RecordValue;
+import com.rm.springjavafx.components.TextFieldFactory;
 import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.util.Callback;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,6 +32,8 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
   private String fxml;
   private String fxmlId;
   private TreeModel treeModel;
+  private List<LevelCellFactory> cellFactories = new ArrayList<>();
+  
   private ApplicationContext context;
 
   @Required
@@ -47,13 +56,43 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     this.treeModel = treeModel;
   }
 
+  public void setCellFactories(List<LevelCellFactory> cellFactories) {
+    this.cellFactories = cellFactories;
+  }
+  
+  
+  
+
   @Override
   public TreeView getObject() throws Exception {
     TreeView<Object> result = (TreeView) this.fxmlInitializer.getNode(fxml, fxmlId);
     TreeItem<Object> rootItem = new TreeItem<>("Inbox");
-
     this.addTreeItems(rootItem);
     result.setRoot(rootItem);
+    Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>(); 
+    for (LevelCellFactory cellFactory : cellFactories) {
+      cellFactoriesMap.put(cellFactory.getLevel(), cellFactory); 
+    }
+    result.setCellFactory((param) -> new TreeCell<Object>(){
+      @Override
+      protected void updateItem(Object item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty) {
+          super.setGraphic(null);
+          super.setText(null);
+        } else {
+          if (item instanceof TreeNode) {
+            TreeNode<RecordValue> treeNode = (TreeNode<RecordValue>) item;
+            int level = treeNode.getLevel();
+            String textField = cellFactoriesMap.get(level).getTextField(); 
+            String textVal = String.valueOf(treeNode.getValueObject().get(textField));
+            super.setText(textVal);
+          } else {
+            super.setText(String.valueOf(item));
+          }
+        }
+      }
+    });
     return result;
   }
 
@@ -99,6 +138,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     if (!this.fxmlInitializer.isInitialized()) {
       this.fxmlInitializer.initializeRoots(context);
     }
+    this.context.getBean(this.id); 
   }
 
   @Override
