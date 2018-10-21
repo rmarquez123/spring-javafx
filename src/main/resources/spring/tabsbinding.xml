@@ -18,16 +18,7 @@
           http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd">
       
       
-  <bean class="com.rm.testrmfxmap.javafx.FxmlInitializer"> 
-    <property name="sceneRoot" value="fxml/Main.fxml"/>
-    <property name="fxmlList"> 
-      <list> 
-        <value>fxml/Sample.fxml</value>
-        <value>fxml/Home.fxml</value>
-      </list>
-    </property>
-  </bean>
-
+          
   <rm:list-property id="windowsgroup">
     <rm:items>
       <rm:item id="0" label="home">

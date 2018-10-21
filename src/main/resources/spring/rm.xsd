@@ -308,5 +308,62 @@
       <xsd:attribute name="listRef" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
+
+  
+  <xsd:element name="datasource-ref">
+    <xsd:complexType>
+      <xsd:attribute name="level" type="xsd:integer"/>
+      <xsd:attribute name="ref" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="datasources">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="datasource-ref"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="link">
+    <xsd:complexType>
+      <xsd:attribute name="childLevel" type="xsd:integer"/>
+      <xsd:attribute name="parentField" type="xsd:string"/>
+      <xsd:attribute name="childField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="links">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="link"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="treemodel"> 
+    <xsd:complexType>
+      <xsd:sequence> 
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="datasources"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="links"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="treeview"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="treemodelRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
   
 </xsd:schema>

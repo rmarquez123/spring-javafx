@@ -13,6 +13,8 @@ import com.rm.springjavafx.properties.DateRangeBeanDefParser;
 import com.rm.springjavafx.properties.IntegerPropertyBeanDefParser;
 import com.rm.springjavafx.table.TableViewBeanDefParser;
 import com.rm.springjavafx.components.TextFieldBeanDefParser;
+import com.rm.springjavafx.tree.TreeBeanDefParser;
+import com.rm.springjavafx.tree.TreeModelBeanDefParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -34,6 +36,8 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     this.registerBeanDefinitionParser("query-params", new QueryParametersBeanDefParser()); 
     this.registerBeanDefinitionParser("query-param", new QueryParameterBeanDefParser()); 
     
+    this.registerBeanDefinitionParser("treemodel", new TreeModelBeanDefParser());
+    this.registerBeanDefinitionParser("treeview", new TreeBeanDefParser());
     this.registerBeanDefinitionParser("tableview", new TableViewBeanDefParser());
     this.registerBeanDefinitionParser("textfield", new TextFieldBeanDefParser());
     this.registerBeanDefinitionParser("combobox", new ComboBoxBeanDefParser());
