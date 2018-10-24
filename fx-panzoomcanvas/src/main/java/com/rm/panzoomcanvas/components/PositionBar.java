@@ -1,12 +1,12 @@
-package fx.panzoomcanvas.components;
+package com.rm.panzoomcanvas.components;
 
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.projections.Projector;
-import fx.panzoomcanvas.projections.ScreenPoint;
-import fx.panzoomcanvas.projections.VirtualPoint;
-import fx.panzoomcanvas.core.FxPoint;
-import fx.panzoomcanvas.core.Point;
-import fx.panzoomcanvas.core.SpatialRef;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.projections.Projector;
+import com.rm.panzoomcanvas.projections.ScreenPoint;
+import com.rm.panzoomcanvas.projections.VirtualPoint;
+import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.core.Point;
+import com.rm.panzoomcanvas.core.SpatialRef;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;

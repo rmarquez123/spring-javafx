@@ -1,7 +1,7 @@
-package fx.panzoomcanvas.bindings;
+package com.rm.panzoomcanvas.bindings;
 
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.projections.ScreenPoint;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.projections.ScreenPoint;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Cursor;

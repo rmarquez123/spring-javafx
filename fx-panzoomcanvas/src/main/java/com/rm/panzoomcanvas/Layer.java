@@ -1,4 +1,4 @@
-package fx.panzoomcanvas;
+package com.rm.panzoomcanvas;
 
 import javafx.beans.property.BooleanProperty;
 

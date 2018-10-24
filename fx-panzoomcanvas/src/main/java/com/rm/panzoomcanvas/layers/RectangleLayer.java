@@ -1,4 +1,4 @@
-package fx.panzoomcanvas.layers;
+package com.rm.panzoomcanvas.layers;
 
 import javafx.beans.property.Property;
 import javafx.scene.canvas.Canvas;

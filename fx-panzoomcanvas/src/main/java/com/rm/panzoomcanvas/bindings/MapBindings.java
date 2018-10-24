@@ -1,6 +1,6 @@
-package fx.panzoomcanvas.bindings;
+package com.rm.panzoomcanvas.bindings;
 
-import fx.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.FxCanvas;
 
 /**
  *

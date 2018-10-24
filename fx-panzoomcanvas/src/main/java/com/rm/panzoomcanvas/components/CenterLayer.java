@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fx.panzoomcanvas.components;
+package com.rm.panzoomcanvas.components;
 
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.layers.BaseLayer;
-import fx.panzoomcanvas.layers.DrawArgs;
-import fx.panzoomcanvas.projections.ScreenEnvelope;
-import fx.panzoomcanvas.projections.ScreenPoint;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.layers.BaseLayer;
+import com.rm.panzoomcanvas.layers.DrawArgs;
+import com.rm.panzoomcanvas.projections.ScreenEnvelope;
+import com.rm.panzoomcanvas.projections.ScreenPoint;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;

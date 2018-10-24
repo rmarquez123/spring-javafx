@@ -1,7 +1,7 @@
-package fx.panzoomcanvas.bindings;
+package com.rm.panzoomcanvas.bindings;
 
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.projections.Level;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.projections.Level;
 import javafx.beans.property.Property;
 import javafx.scene.input.ScrollEvent;
 

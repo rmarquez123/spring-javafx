@@ -1,9 +1,9 @@
-package fx.panzoomcanvas.layers;
+package com.rm.panzoomcanvas.layers;
 
-import fx.panzoomcanvas.Content;
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.Layer;
-import fx.panzoomcanvas.projections.ScreenEnvelope;
+import com.rm.panzoomcanvas.Content;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.Layer;
+import com.rm.panzoomcanvas.projections.ScreenEnvelope;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;

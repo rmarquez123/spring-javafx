@@ -1,13 +1,13 @@
-package fx.panzoomcanvas;
+package com.rm.panzoomcanvas;
 
-import fx.panzoomcanvas.bindings.MapBindings;
-import fx.panzoomcanvas.core.FxPoint;
-import fx.panzoomcanvas.projections.Level;
-import fx.panzoomcanvas.projections.Projector;
-import fx.panzoomcanvas.projections.ScreenEnvelope;
-import fx.panzoomcanvas.projections.ScreenPoint;
-import fx.panzoomcanvas.projections.ScrollInvoker;
-import fx.panzoomcanvas.projections.VirtualEnvelope;
+import com.rm.panzoomcanvas.bindings.MapBindings;
+import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.projections.Level;
+import com.rm.panzoomcanvas.projections.Projector;
+import com.rm.panzoomcanvas.projections.ScreenEnvelope;
+import com.rm.panzoomcanvas.projections.ScreenPoint;
+import com.rm.panzoomcanvas.projections.ScrollInvoker;
+import com.rm.panzoomcanvas.projections.VirtualEnvelope;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;

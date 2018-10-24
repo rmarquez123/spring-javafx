@@ -1,7 +1,7 @@
-package fx.panzoomcanvas;
+package com.rm.panzoomcanvas;
 
-import fx.panzoomcanvas.core.FxEnvelope;
-import fx.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.core.FxEnvelope;
+import com.rm.panzoomcanvas.core.FxPoint;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**

@@ -1,9 +1,9 @@
-package fx.panzoomcanvas.layers;
+package com.rm.panzoomcanvas.layers;
 
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.projections.Level;
-import fx.panzoomcanvas.projections.ScreenEnvelope;
-import fx.panzoomcanvas.projections.ScreenPoint;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.projections.Level;
+import com.rm.panzoomcanvas.projections.ScreenEnvelope;
+import com.rm.panzoomcanvas.projections.ScreenPoint;
 import javafx.scene.Node;
 
 /**

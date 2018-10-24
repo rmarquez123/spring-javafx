@@ -1,15 +1,15 @@
-package fx.panzoomcanvas.app;
+package com.rm.panzoomcanvas.app;
 
-import fx.panzoomcanvas.Content;
-import fx.panzoomcanvas.FxCanvas;
-import fx.panzoomcanvas.Layer;
-import fx.panzoomcanvas.components.PositionBar;
-import fx.panzoomcanvas.components.VirtualBoxLayer;
-import fx.panzoomcanvas.core.FxPoint;
-import fx.panzoomcanvas.core.SpatialRef;
-import fx.panzoomcanvas.projections.GeometryProjection;
-import fx.panzoomcanvas.projections.MapCanvasSR;
-import fx.panzoomcanvas.projections.Projector;
+import com.rm.panzoomcanvas.Content;
+import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.Layer;
+import com.rm.panzoomcanvas.components.PositionBar;
+import com.rm.panzoomcanvas.components.VirtualBoxLayer;
+import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.core.SpatialRef;
+import com.rm.panzoomcanvas.projections.GeometryProjection;
+import com.rm.panzoomcanvas.projections.MapCanvasSR;
+import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;

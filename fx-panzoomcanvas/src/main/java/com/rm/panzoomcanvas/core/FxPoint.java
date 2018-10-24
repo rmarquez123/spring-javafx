@@ -1,4 +1,4 @@
-package fx.panzoomcanvas.core;
+package com.rm.panzoomcanvas.core;
 
 import java.util.HashMap;
 import java.util.Map;

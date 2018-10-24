@@ -1,6 +1,6 @@
-package fx.panzoomcanvas;
+package com.rm.panzoomcanvas;
 
-import fx.panzoomcanvas.projections.VirtualEnvelope;
+import com.rm.panzoomcanvas.projections.VirtualEnvelope;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Platform;
