@@ -69,18 +69,18 @@
                 fxmlId="seriesTableView"
                 datasource-ref="seriesDataSource"> 
     <rm:columns>
-      <rm:columndef label="Sensor Id" 
+<!--      <rm:columndef label="Sensor Id" 
                     columnIndex="0" 
                     propertyName="sensor_id" 
-                    rendererType="Text"/>
+                    rendererType="Text"/>-->
       <rm:columndef label="Time Stamp" 
-                    columnIndex="1"
+                    columnIndex="0"
                     propertyName="timestamp">
         <rm:render-type class="Currency"/> 
       </rm:columndef>
       
       <rm:columndef label="Value" 
-                    columnIndex="2"
+                    columnIndex="1"
                     propertyName="value" >
         <rm:render-type class="Currency"/> 
       </rm:columndef>

@@ -64,7 +64,7 @@ public class Main extends Application {
    */
   @Override
   public void start(Stage primaryStage) throws Exception {
-    primaryStage.setScene(new Scene(this.root, 500, 500));
+    primaryStage.setScene(new Scene(this.root));
     primaryStage.show();
   }
 
