@@ -10,13 +10,14 @@ import com.rm.panzoomcanvas.core.SpatialRef;
  * @author rmarquez
  */
 public class Projector {
-
   private final MapCanvasSR virtualSr = new MapCanvasSR();
   private final SpatialRef baseSpatialRef;
   private final GeometryProjection geomProject;
 
   /**
    *
+   * @param baseSpatialRef
+   * @param geomProj
    */
   public Projector(SpatialRef baseSpatialRef, GeometryProjection geomProj) {
     this.baseSpatialRef = baseSpatialRef;
@@ -47,6 +48,7 @@ public class Projector {
   /**
    * Projects screen envelope to a virtual envelope.
    *
+   * @param screenEnv
    * @return the virtual envelope
    */
   public VirtualEnvelope projectScreenToVirtual(ScreenEnvelope screenEnv) {
@@ -62,6 +64,8 @@ public class Projector {
   /**
    * Projects screen coordinate to a virtual coordinate.
    *
+   * @param scrnPt
+   * @param env
    * @return the virtual point.
    */
   public VirtualPoint projectScreenToVirtual(ScreenPoint scrnPt, ScreenEnvelope env) {
@@ -125,6 +129,8 @@ public class Projector {
   /**
    * Projects virtual envelope to a geometric envelope.
    *
+   * @param virtualEnv
+   * @param destSr
    * @return the geometric envelope.
    */
   public FxEnvelope projectVirtualToGeo(VirtualEnvelope virtualEnv, SpatialRef destSr) {
@@ -136,6 +142,8 @@ public class Projector {
   /**
    * Projects virtual coordinate to a geometric coordinate.
    *
+   * @param virtualPt
+   * @param destSr
    * @return the geometric point.
    */
   public FxPoint projectVirtualToGeo(Point virtualPt, SpatialRef destSr) {
@@ -225,7 +233,7 @@ public class Projector {
     }
     return result;
   }
-
+  
   /**
    *
    * @param geomEnv
@@ -233,7 +241,6 @@ public class Projector {
    * @return
    */
   private FxEnvelope projectGeometry(FxEnvelope geomEnv, SpatialRef baseSpatialRef) {
-
     FxEnvelope result;
     if (geomEnv.getSr().equals(baseSpatialRef)) {
       result = geomEnv;
@@ -244,5 +251,4 @@ public class Projector {
     }
     return result;
   }
-
 }

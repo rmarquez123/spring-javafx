@@ -34,6 +34,7 @@ public class MainApp extends Application {
     ObservableList<Layer> value = content.getLayers().getValue();
     value.add(new VirtualBoxLayer()); 
     FxCanvas mapCanvas = new FxCanvas(content, new Projector(new MapCanvasSR(), new GeometryProjection() {
+      
       @Override
       public FxPoint project(FxPoint geomPoint, SpatialRef baseSpatialRef) {
         return geomPoint;
