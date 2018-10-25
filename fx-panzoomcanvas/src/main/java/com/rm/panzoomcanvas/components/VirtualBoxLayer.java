@@ -2,8 +2,8 @@ package com.rm.panzoomcanvas.components;
 
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.layers.RectangleLayer;
-import com.rm.panzoomcanvas.projections.ScreenEnvelope;
-import com.rm.panzoomcanvas.projections.VirtualEnvelope;
+import com.rm.panzoomcanvas.core.ScreenEnvelope;
+import com.rm.panzoomcanvas.core.VirtualEnvelope;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;

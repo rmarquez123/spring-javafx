@@ -1,5 +1,11 @@
 package com.rm.panzoomcanvas.projections;
 
+import com.rm.panzoomcanvas.core.ScreenEnvelope;
+import com.rm.panzoomcanvas.core.Level;
+import com.rm.panzoomcanvas.core.VirtualPoint;
+import com.rm.panzoomcanvas.core.VirtualEnvelope;
+import com.rm.panzoomcanvas.core.ScreenPoint;
+import com.rm.panzoomcanvas.core.GeometryProjection;
 import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.Point;

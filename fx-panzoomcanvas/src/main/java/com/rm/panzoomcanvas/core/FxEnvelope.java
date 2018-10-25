@@ -1,7 +1,5 @@
 package com.rm.panzoomcanvas.core;
 
-import com.rm.panzoomcanvas.projections.VirtualEnvelope;
-import com.rm.panzoomcanvas.projections.VirtualPoint;
 import java.util.Objects;
 
 /**

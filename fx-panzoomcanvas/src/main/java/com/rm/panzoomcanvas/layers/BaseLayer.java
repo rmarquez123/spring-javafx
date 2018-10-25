@@ -3,7 +3,7 @@ package com.rm.panzoomcanvas.layers;
 import com.rm.panzoomcanvas.Content;
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.Layer;
-import com.rm.panzoomcanvas.projections.ScreenEnvelope;
+import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
@@ -126,12 +126,8 @@ public abstract class BaseLayer implements Layer {
   protected abstract ScreenEnvelope onGetScreenEnvelope(FxCanvas canvas);
 
   /**
-   *
-   * @param graphicsContext2D
-   * @param areaX
-   * @param areaY
-   * @param areaWidth
-   * @param areaHeight
+   * 
+   * @param args 
    */
   protected abstract void onDraw(DrawArgs args);
 

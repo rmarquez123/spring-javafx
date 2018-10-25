@@ -1,7 +1,7 @@
-package com.rm.panzoomcanvas.bindings;
+package com.rm.panzoomcanvas;
 
 import com.rm.panzoomcanvas.FxCanvas;
-import com.rm.panzoomcanvas.projections.ScreenPoint;
+import com.rm.panzoomcanvas.core.ScreenPoint;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Cursor;
@@ -10,13 +10,13 @@ import javafx.scene.Cursor;
  *
  * @author rmarquez
  */
-public class PanningBinding {
+public class PanBinding {
 
   /**
    *
    * @param mapCanvas
    */
-  public PanningBinding(FxCanvas mapCanvas) {
+  public PanBinding(FxCanvas mapCanvas) {
     mapCanvas.parentProperty().addListener((a, old, newParent) -> {
       if (newParent != null) {
         Property<ScreenPoint> center = mapCanvas.centerProperty();

@@ -1,7 +1,8 @@
 
-package com.rm.panzoomcanvas.projections;
+package com.rm.panzoomcanvas.core;
 
 import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.projections.MapCanvasSR;
 
 /**
  *

@@ -1,7 +1,7 @@
-package com.rm.panzoomcanvas.bindings;
+package com.rm.panzoomcanvas;
 
 import com.rm.panzoomcanvas.FxCanvas;
-import com.rm.panzoomcanvas.projections.Level;
+import com.rm.panzoomcanvas.core.Level;
 import javafx.beans.property.Property;
 import javafx.scene.input.ScrollEvent;
 
@@ -9,13 +9,13 @@ import javafx.scene.input.ScrollEvent;
  *
  * @author rmarquez
  */
-public class LevelScrollBinding {
+public class ScrollBinding {
 
   /**
    *
    * @param mapCanvas
    */
-  public LevelScrollBinding(FxCanvas mapCanvas) {
+  public ScrollBinding(FxCanvas mapCanvas) {
     Property<Level> level = mapCanvas.levelProperty();
     mapCanvas.parentProperty().addListener((obs, old, newp) -> {
       if (newp != null) {

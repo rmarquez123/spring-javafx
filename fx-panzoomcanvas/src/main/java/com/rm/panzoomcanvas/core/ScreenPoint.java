@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.projections;
+package com.rm.panzoomcanvas.core;
 
 /**
  *

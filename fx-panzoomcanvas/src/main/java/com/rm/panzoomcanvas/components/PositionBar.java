@@ -2,8 +2,8 @@ package com.rm.panzoomcanvas.components;
 
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.projections.Projector;
-import com.rm.panzoomcanvas.projections.ScreenPoint;
-import com.rm.panzoomcanvas.projections.VirtualPoint;
+import com.rm.panzoomcanvas.core.ScreenPoint;
+import com.rm.panzoomcanvas.core.VirtualPoint;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.Point;
 import com.rm.panzoomcanvas.core.SpatialRef;
