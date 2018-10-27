@@ -32,7 +32,7 @@ public class ProjectorTest {
   public ProjectorTest() {
   }
   
-  @Parameters({"0.5"})
+  @Parameters({"0.5, 0.5"})
   @Test
   public void testProjectScreenToVirtualStrict(
           double screenCnterX, double screenCenterY) {
