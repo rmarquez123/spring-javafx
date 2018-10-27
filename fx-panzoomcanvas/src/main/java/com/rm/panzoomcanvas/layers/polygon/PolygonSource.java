@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.polyline;
+package com.rm.panzoomcanvas.layers.polygon;
 
 import com.rm.panzoomcanvas.LayerGeometry;
 import com.rm.panzoomcanvas.layers.DrawArgs;
@@ -7,13 +7,13 @@ import com.rm.panzoomcanvas.layers.DrawArgs;
  *
  * @author rmarquez
  */
-public interface PolyLineSource extends LayerGeometry {
+public interface PolygonSource extends LayerGeometry {
 
   /**
    *
    * @param args
    * @return
    */
-  PolyLinePoints getScreenPoints(DrawArgs args);
+  PolygonPoints getScreenPoints(DrawArgs args);
 
 }

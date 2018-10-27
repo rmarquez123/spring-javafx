@@ -6,6 +6,7 @@ import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.core.VirtualPoint;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.Point;
+import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import com.rm.panzoomcanvas.core.SpatialRef;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -42,12 +43,18 @@ public class PositionBar extends Label {
    *
    */
   private void redraw() {
-    ScreenPoint mouseScrnPt = new ScreenPoint(this.mousePosition.getValue().getX(), this.mousePosition.getValue().getY());
+    double mouseX = this.mousePosition.getValue().getX();
+    double mouseY = this.mousePosition.getValue().getY();
+    ScreenPoint mouseScrnPt = new ScreenPoint(mouseX, mouseY);
     Projector projector = this.mapCanvas.getProjector();
-    VirtualPoint mouseVrtPt = projector.projectScreenToVirtual(mouseScrnPt, this.mapCanvas.screenEnvelopeProperty().getValue());
-    FxPoint mouseGeo = projector.projectVirtualToGeo(mouseVrtPt.asPoint(), new SpatialRef(4326, new Point(-179.999999, -89.999999), new Point(179.999999, 89.999999)) {
-    });
-    String text = String.format("Sreeen w: %d h: %d, Level : %d, Virtual w: %f  h %f: Cursor x: %d y: %d, Cursor x: %f y: %f",
+    ScreenEnvelope screenEnv = this.mapCanvas.screenEnvelopeProperty().getValue();
+    VirtualPoint mouseVrtPt = projector.projectScreenToVirtual(mouseScrnPt, screenEnv);    
+    Point min = new Point(-179.999999, -89.999999);
+    Point max = new Point(179.999999, 89.999999);
+    SpatialRef spatialRef = new SpatialRef(4326, min, max) {
+    };
+    FxPoint mouseGeo = projector.projectVirtualToGeo(mouseVrtPt.asPoint(), spatialRef);
+    String text = String.format("Sreeen w: %d h: %d, Level : %d, Virtual w: %f  h %f: Cursor x: %d y: %d, Cursor (Geo) x: %f y: %f",
             (int) this.mapCanvas.getWidth(), (int) this.mapCanvas.getHeight(),
             this.mapCanvas.levelProperty().getValue().getValue(),
             this.mapCanvas.virtualEnvelopeProperty().getValue().getWidth(),

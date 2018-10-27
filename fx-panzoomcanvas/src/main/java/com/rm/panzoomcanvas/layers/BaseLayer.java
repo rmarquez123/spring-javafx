@@ -3,30 +3,35 @@ package com.rm.panzoomcanvas.layers;
 import com.rm.panzoomcanvas.Content;
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.Layer;
+import com.rm.panzoomcanvas.LayerGeometry;
+import com.rm.panzoomcanvas.LayerMouseEvent;
 import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
  * @author rmarquez
  */
 public abstract class BaseLayer implements Layer {
-
   private final String name;
   private final BooleanProperty visible = new SimpleBooleanProperty(true);
+  private final long uuid = (long) (Math.random() * 100000);
+  private final LayerGeometry geometry;
   private Node layerCanvas = null;
   private FxCanvas canvas;
-  private final long uuid = (long) (Math.random() * 100000);
-
+  
   /**
    *
    * @param name
+   * @param layerGeometry
    */
-  public BaseLayer(String name) {
+  public BaseLayer(String name, LayerGeometry layerGeometry) {
     this.name = name;
+    this.geometry = layerGeometry;
   }
 
   @Override
@@ -109,7 +114,26 @@ public abstract class BaseLayer implements Layer {
       this.redraw(canvas);
     }
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public final LayerGeometry getLayerGeometry() {
+    return this.geometry;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: Default implementation does nothing on mouse event. </p>
+   */
+  @Override
+  public void onMouseClicked(LayerMouseEvent e) {
+  }
+  
   /**
    *
    * @param canvas
@@ -130,7 +154,11 @@ public abstract class BaseLayer implements Layer {
    * @return
    */
   protected abstract Node createLayerCanvas(double width, double height);
-
+  
+  
+  
+  
+  
   /**
    *
    */

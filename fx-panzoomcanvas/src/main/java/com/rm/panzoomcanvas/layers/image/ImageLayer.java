@@ -25,7 +25,7 @@ public class ImageLayer extends BaseLayer {
    * @param source
    */
   public ImageLayer(String name, ImageSource source) {
-    super(name);
+    super(name, source);
     this.source = source;
   }
 

@@ -30,7 +30,7 @@ public class PointsLayer extends BaseLayer {
    * @param source
    */
   public PointsLayer(String name, PointsSource source) {
-    super(name);
+    super(name, source);
     this.source = source;
 
   }

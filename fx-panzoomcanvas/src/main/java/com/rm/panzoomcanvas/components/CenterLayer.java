@@ -1,6 +1,8 @@
 package com.rm.panzoomcanvas.components;
 
+import com.rm.panzoomcanvas.Content;
 import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.LayerGeometry;
 import com.rm.panzoomcanvas.layers.BaseLayer;
 import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.core.ScreenEnvelope;
@@ -21,7 +23,7 @@ public class CenterLayer extends BaseLayer {
    * @param name 
    */
   public CenterLayer(String name) {
-    super(name);
+    super(name, (com.rm.panzoomcanvas.ParamsIntersects args) -> false);
   }
   
   /**

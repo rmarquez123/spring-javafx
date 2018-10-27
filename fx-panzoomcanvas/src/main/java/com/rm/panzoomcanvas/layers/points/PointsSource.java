@@ -1,12 +1,13 @@
 package com.rm.panzoomcanvas.layers.points;
 
+import com.rm.panzoomcanvas.LayerGeometry;
 import com.rm.panzoomcanvas.core.FxPoint;
 
 /**
  *
  * @author rmarquez
  */
-public interface PointsSource {
+public interface PointsSource extends LayerGeometry {
 
   /**
    *

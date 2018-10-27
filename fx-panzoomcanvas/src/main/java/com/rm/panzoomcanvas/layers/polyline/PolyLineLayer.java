@@ -27,7 +27,7 @@ public class PolyLineLayer extends BaseLayer {
    * @param source 
    */
   public PolyLineLayer(String name, PolyLineSource source) {
-    super(name);
+    super(name, source);
     this.source = source;
   }
   

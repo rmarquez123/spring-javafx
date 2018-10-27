@@ -8,6 +8,7 @@ import java.util.Map;
  * @author rmarquez
  */
 public class FxPoint {
+  
   private final double x;
   private final double y;
   private final SpatialRef sr;
@@ -15,6 +16,9 @@ public class FxPoint {
   
   /**
    * 
+   * @param x
+   * @param y
+   * @param sr
    */
   public FxPoint(double x, double y, SpatialRef sr) {
     this.x = x;
@@ -51,5 +55,5 @@ public class FxPoint {
   @Override
   public String toString() {
     return "FxPoint{" + "x=" + x + ", y=" + y + ", sr=" + sr.getSrid() + '}';
-  } 
+  }
 }

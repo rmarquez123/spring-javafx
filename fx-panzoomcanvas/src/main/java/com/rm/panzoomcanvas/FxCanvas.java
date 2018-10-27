@@ -7,6 +7,7 @@ import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.core.ScrollInvoker;
 import com.rm.panzoomcanvas.core.VirtualEnvelope;
+import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -19,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -43,7 +45,7 @@ public class FxCanvas extends Canvas {
    */
   public FxCanvas(Content content, Projector projector) {
     if (projector == null) {
-      throw new IllegalArgumentException("Projector cannot be null"); 
+      throw new IllegalArgumentException("Projector cannot be null");
     }
     this.projector = projector;
     this.content = content;
@@ -56,15 +58,35 @@ public class FxCanvas extends Canvas {
 
     this.screenEnvelope.addListener((e) -> this.updateVirtualView());
     this.parentProperty().addListener((obs, newVal, oldVal) -> {
-      Platform.runLater(() -> {
-        if (this.center.getValue() == INITIAL_SCREEN_POINT) {
-          this.center.setValue(this.getCenterOfScreenPoint());
-        }
-      });
+      onParentPropertyChanged();
     });
     MapBindings.bindLevelScrolling(this);
     MapBindings.bindPanning(this);
     this.content.setVirtualCanvas(this);
+  }
+
+  private void onParentPropertyChanged() {
+    Platform.runLater(() -> {
+      this.addMouseListeners();
+      this.setInitialCenter();
+    });
+  }
+
+  /**
+   *
+   */
+  private void addMouseListeners() {
+    this.getParent().setOnMouseClicked((e) -> {
+      ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
+      List<Layer> layers = this.getContent().getLayers(s);
+      this.getContent().onLayersMouseClicked(e, layers); 
+    });
+  }
+
+  private void setInitialCenter() {
+    if (this.center.getValue() == INITIAL_SCREEN_POINT) {
+      this.center.setValue(this.getCenterOfScreenPoint());
+    }
   }
 
   /**
@@ -106,10 +128,10 @@ public class FxCanvas extends Canvas {
   public Content getContent() {
     return content;
   }
-  
+
   /**
-   * 
-   * @param geometricLayer 
+   *
+   * @param geometricLayer
    */
   public void zoomToLayer(GeometricLayer geometricLayer) {
     FxPoint value = geometricLayer.centerProperty().getValue();
