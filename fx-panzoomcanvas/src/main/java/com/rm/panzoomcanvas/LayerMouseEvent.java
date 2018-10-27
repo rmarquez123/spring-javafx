@@ -13,7 +13,13 @@ public class LayerMouseEvent {
   private final MouseEvent mouseEvt;
   private final Projector projector;
   private final ScreenEnvelope screenEnv;
-
+  
+  /**
+   * 
+   * @param mouseEvt
+   * @param projector
+   * @param screenEnv 
+   */
   LayerMouseEvent(MouseEvent mouseEvt, Projector projector, ScreenEnvelope screenEnv) {
     this.mouseEvt = mouseEvt;
     this.projector = projector;

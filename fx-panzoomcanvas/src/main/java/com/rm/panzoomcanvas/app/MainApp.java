@@ -13,6 +13,8 @@ import com.rm.panzoomcanvas.layers.line.LineLayer;
 import com.rm.panzoomcanvas.layers.line.LineLayerSource;
 import com.rm.panzoomcanvas.core.GeometryProjection;
 import com.rm.panzoomcanvas.core.SpatialUtils;
+import com.rm.panzoomcanvas.layers.points.ArrayPointsSource;
+import com.rm.panzoomcanvas.layers.points.BasePointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointsSource;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
@@ -27,6 +29,10 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
@@ -72,30 +78,8 @@ public class MainApp extends Application {
       }
     }));
     
-    value.add(new PointsLayer("points", new PointsSource() {
-      private final FxPoint fxPoint = new FxPoint(120, 120, new MapCanvasSR());
-      @Override
-      public int getNumPoints() {
-        return 1;
-      }
-
-      @Override
-      public FxPoint getFxPoint(int i) {
-        return fxPoint;
-      }
-        
-      /**
-       * {@inheritDoc}
-       * <p>
-       * OVERRIDE: </p>
-       */
-      @Override
-      public boolean intersects(ParamsIntersects args) {
-        FxPoint geomPoint = args.getGeomPoint(new MapCanvasSR());
-        boolean result = SpatialUtils.intersects(this.fxPoint, geomPoint, 5);
-        return result;
-      }
-    })); 
+    ArrayPointsSource singlePointSource = new ArrayPointsSource(new FxPoint(120, 120, new MapCanvasSR()));
+    value.add(new PointsLayer("points", singlePointSource)); 
   }
 
   /**

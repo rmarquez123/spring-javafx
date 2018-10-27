@@ -1,11 +1,8 @@
 package com.rm.panzoomcanvas;
 
-import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import com.rm.panzoomcanvas.core.ScreenPoint;
-import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.core.VirtualEnvelope;
-import com.rm.panzoomcanvas.core.VirtualPoint;
 import com.rm.panzoomcanvas.projections.Projector;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +23,10 @@ import javafx.scene.input.MouseEvent;
  * @author rmarquez
  */
 public class Content {
-
+  
   private FxCanvas canvas;
   private final Map<Long, Node> nodes = new HashMap<>();
   private final ListProperty<Layer> layers = new SimpleListProperty<>(FXCollections.observableArrayList());
-
   /**
    *
    */
@@ -38,8 +34,7 @@ public class Content {
     this.layers.addListener((ListChangeListener.Change<? extends Layer> c) -> onLayerItemsChanged(c));
     this.layers.addListener((observable, oldValue, newValue) -> onLayerListChanged());
   }
-   
-  
+
   /**
    *
    * @return
@@ -87,10 +82,10 @@ public class Content {
       if (c.wasAdded()) {
         c.getAddedSubList().stream().forEach((layer) -> {
           if (layer == null) {
-            throw new RuntimeException("Layer cannot be null"); 
+            throw new RuntimeException("Layer cannot be null");
           }
           layer.redraw(this.canvas);
-          layer.getVisible().addListener((obs, old, change) -> {
+          layer.visibleProperty().addListener((obs, old, change) -> {
             Node get = this.nodes.get(layer.getUuid());
             if (get != null) {
               get.setVisible(change);
@@ -124,9 +119,8 @@ public class Content {
     this.canvas.addLayerCanvas(layerCanvas);
     this.nodes.put(uuid, layerCanvas);
     this.layers.filtered((Layer t) -> t.getUuid() == uuid).forEach((t) -> {
-      layerCanvas.setVisible(t.getVisible().getValue());
+      layerCanvas.setVisible(t.visibleProperty().getValue());
     });
-
   }
 
   /**
@@ -140,66 +134,53 @@ public class Content {
   }
 
   /**
-   * 
+   *
    * @param s
-   * @return 
+   * @return
    */
-  List<Layer> getLayers(ScreenPoint s) {
+  List<Layer> getSelectableLayers(ScreenPoint s) {
     ScreenEnvelope screenEnv = this.canvas.screenEnvelopeProperty().getValue();
     Projector projector = this.canvas.getProjector();
     ParamsIntersects args = new ParamsIntersects(s, projector, screenEnv);
     ListProperty<Layer> listProp = this.getLayers();
     List<Layer> result = listProp.getValue()
             .stream()
+            .filter((l) -> l.selectableProperty().getValue())
             .filter(new LayerIntersectsPoint(args))
-            .collect(Collectors.toList()); 
+            .collect(Collectors.toList());
     return result;
   }
   
   /**
-   * 
-   * @param layers 
+   *
+   * @param s
+   * @return
+   */
+  List<Layer> getHoverableLayers(ScreenPoint s) {
+    ScreenEnvelope screenEnv = this.canvas.screenEnvelopeProperty().getValue();
+    Projector projector = this.canvas.getProjector();
+    ParamsIntersects args = new ParamsIntersects(s, projector, screenEnv);
+    ListProperty<Layer> listProp = this.getLayers();
+    List<Layer> result = listProp.getValue()
+            .stream()
+            .filter((l) -> l.hoverableProperty().getValue())
+            .filter(new LayerIntersectsPoint(args))
+            .collect(Collectors.toList());
+    return result;
+  }
+
+  /**
+   *
+   * @param layers
    */
   void onLayersMouseClicked(MouseEvent e, List<Layer> layers) {
     Projector projector = this.canvas.getProjector();
     ScreenEnvelope screenEnv = this.canvas.screenEnvelopeProperty().getValue();
     LayerMouseEvent layerMouseEvent = new LayerMouseEvent(e, projector, screenEnv);
     for (Layer layer : layers) {
-      layer.onMouseClicked(layerMouseEvent); 
+      layer.onMouseClicked(layerMouseEvent);
     }
   }
   
-  
-  private static class LayerIntersectsPoint implements Predicate<Layer> {
-      
-    private final ParamsIntersects args;
-    
-    public LayerIntersectsPoint(ParamsIntersects s) {
-      this.args = s;
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * OVERRIDE: </p>
-     */
-    @Override
-    public boolean test(Layer t) {
-      boolean result;
-      try {
-        LayerGeometry geometry = t.getLayerGeometry(); 
-        if (geometry == null) {
-          throw new NullPointerException("Geometry cannot be null.  Check args : {"
-                  + "layer name="  + t.getName()
-                  + ", layer class="  + t.getClass().getName()
-                  + "}"); 
-        }
-        result = geometry.intersects(this.args); 
-      } catch(Exception ex) {
-        throw new RuntimeException(ex);
-      }
-      return result; 
-    }
-  }
-  
+
 }

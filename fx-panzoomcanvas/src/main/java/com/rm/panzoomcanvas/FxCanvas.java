@@ -20,7 +20,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -70,23 +69,6 @@ public class FxCanvas extends Canvas {
       this.addMouseListeners();
       this.setInitialCenter();
     });
-  }
-
-  /**
-   *
-   */
-  private void addMouseListeners() {
-    this.getParent().setOnMouseClicked((e) -> {
-      ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
-      List<Layer> layers = this.getContent().getLayers(s);
-      this.getContent().onLayersMouseClicked(e, layers); 
-    });
-  }
-
-  private void setInitialCenter() {
-    if (this.center.getValue() == INITIAL_SCREEN_POINT) {
-      this.center.setValue(this.getCenterOfScreenPoint());
-    }
   }
 
   /**
@@ -193,7 +175,6 @@ public class FxCanvas extends Canvas {
   }
 
   private void updateCenterAfterLevelChanged(Level newLevel, Level oldLevel) {
-
     ScreenPoint refPoint;
     ScrollInvoker invoker = newLevel.getInvoker();
     try {
@@ -213,7 +194,30 @@ public class FxCanvas extends Canvas {
     } finally {
       this.scrolling.setValue(Boolean.FALSE);
     }
+  }
 
+  /**
+   *
+   */
+  private void addMouseListeners() {
+    
+    this.getParent().setOnMouseClicked((e) -> {
+      ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
+      List<Layer> layers = this.getContent().getSelectableLayers(s);
+      this.getContent().onLayersMouseClicked(e, layers);
+    });
+    
+    this.getParent().setOnMouseMoved((e)->{
+      ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
+      List<Layer> layers = this.getContent().getHoverableLayers(s);
+      this.getContent().onLayersMouseClicked(e, layers);
+    });
+  }
+
+  private void setInitialCenter() {
+    if (this.center.getValue() == INITIAL_SCREEN_POINT) {
+      this.center.setValue(this.getCenterOfScreenPoint());
+    }
   }
 
   /**

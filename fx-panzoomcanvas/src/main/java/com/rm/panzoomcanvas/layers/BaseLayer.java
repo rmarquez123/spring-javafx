@@ -10,7 +10,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.input.MouseEvent;
 
 /**
  *
@@ -18,12 +17,14 @@ import javafx.scene.input.MouseEvent;
  */
 public abstract class BaseLayer implements Layer {
   private final String name;
-  private final BooleanProperty visible = new SimpleBooleanProperty(true);
+  private final BooleanProperty visibleProperty = new SimpleBooleanProperty(true);
+  private final BooleanProperty selectableProperty = new SimpleBooleanProperty(false);
+  private final BooleanProperty hoverableProperty = new SimpleBooleanProperty(false);
   private final long uuid = (long) (Math.random() * 100000);
   private final LayerGeometry geometry;
   private Node layerCanvas = null;
   private FxCanvas canvas;
-  
+
   /**
    *
    * @param name
@@ -34,18 +35,53 @@ public abstract class BaseLayer implements Layer {
     this.geometry = layerGeometry;
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   public final String getName() {
     return this.name;
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
-  public BooleanProperty getVisible() {
-    return this.visible;
+  public final BooleanProperty visibleProperty() {
+    return this.visibleProperty;
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
-  public long getUuid() {
+  public final BooleanProperty selectableProperty() {
+    return this.selectableProperty;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public final BooleanProperty hoverableProperty() {
+    return this.hoverableProperty;
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public final long getUuid() {
     return uuid;
   }
 
@@ -114,7 +150,7 @@ public abstract class BaseLayer implements Layer {
       this.redraw(canvas);
     }
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -124,7 +160,7 @@ public abstract class BaseLayer implements Layer {
   public final LayerGeometry getLayerGeometry() {
     return this.geometry;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -133,7 +169,7 @@ public abstract class BaseLayer implements Layer {
   @Override
   public void onMouseClicked(LayerMouseEvent e) {
   }
-  
+
   /**
    *
    * @param canvas
@@ -154,11 +190,7 @@ public abstract class BaseLayer implements Layer {
    * @return
    */
   protected abstract Node createLayerCanvas(double width, double height);
-  
-  
-  
-  
-  
+
   /**
    *
    */

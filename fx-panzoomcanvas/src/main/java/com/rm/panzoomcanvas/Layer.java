@@ -30,8 +30,20 @@ public interface Layer {
    *
    * @return
    */
-  public BooleanProperty getVisible();
-
+  public BooleanProperty visibleProperty();
+  
+  /**
+   * 
+   * @return 
+   */
+  public BooleanProperty selectableProperty();
+  
+  /**
+   * 
+   * @return 
+   */
+  public BooleanProperty hoverableProperty();
+  
   /**
    *
    * @return
@@ -49,7 +61,7 @@ public interface Layer {
    * @return 
    */
   public LayerGeometry getLayerGeometry(); 
-
+  
   /**
    * 
    * @param e 

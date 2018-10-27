@@ -8,7 +8,7 @@ import com.rm.panzoomcanvas.core.FxPoint;
  * @author rmarquez
  */
 public interface PointsSource extends LayerGeometry {
-
+  
   /**
    *
    * @return
@@ -20,6 +20,6 @@ public interface PointsSource extends LayerGeometry {
    * @param i
    * @return
    */
-  FxPoint getFxPoint(int i);
-
+  FxPoint getFxPoint(int i) ;
+  
 }
