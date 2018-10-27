@@ -11,6 +11,9 @@ import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.layers.line.LineLayer;
 import com.rm.panzoomcanvas.layers.line.LineLayerSource;
 import com.rm.panzoomcanvas.core.GeometryProjection;
+import com.rm.panzoomcanvas.core.ScreenEnvelope;
+import com.rm.panzoomcanvas.layers.points.PointsLayer;
+import com.rm.panzoomcanvas.layers.points.PointsSource;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
@@ -22,6 +25,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import static javafx.application.Application.launch;
 
 public class MainApp extends Application {
@@ -50,7 +54,25 @@ public class MainApp extends Application {
     ObservableList<Layer> value = mapCanvas.getContent().getLayers().getValue();
     value.add(new VirtualBoxLayer());
     value.add(new CenterLayer("center"));
-    value.add(new LineLayer("line", new LineLayerSource())); 
+    value.add(new LineLayer("line", new LineLayerSource() {
+      private SpatialRef sr = new MapCanvasSR();
+      Pair<FxPoint, FxPoint> points = new Pair<>(new FxPoint(0.0, 0.0, sr), new FxPoint(120.0, 120.0, sr));
+      @Override
+      public Pair<FxPoint, FxPoint> getFxPoints() {
+        return this.points;
+      }
+    }));
+    value.add(new PointsLayer("points", new PointsSource() {
+      @Override
+      public int getNumPoints() {
+        return 1;
+      }
+
+      @Override
+      public FxPoint getFxPoint(int i) {
+        return new FxPoint(120, 120, new MapCanvasSR());
+      }
+    })); 
   }
 
   /**

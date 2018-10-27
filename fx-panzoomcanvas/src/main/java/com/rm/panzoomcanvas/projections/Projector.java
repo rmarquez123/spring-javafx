@@ -16,6 +16,7 @@ import com.rm.panzoomcanvas.core.SpatialRef;
  * @author rmarquez
  */
 public class Projector {
+
   private final MapCanvasSR virtualSr = new MapCanvasSR();
   private final SpatialRef baseSpatialRef;
   private final GeometryProjection geomProject;
@@ -133,6 +134,43 @@ public class Projector {
   }
 
   /**
+   * 
+   * @param screenEnv
+   * @param d
+   * @return 
+   */
+  private double[] projectVirtualToScreen(ScreenEnvelope screenEnv, double[] d) {
+    Level level = screenEnv.getLevel();
+    ScreenPoint scrnCenter = screenEnv.getCenter();
+    double width = this.virtualSr.getWidth();
+    double height = this.virtualSr.getHeight();
+    Point virtualMin = this.virtualSr.getMin();
+    Point virtualMax = this.virtualSr.getMax();
+    double f = Math.pow(2, -level.getValue());
+    double scaleX = 1.0;
+    double scaleY = 1.0;
+    double vX = d[0];
+    double vY = d[1];
+    double sX = (vX - virtualMin.getX() - 0.5 * width) / (scaleX * f) + scrnCenter.getX();
+    double sY = (-vY - virtualMax.getY() + 0.5 * height) / (scaleY * f) + scrnCenter.getY();
+    return new double[]{sX, sY};
+  }
+
+  /**
+   *
+   * @param virtual
+   * @param screenEnv
+   * @return
+   */
+  private double[][] projectVirtualToScreen(double[][] virtual, ScreenEnvelope screenEnv) {
+    double[][] result = new double[virtual.length][2];
+    for (int i = 0; i < virtual.length; i++) {
+      result[i] = this.projectVirtualToScreen(screenEnv, virtual[i]);
+    }
+    return result;
+  }
+
+  /**
    * Projects virtual envelope to a geometric envelope.
    *
    * @param virtualEnv
@@ -169,6 +207,45 @@ public class Projector {
 
   /**
    *
+   * @param spatialRef
+   * @param points
+   * @return
+   */
+  public double[][] projectGeoToVirtual(SpatialRef spatialRef, double[][] points) {
+    double[][] result = new double[points.length][2];
+    for (int i = 0; i < points.length; i++) {
+      result[i] = this.projectGeoToVirtual(spatialRef, points[i]);
+    }
+    return result;
+  }
+
+  /**
+   *
+   * @param x
+   * @param spatialRef
+   * @return
+   */
+  public double[] projectGeoToVirtual(SpatialRef spatialRef, double[] x) {
+    Point srcMax = spatialRef.getMax();
+    Point srcMin = spatialRef.getMin();
+    double srcMinX = srcMin.getX();
+    double srcMinY = srcMin.getY();
+    double srcDeltaX = srcMax.getX() - srcMinX;
+    double srcDeltaY = srcMax.getY() - srcMinY;
+    Point virtualMax = this.virtualSr.getMax();
+    Point virtualMin = this.virtualSr.getMin();
+    double vMinX = virtualMin.getX();
+    double vMinY = virtualMin.getY();
+    double virtualDeltaX = virtualMax.getX() - vMinX;
+    double virtualDeltaY = virtualMax.getY() - vMinY;
+    double[] result = new double[2];
+    result[0] = (x[0] - srcMinX) * virtualDeltaX / srcDeltaX + vMinX;
+    result[1] = (x[1] - srcMinY) * virtualDeltaY / srcDeltaY + vMinY;
+    return result;
+  }
+
+  /**
+   *
    * @param geomPoint
    * @return
    */
@@ -176,10 +253,12 @@ public class Projector {
     SpatialRef spatialRef = geomPoint.getSpatialRef();
     Point srcMax = spatialRef.getMax();
     Point srcMin = spatialRef.getMin();
-    Point virtualMax = virtualSr.getMax();
-    Point virtualMin = virtualSr.getMin();
+    Point virtualMax = this.virtualSr.getMax();
+    Point virtualMin = this.virtualSr.getMin();
+
     double srcDeltaX = srcMax.getX() - srcMin.getX();
     double srcDeltaY = srcMax.getY() - srcMin.getY();
+
     double virtualDeltaX = virtualMax.getX() - virtualMin.getX();
     double virtualDeltaY = virtualMax.getY() - virtualMin.getY();
     double vX = (geomPoint.getX() - srcMin.getX()) * virtualDeltaX / srcDeltaX + virtualMin.getX();
@@ -224,6 +303,12 @@ public class Projector {
     return result;
   }
 
+  public double[][] projectGeoToScreen(ScreenEnvelope screenEnv, double[][] points) {
+    double[][] virtual = this.projectGeoToVirtual(this.baseSpatialRef, points);
+    double[][] result = this.projectVirtualToScreen(virtual, screenEnv);
+    return result;
+  }
+
   /**
    *
    * @param geomPoint
@@ -239,7 +324,7 @@ public class Projector {
     }
     return result;
   }
-  
+
   /**
    *
    * @param geomEnv
@@ -257,4 +342,5 @@ public class Projector {
     }
     return result;
   }
+
 }

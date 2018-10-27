@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.rm.panzoomcanvas.components;
 
 import com.rm.panzoomcanvas.FxCanvas;
@@ -60,7 +55,7 @@ public class CenterLayer extends BaseLayer {
     GraphicsContext graphicsContext2D = ((Canvas) args.getLayerCanvas()).getGraphicsContext2D(); 
     ScreenPoint center = args.getCanvas().centerProperty().getValue(); 
     graphicsContext2D.setFill(Color.RED);
-    graphicsContext2D.fillRect(center.getX(), center.getY(), 10, 10);
+    graphicsContext2D.fillRect(center.getX()-5., center.getY()-5., 10, 10);
   }
   
 }

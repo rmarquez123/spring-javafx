@@ -1,12 +1,12 @@
-package com.rm.panzoomcanvas.layers.line;
+package com.rm.panzoomcanvas.layers.points;
 
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.core.FxPoint;
-import com.rm.panzoomcanvas.layers.BaseLayer;
-import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.core.VirtualEnvelope;
+import com.rm.panzoomcanvas.layers.BaseLayer;
+import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,27 +14,25 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 /**
  *
  * @author rmarquez
  */
-public class LineLayer extends BaseLayer {
+public class PointsLayer extends BaseLayer {
 
-  private static final int X_INDEX = 0;
-  private static final int Y_INDEX = 1;
   private final Property<Color> color = new SimpleObjectProperty<>(Color.BLUE);
-  private final LineLayerSource source;
+  private final PointsSource source;
 
   /**
    *
    * @param name
    * @param source
    */
-  public LineLayer(String name, LineLayerSource source) {
+  public PointsLayer(String name, PointsSource source) {
     super(name);
     this.source = source;
+
   }
 
   @Override
@@ -48,24 +46,26 @@ public class LineLayer extends BaseLayer {
             .virtualEnvelopeProperty()
             .getValue();
     ScreenEnvelope screenEnv = canvas.screenEnvelopeProperty().getValue();
-    ScreenEnvelope layerScreenEnv = canvas.getProjector()
+    ScreenEnvelope result = canvas.getProjector()
             .projectVirtualToScreen(virtualEnv, screenEnv);
-    return layerScreenEnv;
+    return result;
   }
 
   @Override
   protected void onDraw(DrawArgs args) {
     Projector projector = args.getCanvas().getProjector();
     GraphicsContext g = ((Canvas) args.getLayerCanvas()).getGraphicsContext2D();
-    Pair<FxPoint, FxPoint> points = this.source.getFxPoints();
-    ScreenPoint a = projector.projectGeoToScreen(points.getKey(), args.getScreenEnv());
-    ScreenPoint b = projector.projectGeoToScreen(points.getValue(), args.getScreenEnv());
+    int numPoints = this.source.getNumPoints();
     g.setStroke(this.color.getValue());
-    double x1 = a.getX();
-    double y1 = a.getY();
-    double x2 = b.getX();
-    double y2 = b.getY();
-    g.strokeLine(x1, y1, x2, y2);
+    double radius = 8;
+    double half = radius / 2.0;
+    for (int i = 0; i < numPoints; i++) {
+      FxPoint p = this.source.getFxPoint(i);
+      ScreenPoint a = projector.projectGeoToScreen(p, args.getScreenEnv());
+      double x1 = a.getX();
+      double y1 = a.getY();
+      g.fillOval(x1 - half, y1 - half, 8, radius);
+    }
   }
 
 }

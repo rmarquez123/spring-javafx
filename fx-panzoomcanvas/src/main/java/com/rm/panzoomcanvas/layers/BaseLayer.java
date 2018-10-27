@@ -84,31 +84,6 @@ public abstract class BaseLayer implements Layer {
   }
 
   /**
-   *
-   * @param width
-   * @param height
-   * @return
-   */
-  protected abstract Node createLayerCanvas(double width, double height);
-
-  /**
-   *
-   * @return
-   */
-  protected Node getLayerCanvas() {
-    return layerCanvas;
-  }
-
-  /**
-   *
-   */
-  protected void repaint() {
-    if (this.canvas != null) {
-      this.redraw(canvas);
-    }
-  }
-
-  /**
    * {@inheritDoc}
    * <p>
    * OVERRIDE: </p>
@@ -120,16 +95,41 @@ public abstract class BaseLayer implements Layer {
 
   /**
    *
+   * @return
+   */
+  protected final Node getLayerCanvas() {
+    return layerCanvas;
+  }
+
+  /**
+   *
+   */
+  protected final void repaint() {
+    if (this.canvas != null) {
+      this.redraw(canvas);
+    }
+  }
+
+  /**
+   *
    * @param canvas
    * @return
    */
   protected abstract ScreenEnvelope onGetScreenEnvelope(FxCanvas canvas);
 
   /**
-   * 
-   * @param args 
+   *
+   * @param args
    */
   protected abstract void onDraw(DrawArgs args);
+
+  /**
+   *
+   * @param width
+   * @param height
+   * @return
+   */
+  protected abstract Node createLayerCanvas(double width, double height);
 
   /**
    *
