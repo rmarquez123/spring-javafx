@@ -16,6 +16,7 @@ import com.rm.panzoomcanvas.layers.points.impl.ArrayPointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointMarkerTooltipBuilder;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
+import com.rm.panzoomcanvas.layers.points.impl.DefaultPointSymbology;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
@@ -29,10 +30,14 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
+import javafx.scene.paint.Color;
 
+/**
+ * The purpose of this main application is to test the basic and default
+ * features and functions of panzoomcanvas api.
+ *
+ * @author rmarquez
+ */
 public class MainApp extends Application {
 
   /**
@@ -62,40 +67,57 @@ public class MainApp extends Application {
     value.add(new LineLayer("line", new LineLayerSource() {
       private final SpatialRef sr = new MapCanvasSR();
       Pair<FxPoint, FxPoint> points = new Pair<>(new FxPoint(0.0, 0.0, sr), new FxPoint(120.0, 120.0, sr));
+
       @Override
       public Pair<FxPoint, FxPoint> getFxPoints() {
         return this.points;
       }
+
       @Override
       public boolean intersects(ParamsIntersects screenPoint) {
         return false;
       }
-    })); 
+    }));
     PointsLayer pointsLayer = this.getPointsLayer();
-    value.add(pointsLayer); 
-  }
-  /**
-   * 
-   * @return 
-   */
-  private PointsLayer getPointsLayer() {
-    FxPoint fxPoint = new FxPoint(120, 120, new MapCanvasSR());
-    PointMarker<String> pointMarker = new PointMarker<>("Single point", fxPoint);
-    ArrayPointsSource singlePointSource = new ArrayPointsSource(pointMarker);
-    PointsLayer pointsLayer = new PointsLayer("points", singlePointSource);
-    pointsLayer.hoverableProperty().setValue(Boolean.TRUE);
-    pointsLayer.setTooltip(new PointMarkerTooltipBuilder());
-    return pointsLayer; 
+    value.add(pointsLayer);
   }
 
   /**
    *
    * @return
    */
+  private PointsLayer getPointsLayer() {
+    FxPoint fxPoint = new FxPoint(120, 120, new MapCanvasSR());
+    PointMarker<String> pointMarker = new PointMarker<>("Point 1", fxPoint);
+    ArrayPointsSource singlePointSource = new ArrayPointsSource(pointMarker);
+
+    DefaultPointSymbology symbology = new DefaultPointSymbology();
+    symbology.fillColorProperty().setValue(Color.ROSYBROWN);
+    symbology.strokeColorProperty().setValue(Color.BLACK);
+
+    PointsLayer pointsLayer = new PointsLayer("points", symbology, singlePointSource);
+    pointsLayer.hoverableProperty().setValue(Boolean.TRUE);
+    pointsLayer.selectableProperty().setValue(Boolean.TRUE);
+    pointsLayer.setTooltip(new PointMarkerTooltipBuilder());
+
+    pointsLayer.selectedMarkersProperty().addListener((obs, old, change) -> {
+      System.out.println(change);
+    });
+    
+    pointsLayer.hoveredMarkersProperty().addListener((obs, old, change) -> {
+      System.out.println(change);
+    });
+    return pointsLayer;
+  }
+
+  /**
+   * Creates the map.
+   *
+   * @return
+   */
   private FxCanvas createMap() {
     Content content = new Content();
     FxCanvas mapCanvas = new FxCanvas(content, new Projector(new MapCanvasSR(), new GeometryProjection() {
-
       @Override
       public FxPoint project(FxPoint geomPoint, SpatialRef baseSpatialRef) {
         return geomPoint;

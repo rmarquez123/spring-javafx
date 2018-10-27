@@ -14,15 +14,12 @@ import com.rm.panzoomcanvas.projections.Projector;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 /**
  *
@@ -30,21 +27,41 @@ import javafx.scene.paint.Color;
  * @param <T> A user object type.
  */
 public class PointsLayer<T> extends BaseLayer {
-
-  private final Property<Color> color = new SimpleObjectProperty<>(Color.BLUE);
+  
+  private final PointSymbology symbology;
   private final PointsSource<T> source;
   private final ListProperty<PointMarker<T>> selected = new SimpleListProperty<>();
   private final ListProperty<PointMarker<T>> hovered = new SimpleListProperty<>();
-
+  
   /**
    *
    * @param name
+   * @param symbology
    * @param source
    */
-  public PointsLayer(String name, PointsSource<T> source) {
+  public PointsLayer(String name, PointSymbology symbology, PointsSource<T> source) {
     super(name, source);
     this.source = source;
-
+    if (symbology == null) {
+      throw new NullPointerException("Symbology cannot be null");
+    }
+    this.symbology = symbology;
+  }
+  
+  /**
+   * 
+   * @return 
+   */
+  public ReadOnlyListProperty<PointMarker<T>> hoveredMarkersProperty() {
+    return this.hovered;
+  }
+  
+  /**
+   * 
+   * @return 
+   */
+  public ReadOnlyListProperty<PointMarker<T>> selectedMarkersProperty() {
+    return this.selected;
   }
 
   /**
@@ -81,18 +98,12 @@ public class PointsLayer<T> extends BaseLayer {
   @Override
   protected void onDraw(DrawArgs args) {
     Projector projector = args.getCanvas().getProjector();
-    GraphicsContext g = ((Canvas) args.getLayerCanvas()).getGraphicsContext2D();
     int numPoints = this.source.getNumPoints();
-    g.setStroke(this.color.getValue());
-    double radius = 8;
-    double half = radius / 2.0;
     for (int i = 0; i < numPoints; i++) {
       PointMarker marker = this.source.getFxPoint(i);
       FxPoint point = marker.getPoint();
       ScreenPoint screenPoint = projector.projectGeoToScreen(point, args.getScreenEnv());
-      double x1 = screenPoint.getX();
-      double y1 = screenPoint.getY();
-      g.fillOval(x1 - half, y1 - half, 8, radius);
+      this.symbology.apply(args, screenPoint);
     }
   }
 
