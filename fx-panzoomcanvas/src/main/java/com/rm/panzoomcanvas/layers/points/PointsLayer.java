@@ -34,12 +34,22 @@ public class PointsLayer extends BaseLayer {
     this.source = source;
 
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected Node createLayerCanvas(double width, double height) {
     return new Canvas(width, height);
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected ScreenEnvelope onGetScreenEnvelope(FxCanvas canvas) {
     VirtualEnvelope virtualEnv = canvas
@@ -50,7 +60,12 @@ public class PointsLayer extends BaseLayer {
             .projectVirtualToScreen(virtualEnv, screenEnv);
     return result;
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected void onDraw(DrawArgs args) {
     Projector projector = args.getCanvas().getProjector();
@@ -67,5 +82,4 @@ public class PointsLayer extends BaseLayer {
       g.fillOval(x1 - half, y1 - half, 8, radius);
     }
   }
-
 }

@@ -20,17 +20,32 @@ public class PolyLineLayer extends BaseLayer {
 
   private final Property<Color> color = new SimpleObjectProperty<>(Color.BLUE);
   private final PolyLineSource source;
-
+  
+  /**
+   * 
+   * @param name
+   * @param source 
+   */
   public PolyLineLayer(String name, PolyLineSource source) {
     super(name);
     this.source = source;
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected Node createLayerCanvas(double width, double height) {
     return new Canvas(width, height);
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected ScreenEnvelope onGetScreenEnvelope(FxCanvas canvas) {
     VirtualEnvelope virtualEnv = canvas
@@ -40,8 +55,13 @@ public class PolyLineLayer extends BaseLayer {
     ScreenEnvelope layerScreenEnv = canvas.getProjector()
             .projectVirtualToScreen(virtualEnv, screenEnv);
     return layerScreenEnv;
-  }
-
+  } 
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected void onDraw(DrawArgs args) {
     PolyLinePoints points = this.source.getScreenPoints(args);

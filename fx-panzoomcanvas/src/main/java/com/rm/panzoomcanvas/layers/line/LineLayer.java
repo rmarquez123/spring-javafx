@@ -34,12 +34,22 @@ public class LineLayer extends BaseLayer {
     super(name);
     this.source = source;
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected Node createLayerCanvas(double width, double height) {
     return new Canvas(width, height);
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected ScreenEnvelope onGetScreenEnvelope(FxCanvas canvas) {
     VirtualEnvelope virtualEnv = canvas
@@ -50,7 +60,12 @@ public class LineLayer extends BaseLayer {
             .projectVirtualToScreen(virtualEnv, screenEnv);
     return layerScreenEnv;
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
   @Override
   protected void onDraw(DrawArgs args) {
     Projector projector = args.getCanvas().getProjector();
