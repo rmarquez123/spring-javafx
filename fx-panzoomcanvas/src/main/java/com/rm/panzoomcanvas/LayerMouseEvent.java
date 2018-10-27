@@ -10,9 +10,9 @@ import javafx.scene.input.MouseEvent;
  */
 public class LayerMouseEvent {
 
-  private final MouseEvent mouseEvt;
-  private final Projector projector;
-  private final ScreenEnvelope screenEnv;
+  public final MouseEvent mouseEvt;
+  public final Projector projector;
+  public final ScreenEnvelope screenEnv;
   
   /**
    * 
@@ -25,6 +25,7 @@ public class LayerMouseEvent {
     this.projector = projector;
     this.screenEnv = screenEnv;
   }
+  
   
   /**
    * {@inheritDoc}

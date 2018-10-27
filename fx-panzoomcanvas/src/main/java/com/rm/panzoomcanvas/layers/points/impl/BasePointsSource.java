@@ -1,15 +1,17 @@
-package com.rm.panzoomcanvas.layers.points;
+package com.rm.panzoomcanvas.layers.points.impl;
 
 import com.rm.panzoomcanvas.ParamsIntersects;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.core.SpatialUtils;
+import com.rm.panzoomcanvas.layers.points.PointMarker;
+import com.rm.panzoomcanvas.layers.points.PointsSource;
 
 /**
  *
  * @author rmarquez
  */
-public abstract class BasePointsSource implements PointsSource {
+public abstract class BasePointsSource<T> implements PointsSource<T> {
 
   private final SpatialRef spatialRef;
   private double buffer = 5.0;
@@ -40,9 +42,22 @@ public abstract class BasePointsSource implements PointsSource {
     boolean result = false;
     FxPoint geomPoint = args.getGeomPoint(this.spatialRef);
     for (int i = 0; i < this.getNumPoints(); i++) {
-      FxPoint fxPoint = this.getFxPoint(i);
-      result = SpatialUtils.intersects(fxPoint, geomPoint, this.buffer);
+      PointMarker marker = this.getFxPoint(i);
+      FxPoint point = marker.getPoint();
+      result = this.intersects(point, geomPoint);
     }
+    return result;
+  }
+
+  /**
+   * 
+   * @param point
+   * @param geomPoint
+   * @return 
+   */
+  public boolean intersects(FxPoint point, FxPoint geomPoint) {
+    boolean result;
+    result = SpatialUtils.intersects(point, geomPoint, this.buffer);
     return result;
   }
 

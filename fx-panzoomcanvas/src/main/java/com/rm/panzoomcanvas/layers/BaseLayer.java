@@ -169,6 +169,16 @@ public abstract class BaseLayer implements Layer {
   @Override
   public void onMouseClicked(LayerMouseEvent e) {
   }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: Default implementation does nothing on mouse event. </p>
+   */
+  @Override
+  public void onMouseHovered(LayerMouseEvent layerMouseEvent) {
+  }
+  
 
   /**
    *

@@ -1,29 +1,30 @@
-package com.rm.panzoomcanvas.layers.points;
+package com.rm.panzoomcanvas.layers.points.impl;
 
 import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.layers.points.PointMarker;
 
 /**
  *
  * @author rmarquez
  */
-public final class ArrayPointsSource extends BasePointsSource {
+public final class ArrayPointsSource<T> extends BasePointsSource<T> {
 
-  private final FxPoint[] points;
+  private final PointMarker[] points;
 
   /**
    *
    * @param point
    */
-  public ArrayPointsSource(FxPoint point) {
-    this(new FxPoint[]{point});
+  public ArrayPointsSource(PointMarker<T> point) {
+    this(new PointMarker[]{point});
   }
 
   /**
    *
    * @param points
    */
-  public ArrayPointsSource(FxPoint[] points) {
-    super(FxPoint.getSpatialRef(points));
+  public ArrayPointsSource(PointMarker<T>[] points) {
+    super(FxPoint.getSpatialRef(PointMarker.getPoints(points)));
     this.points = points;
   }
 
@@ -43,7 +44,7 @@ public final class ArrayPointsSource extends BasePointsSource {
    * OVERRIDE: </p>
    */
   @Override
-  public FxPoint getFxPoint(int i) {
+  public PointMarker getFxPoint(int i) {
     return this.points[i];
   }
 

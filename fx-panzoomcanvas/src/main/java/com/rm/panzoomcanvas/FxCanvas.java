@@ -200,7 +200,6 @@ public class FxCanvas extends Canvas {
    *
    */
   private void addMouseListeners() {
-    
     this.getParent().setOnMouseClicked((e) -> {
       ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
       List<Layer> layers = this.getContent().getSelectableLayers(s);
@@ -210,7 +209,7 @@ public class FxCanvas extends Canvas {
     this.getParent().setOnMouseMoved((e)->{
       ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
       List<Layer> layers = this.getContent().getHoverableLayers(s);
-      this.getContent().onLayersMouseClicked(e, layers);
+      this.getContent().onLayersMouseHovered(e, layers);
     });
   }
 

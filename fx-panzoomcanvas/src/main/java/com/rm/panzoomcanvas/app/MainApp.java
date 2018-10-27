@@ -12,11 +12,10 @@ import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.layers.line.LineLayer;
 import com.rm.panzoomcanvas.layers.line.LineLayerSource;
 import com.rm.panzoomcanvas.core.GeometryProjection;
-import com.rm.panzoomcanvas.core.SpatialUtils;
-import com.rm.panzoomcanvas.layers.points.ArrayPointsSource;
-import com.rm.panzoomcanvas.layers.points.BasePointsSource;
+import com.rm.panzoomcanvas.layers.points.impl.ArrayPointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
-import com.rm.panzoomcanvas.layers.points.PointsSource;
+import com.rm.panzoomcanvas.layers.points.PointMarkerTooltipBuilder;
+import com.rm.panzoomcanvas.layers.points.PointMarker;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
@@ -29,10 +28,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
@@ -65,21 +60,32 @@ public class MainApp extends Application {
     value.add(new VirtualBoxLayer());
     value.add(new CenterLayer("center"));
     value.add(new LineLayer("line", new LineLayerSource() {
-      private SpatialRef sr = new MapCanvasSR();
+      private final SpatialRef sr = new MapCanvasSR();
       Pair<FxPoint, FxPoint> points = new Pair<>(new FxPoint(0.0, 0.0, sr), new FxPoint(120.0, 120.0, sr));
       @Override
       public Pair<FxPoint, FxPoint> getFxPoints() {
         return this.points;
       }
-
       @Override
       public boolean intersects(ParamsIntersects screenPoint) {
         return false;
       }
-    }));
-    
-    ArrayPointsSource singlePointSource = new ArrayPointsSource(new FxPoint(120, 120, new MapCanvasSR()));
-    value.add(new PointsLayer("points", singlePointSource)); 
+    })); 
+    PointsLayer pointsLayer = this.getPointsLayer();
+    value.add(pointsLayer); 
+  }
+  /**
+   * 
+   * @return 
+   */
+  private PointsLayer getPointsLayer() {
+    FxPoint fxPoint = new FxPoint(120, 120, new MapCanvasSR());
+    PointMarker<String> pointMarker = new PointMarker<>("Single point", fxPoint);
+    ArrayPointsSource singlePointSource = new ArrayPointsSource(pointMarker);
+    PointsLayer pointsLayer = new PointsLayer("points", singlePointSource);
+    pointsLayer.hoverableProperty().setValue(Boolean.TRUE);
+    pointsLayer.setTooltip(new PointMarkerTooltipBuilder());
+    return pointsLayer; 
   }
 
   /**

@@ -31,19 +31,19 @@ public interface Layer {
    * @return
    */
   public BooleanProperty visibleProperty();
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public BooleanProperty selectableProperty();
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public BooleanProperty hoverableProperty();
-  
+
   /**
    *
    * @return
@@ -57,15 +57,21 @@ public interface Layer {
   public Content getContent();
 
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
-  public LayerGeometry getLayerGeometry(); 
-  
+  public LayerGeometry getLayerGeometry();
+
   /**
-   * 
-   * @param e 
+   *
+   * @param e
    */
   public void onMouseClicked(LayerMouseEvent e);
+
+  /**
+   *
+   * @param layerMouseEvent
+   */
+  public void onMouseHovered(LayerMouseEvent layerMouseEvent);
 
 }

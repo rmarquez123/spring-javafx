@@ -7,7 +7,6 @@ import com.rm.panzoomcanvas.projections.Projector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
@@ -179,6 +178,15 @@ public class Content {
     LayerMouseEvent layerMouseEvent = new LayerMouseEvent(e, projector, screenEnv);
     for (Layer layer : layers) {
       layer.onMouseClicked(layerMouseEvent);
+    }
+  }
+
+  void onLayersMouseHovered(MouseEvent e, List<Layer> layers) {
+    Projector projector = this.canvas.getProjector();
+    ScreenEnvelope screenEnv = this.canvas.screenEnvelopeProperty().getValue();
+    LayerMouseEvent layerMouseEvent = new LayerMouseEvent(e, projector, screenEnv);
+    for (Layer layer : layers) {
+      layer.onMouseHovered(layerMouseEvent);
     }
   }
   

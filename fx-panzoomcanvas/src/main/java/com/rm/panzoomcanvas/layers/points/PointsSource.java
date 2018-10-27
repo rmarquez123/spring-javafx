@@ -6,9 +6,10 @@ import com.rm.panzoomcanvas.core.FxPoint;
 /**
  *
  * @author rmarquez
+ * @param <T>
  */
-public interface PointsSource extends LayerGeometry {
-  
+public interface PointsSource<T> extends LayerGeometry {
+
   /**
    *
    * @return
@@ -20,6 +21,13 @@ public interface PointsSource extends LayerGeometry {
    * @param i
    * @return
    */
-  FxPoint getFxPoint(int i) ;
-  
+  PointMarker<T> getFxPoint(int i);
+
+  /**
+   *
+   * @param p1
+   * @param p2
+   * @return
+   */
+  boolean intersects(FxPoint p1, FxPoint p2);
 }
