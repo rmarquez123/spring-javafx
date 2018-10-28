@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.points.impl;
+package com.rm.panzoomcanvas.layers.impl.points;
 
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
