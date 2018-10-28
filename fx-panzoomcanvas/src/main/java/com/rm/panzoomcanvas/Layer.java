@@ -14,17 +14,6 @@ public interface Layer {
    */
   public String getName();
 
-  /**
-   *
-   * @param canvas
-   */
-  public void redraw(FxCanvas canvas);
-
-  /**
-   *
-   * @param canvas
-   */
-  public void purge(FxCanvas canvas);
 
   /**
    *
@@ -48,12 +37,6 @@ public interface Layer {
    *
    * @return
    */
-  public long getUuid();
-
-  /**
-   *
-   * @return
-   */
   public Content getContent();
 
   /**
@@ -61,17 +44,36 @@ public interface Layer {
    * @return
    */
   public LayerGeometry getLayerGeometry();
+  
+  /**
+   *
+   * @param canvas
+   */
+  void redraw(FxCanvas canvas);
+
+  /**
+   *
+   * @param canvas
+   */
+  void purge(FxCanvas canvas);
+  
+  /**
+   *
+   * @return
+   */
+  long getUuid();
+
 
   /**
    *
    * @param e
    */
-  public void onMouseClicked(LayerMouseEvent e);
+  void onMouseClicked(LayerMouseEvent e);
 
   /**
    *
    * @param layerMouseEvent
    */
-  public void onMouseHovered(LayerMouseEvent layerMouseEvent);
+  void onMouseHovered(LayerMouseEvent layerMouseEvent);
 
 }

@@ -30,7 +30,7 @@ public class PointsLayer<T> extends BaseLayer {
   
   private final PointSymbology symbology;
   private final PointsSource<T> source;
-  private LayerTooltip pointsTooltip;
+  private LayerTooltip tooltip;
   private final LayerHoverSelect<PointMarker<T>, T> hoverSelect;
 
   /**
@@ -53,6 +53,7 @@ public class PointsLayer<T> extends BaseLayer {
         return self.getMouseEvtList(e);
       }
     }; 
+    
   }
 
   /**
@@ -126,31 +127,12 @@ public class PointsLayer<T> extends BaseLayer {
    * @param pointsTooltipBuilder
    */
   public void setTooltip(LayerTooltip.Builder pointsTooltipBuilder) {
-    if (this.pointsTooltip != null) {
-      this.pointsTooltip.destroy();
+    if (this.tooltip != null) {
+      this.tooltip.destroy();
     }
-    this.pointsTooltip = pointsTooltipBuilder.build(this.hoverSelect);
-  }
-
-  /**
-   * {@inheritDoc}
-   * <p>
-   * OVERRIDE: </p>
-   */
-  @Override
-  public void onMouseHovered(LayerMouseEvent e) {
-    this.hoverSelect.onMouseHovered(e);
+    this.tooltip = pointsTooltipBuilder.build(this.hoverSelect);
   }
   
-  /**
-   * {@inheritDoc}
-   * <p>
-   * OVERRIDE: </p>
-   */
-  @Override
-  public void onMouseClicked(LayerMouseEvent e) {
-    this.hoverSelect.onMouseClicked(e);
-  }
 
   /**
    *

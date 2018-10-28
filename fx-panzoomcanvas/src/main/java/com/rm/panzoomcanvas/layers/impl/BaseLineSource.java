@@ -11,16 +11,16 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  * @author rmarquez
  */
-public abstract class BaseLineLayer<T> implements LineLayerSource<T> {
+public abstract class BaseLineSource<T> implements LineLayerSource<T> {
 
   private final SpatialRef spatialRef;
-  private double buffer;
+  private double buffer = 2.0;
 
   /**
    *
    * @param spatialRef
    */
-  protected BaseLineLayer(SpatialRef spatialRef) {
+  protected BaseLineSource(SpatialRef spatialRef) {
     this.spatialRef = spatialRef;
   }
 
@@ -42,6 +42,28 @@ public abstract class BaseLineLayer<T> implements LineLayerSource<T> {
     Geometry jtsLine = this.getLineMarker().getJtsGeometry(); 
     FxPoint geomPoint = args.getGeomPoint(this.spatialRef);
     boolean result = SpatialUtils.intersects(jtsLine, geomPoint, this.buffer);
+    return result;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public final SpatialRef getSpatialRef() {
+    return this.spatialRef;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public boolean intersects(FxPoint refPoint) {
+    Geometry geom = this.getLineMarker().getJtsGeometry(); 
+    boolean result = SpatialUtils.intersects(geom, refPoint, this.buffer);
     return result;
   }
 }

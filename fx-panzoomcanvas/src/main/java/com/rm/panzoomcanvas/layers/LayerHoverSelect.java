@@ -29,6 +29,14 @@ public abstract class LayerHoverSelect<TMarker extends Marker<TObj>, TObj> {
   public LayerHoverSelect(BaseLayer host) {
     this.host = host;
     this.cursorHelper = new LayerCursorHelper<>(this);
+    MouseEventProperties.MouseEvent HOVERED = MouseEventProperties.MouseEvent.HOVERED;
+    this.host.getMouseEvtProps().addListener(HOVERED, (type, event) -> {
+      this.onMouseHovered(event);
+    });
+    MouseEventProperties.MouseEvent CLICKED = MouseEventProperties.MouseEvent.CLICKED;
+    this.host.getMouseEvtProps().addListener(HOVERED, (type, event) -> {
+      this.onMouseClicked(event);
+    });
   }
     
   public BooleanProperty selectableProperty() {

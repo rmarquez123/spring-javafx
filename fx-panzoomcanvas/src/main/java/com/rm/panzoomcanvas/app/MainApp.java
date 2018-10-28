@@ -15,6 +15,7 @@ import com.rm.panzoomcanvas.layers.impl.ArrayPointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
 import com.rm.panzoomcanvas.layers.LayerTooltip;
+import com.rm.panzoomcanvas.layers.impl.DefaultLineSymbology;
 import com.rm.panzoomcanvas.layers.impl.DefaultPointSymbology;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
@@ -28,8 +29,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
-import static javafx.application.Application.launch;
-import static javafx.application.Application.launch;
 
 /**
  * The purpose of this main application is to test the basic and default
@@ -76,13 +75,17 @@ public class MainApp extends Application {
    * @return 
    */
   private LineLayer getLineLayer() {
-    
     final SpatialRef sr = new MapCanvasSR();
     FxPoint p1 = new FxPoint(0.0, 0.0, sr);
     FxPoint p2 = new FxPoint(120.0, 120.0, sr);
-    LineLayer lineLayer = new LineLayer("line", new FixedLineLayerSource<>("line", p1, p2));
+    FixedLineLayerSource<String> lineSource = new FixedLineLayerSource<>("line", p1, p2);
+    DefaultLineSymbology symbology = new DefaultLineSymbology();
+    symbology.strokeColorProperty().setValue(Color.BLACK);
+    symbology.lineWidthProperty().setValue(2);
+    LineLayer lineLayer = new LineLayer("line", symbology, lineSource);
     lineLayer.selectableProperty().setValue(Boolean.TRUE);
     lineLayer.hoverableProperty().setValue(Boolean.TRUE);
+    lineLayer.setTooltip(new LayerTooltip.Builder().setHeightOffset(40));
     return lineLayer;
   }
 
@@ -105,9 +108,6 @@ public class MainApp extends Application {
     pointsLayer.selectableProperty().setValue(Boolean.TRUE);
     pointsLayer.setTooltip(new LayerTooltip.Builder()
             .setHeightOffset(54));
-    pointsLayer.selectedMarkersProperty().addListener((obs, old, change) -> {
-      System.out.println(change);
-    });
     return pointsLayer;
   }
 

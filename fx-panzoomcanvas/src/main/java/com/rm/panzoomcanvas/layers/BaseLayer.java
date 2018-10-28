@@ -24,6 +24,8 @@ public abstract class BaseLayer implements Layer {
   private final LayerGeometry geometry;
   private Node layerCanvas = null;
   private FxCanvas canvas;
+  private MouseEventProperties mouseEvtProps = new MouseEventProperties();
+  
 
   /**
    *
@@ -161,14 +163,13 @@ public abstract class BaseLayer implements Layer {
   public final LayerGeometry getLayerGeometry() {
     return this.geometry;
   }
-
+  
   /**
-   * {@inheritDoc}
-   * <p>
-   * OVERRIDE: Default implementation does nothing on mouse event. </p>
+   * 
+   * @return 
    */
-  @Override
-  public void onMouseClicked(LayerMouseEvent e) {
+  public MouseEventProperties getMouseEvtProps() {
+    return mouseEvtProps;
   }
   
   /**
@@ -177,7 +178,18 @@ public abstract class BaseLayer implements Layer {
    * OVERRIDE: Default implementation does nothing on mouse event. </p>
    */
   @Override
-  public void onMouseHovered(LayerMouseEvent layerMouseEvent) {
+  public final void onMouseClicked(LayerMouseEvent evt) {
+    this.mouseEvtProps.trigger(MouseEventProperties.MouseEvent.CLICKED, evt); 
+  }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: Default implementation does nothing on mouse event. </p>
+   */
+  @Override
+  public final void onMouseHovered(LayerMouseEvent event) {
+    this.mouseEvtProps.trigger(MouseEventProperties.MouseEvent.HOVERED, event);
   }
   
 

@@ -7,7 +7,7 @@ import com.rm.panzoomcanvas.layers.line.LineMarker;
  *
  * @author rmarquez
  */
-public class FixedLineLayerSource<T> extends BaseLineLayer<T> {
+public class FixedLineLayerSource<T> extends BaseLineSource<T> {
 
   private final LineMarker<T> marker;
 
