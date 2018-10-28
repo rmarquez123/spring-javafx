@@ -12,7 +12,10 @@ import com.rm.panzoomcanvas.layers.BaseLayer;
 import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.projections.Projector;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -23,19 +26,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
+
 /**
  *
  * @author rmarquez
  * @param <T> A user object type.
  */
 public class PointsLayer<T> extends BaseLayer {
-  
+
   private final PointSymbology symbology;
   private final PointsSource<T> source;
-  private final ListProperty<PointMarker<T>> selected = new SimpleListProperty<>();
+  private final ListProperty<PointMarker<T>> selected = new SimpleListProperty<>(FXCollections.emptyObservableList());
   final Property<HoveredPointMarkers<T>> hovered = new SimpleObjectProperty<>();
   private final PointLayerCursorHelper hoveredActionsHelper;
   private PointsTooltip<T> pointsTooltip;
+
   /**
    *
    * @param name
@@ -50,16 +55,15 @@ public class PointsLayer<T> extends BaseLayer {
     }
     this.symbology = symbology;
     this.hoveredActionsHelper = new PointLayerCursorHelper(this);
-    
   }
-  
-  
+
   /**
-   * 
+   *
    */
   Node getNode() {
     return this.getLayerCanvas();
   }
+
   /**
    *
    * @return
@@ -115,7 +119,7 @@ public class PointsLayer<T> extends BaseLayer {
       PointMarker marker = this.source.getFxPoint(i);
       FxPoint point = marker.getPoint();
       ScreenPoint screenPoint = projector.projectGeoToScreen(point, args.getScreenEnv());
-      this.symbology.apply(args, screenPoint);
+      this.symbology.apply(this, marker, args, screenPoint);
     }
   }
 
@@ -125,7 +129,7 @@ public class PointsLayer<T> extends BaseLayer {
    */
   public void setTooltip(PointsTooltip.Builder pointsTooltipBuilder) {
     if (this.pointsTooltip != null) {
-      this.pointsTooltip.destroy(); 
+      this.pointsTooltip.destroy();
     }
     this.pointsTooltip = pointsTooltipBuilder.build(this);
   }
@@ -138,8 +142,26 @@ public class PointsLayer<T> extends BaseLayer {
   @Override
   public void onMouseHovered(LayerMouseEvent e) {
     ObservableList<PointMarker<T>> newVal = this.getMouseEvtList(e);
+    HoveredPointMarkers<T> oldHOvered = this.hovered.getValue();
     HoveredPointMarkers<T> result = new HoveredPointMarkers<>(e, newVal);
     this.hovered.setValue(result);
+    List<PointMarker<T>> oldList = oldHOvered == null ? Collections.EMPTY_LIST : oldHOvered.markers;
+    this.repaintIfHoveredListChanged(oldList, newVal);
+  }
+
+  /**
+   *
+   * @param newVal
+   */
+  private void repaintIfHoveredListChanged(List<PointMarker<T>> oldVal, List<PointMarker<T>> newVal) {
+    boolean changed = !listEqualsIgnoreOrder(newVal, oldVal);
+    if (changed) {
+      this.repaint();
+    }
+  }
+
+  public static <T> boolean listEqualsIgnoreOrder(List<T> list1, List<T> list2) {
+    return new HashSet<>(list1).equals(new HashSet<>(list2));
   }
 
   /**
@@ -149,8 +171,12 @@ public class PointsLayer<T> extends BaseLayer {
    */
   @Override
   public void onMouseClicked(LayerMouseEvent e) {
-    ObservableList<PointMarker<T>> newVal = this.getMouseEvtList(e);
-    this.selected.setValue(newVal);
+    List<PointMarker<T>> newVal = this.getMouseEvtList(e);
+    List<PointMarker<T>> a = newVal.stream().filter((m)->{
+      return !selected.getValue().contains(m);
+    }).collect(Collectors.toList());
+    this.selected.setValue(FXCollections.observableArrayList(a));
+    this.repaint();
   }
 
   /**
@@ -179,5 +205,4 @@ public class PointsLayer<T> extends BaseLayer {
     return newVal;
   }
 
-  
 }

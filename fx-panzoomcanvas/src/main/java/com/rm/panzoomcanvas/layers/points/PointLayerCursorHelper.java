@@ -28,6 +28,7 @@ public class PointLayerCursorHelper<T> {
   private void bindHoveredActions() {
     this.host.hovered.addListener((obs, old, change) -> {
       this.onHoveredSelectable(change);
+      
     });
   }
 

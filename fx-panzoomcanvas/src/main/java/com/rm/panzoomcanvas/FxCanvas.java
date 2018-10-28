@@ -16,11 +16,13 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -37,7 +39,7 @@ public class FxCanvas extends Canvas {
   private final Property<ScreenPoint> center = new SimpleObjectProperty<>(INITIAL_SCREEN_POINT);
   private final Projector projector;
   private final BooleanProperty scrolling = new SimpleBooleanProperty(false);
-  
+
   /**
    *
    * @param content
@@ -71,8 +73,6 @@ public class FxCanvas extends Canvas {
       this.setInitialCenter();
     });
   }
-  
-
 
   /**
    *
@@ -203,13 +203,13 @@ public class FxCanvas extends Canvas {
    *
    */
   private void addMouseListeners() {
-    this.getParent().setOnMouseClicked((e) -> {
+    this.getParent().addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
       ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
       List<Layer> layers = this.getContent().getSelectableLayers(s);
       this.getContent().onLayersMouseClicked(e, layers);
     });
     
-    this.getParent().setOnMouseMoved((e)->{
+    this.getParent().addEventHandler(MouseEvent.MOUSE_MOVED, (e) -> {
       List<Layer> layers = this.getContent().getHoverableLayers();
       this.getContent().onLayersMouseHovered(e, layers);
     });

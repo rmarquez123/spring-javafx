@@ -17,7 +17,6 @@ import javafx.scene.control.Label;
  * @author rmarquez
  */
 public class PositionBar extends Label {
-
   private final FxCanvas mapCanvas;
   private final Property<VirtualPoint> mousePosition
           = new SimpleObjectProperty<>(new VirtualPoint(Double.NaN, Double.NaN));

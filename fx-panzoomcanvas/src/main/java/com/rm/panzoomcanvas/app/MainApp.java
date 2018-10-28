@@ -94,7 +94,7 @@ public class MainApp extends Application {
     DefaultPointSymbology symbology = new DefaultPointSymbology();
     symbology.fillColorProperty().setValue(Color.ROSYBROWN);
     symbology.strokeColorProperty().setValue(Color.BLACK);
-    
+    symbology.selected.fillColorProperty().setValue(Color.ANTIQUEWHITE);
     
     PointsLayer pointsLayer = new PointsLayer("points", symbology, singlePointSource);
     pointsLayer.hoverableProperty().setValue(Boolean.TRUE);

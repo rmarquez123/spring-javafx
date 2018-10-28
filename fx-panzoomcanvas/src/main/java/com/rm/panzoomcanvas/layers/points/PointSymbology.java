@@ -11,8 +11,10 @@ public interface PointSymbology {
 
   /**
    *
+   * @param layer
+   * @param marker
    * @param args
    * @param screenPoint
    */
-  public void apply(DrawArgs args, ScreenPoint screenPoint);
+  public void apply(PointsLayer<?> layer, PointMarker<?> marker, DrawArgs args, ScreenPoint screenPoint);
 }

@@ -1,13 +1,19 @@
 package com.rm.panzoomcanvas.layers.points;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
+import javafx.util.Duration;
 
 /**
  *
  * @author rmarquez
+ * @param <T>
  */
 public final class PointsTooltip<T> {
 
@@ -28,7 +34,26 @@ public final class PointsTooltip<T> {
     this.host.hovered.addListener(onHoveredListener);
   }
 
-  public void onHovered(HoveredPointMarkers<T> hovered) {
+  /**
+   *
+   * @return
+   */
+  int getHeightOffset() {
+    return heightOffset;
+  }
+  
+  /**
+   *
+   */
+  void destroy() {
+    this.host.hovered.removeListener(this.onHoveredListener);
+  }
+
+  /**
+   *
+   * @param hovered
+   */
+  private void onHovered(HoveredPointMarkers<T> hovered) {
     if (holder.tooltip != null) {
       holder.tooltip.hide();
     }
@@ -50,25 +75,41 @@ public final class PointsTooltip<T> {
 
   /**
    *
-   * @return
+   * @param tooltip
+   * @param delayInSeconds
    */
-  public int getHeightOffset() {
-    return heightOffset;
-  }
-  
-  /**
-   * 
-   */
-  void destroy() {
-    this.host.hovered.removeListener(this.onHoveredListener);
+  public static void hackTooltipStartTiming(Tooltip tooltip, double delayInSeconds) {
+
+    try {
+      Tooltip obj = tooltip;
+      Class<?> clazz = obj.getClass().getDeclaredClasses()[1];
+      Constructor<?> constructor = clazz.getDeclaredConstructor(
+              Duration.class,
+              Duration.class,
+              Duration.class,
+              boolean.class);
+      constructor.setAccessible(true);
+      Object tooltipBehavior = constructor.newInstance(
+              new Duration(delayInSeconds * 1000.0), //open
+              new Duration(5000), //visible
+              new Duration(200), //close
+              false);
+      Field fieldBehavior = obj.getClass().getDeclaredField("BEHAVIOR");
+      fieldBehavior.setAccessible(true);
+      fieldBehavior.set(obj, tooltipBehavior);
+    } catch (Exception e) {
+      Logger.getLogger(PointsTooltip.class.getName()).log(Level.WARNING, "message", e);
+    }
+
   }
 
-  
   /**
-   * 
+   *
    */
   public static class Builder {
+
     private int heightOffset = 44;
+
     /**
      *
      * @param heightOffset
