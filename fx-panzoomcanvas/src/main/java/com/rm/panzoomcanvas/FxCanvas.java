@@ -17,6 +17,7 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
@@ -36,7 +37,7 @@ public class FxCanvas extends Canvas {
   private final Property<ScreenPoint> center = new SimpleObjectProperty<>(INITIAL_SCREEN_POINT);
   private final Projector projector;
   private final BooleanProperty scrolling = new SimpleBooleanProperty(false);
-
+  
   /**
    *
    * @param content
@@ -70,6 +71,8 @@ public class FxCanvas extends Canvas {
       this.setInitialCenter();
     });
   }
+  
+
 
   /**
    *
@@ -207,8 +210,7 @@ public class FxCanvas extends Canvas {
     });
     
     this.getParent().setOnMouseMoved((e)->{
-      ScreenPoint s = new ScreenPoint(e.getX(), e.getY());
-      List<Layer> layers = this.getContent().getHoverableLayers(s);
+      List<Layer> layers = this.getContent().getHoverableLayers();
       this.getContent().onLayersMouseHovered(e, layers);
     });
   }

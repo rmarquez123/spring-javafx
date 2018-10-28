@@ -40,6 +40,12 @@ public class PointMarker<T> {
     return result;
   }
 
+  
+  public StringProperty labelProperty() {
+    return labelProperty;
+  }
+  
+
   /**
    *
    * @return

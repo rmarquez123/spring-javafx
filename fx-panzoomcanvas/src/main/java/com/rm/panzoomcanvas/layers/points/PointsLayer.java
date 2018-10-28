@@ -14,25 +14,27 @@ import com.rm.panzoomcanvas.projections.Projector;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-
 /**
  *
  * @author rmarquez
  * @param <T> A user object type.
  */
 public class PointsLayer<T> extends BaseLayer {
-  
+
   private final PointSymbology symbology;
   private final PointsSource<T> source;
   private final ListProperty<PointMarker<T>> selected = new SimpleListProperty<>();
-  private final ListProperty<PointMarker<T>> hovered = new SimpleListProperty<>();
-  
+  final Property<HoveredPointMarkers<T>> hovered = new SimpleObjectProperty<>();
+  private final HoveredPointActionsHelper hoveredActionsHelper;
   /**
    *
    * @param name
@@ -46,19 +48,27 @@ public class PointsLayer<T> extends BaseLayer {
       throw new NullPointerException("Symbology cannot be null");
     }
     this.symbology = symbology;
+    this.hoveredActionsHelper = new HoveredPointActionsHelper(this);
   }
+  
   
   /**
    * 
-   * @return 
    */
-  public ReadOnlyListProperty<PointMarker<T>> hoveredMarkersProperty() {
+  Node getNode() {
+    return this.getLayerCanvas();
+  }
+  /**
+   *
+   * @return
+   */
+  public ReadOnlyProperty<HoveredPointMarkers<T>> hoveredMarkersProperty() {
     return this.hovered;
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public ReadOnlyListProperty<PointMarker<T>> selectedMarkersProperty() {
     return this.selected;
@@ -112,7 +122,8 @@ public class PointsLayer<T> extends BaseLayer {
    * @param pointsTooltipBuilder
    */
   public void setTooltip(PointMarkerTooltipBuilder pointsTooltipBuilder) {
-
+    PointsTooltip pointsTooltip = pointsTooltipBuilder.build();
+    this.hoveredActionsHelper.setPointsToolTip(pointsTooltip);
   }
 
   /**
@@ -123,7 +134,8 @@ public class PointsLayer<T> extends BaseLayer {
   @Override
   public void onMouseHovered(LayerMouseEvent e) {
     ObservableList<PointMarker<T>> newVal = this.getMouseEvtList(e);
-    this.hovered.setValue(newVal);
+    HoveredPointMarkers<T> result = new HoveredPointMarkers<>(e, newVal);
+    this.hovered.setValue(result);
   }
 
   /**
@@ -162,4 +174,6 @@ public class PointsLayer<T> extends BaseLayer {
     ObservableList<PointMarker<T>> newVal = FXCollections.observableArrayList(result);
     return newVal;
   }
+
+  
 }

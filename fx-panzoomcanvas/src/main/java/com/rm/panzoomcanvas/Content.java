@@ -155,15 +155,11 @@ public class Content {
    * @param s
    * @return
    */
-  List<Layer> getHoverableLayers(ScreenPoint s) {
-    ScreenEnvelope screenEnv = this.canvas.screenEnvelopeProperty().getValue();
-    Projector projector = this.canvas.getProjector();
-    ParamsIntersects args = new ParamsIntersects(s, projector, screenEnv);
+  List<Layer> getHoverableLayers() {
     ListProperty<Layer> listProp = this.getLayers();
     List<Layer> result = listProp.getValue()
             .stream()
             .filter((l) -> l.hoverableProperty().getValue())
-            .filter(new LayerIntersectsPoint(args))
             .collect(Collectors.toList());
     return result;
   }

@@ -103,10 +103,6 @@ public class MainApp extends Application {
     pointsLayer.selectedMarkersProperty().addListener((obs, old, change) -> {
       System.out.println(change);
     });
-    
-    pointsLayer.hoveredMarkersProperty().addListener((obs, old, change) -> {
-      System.out.println(change);
-    });
     return pointsLayer;
   }
 
