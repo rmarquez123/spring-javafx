@@ -1,5 +1,6 @@
 package com.rm.panzoomcanvas.layers.points;
 
+import com.rm.panzoomcanvas.layers.LayerTooltip;
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.LayerMouseEvent;
 import com.rm.panzoomcanvas.core.FxPoint;
@@ -26,10 +27,10 @@ import javafx.scene.canvas.Canvas;
  * @param <T> A user object type.
  */
 public class PointsLayer<T> extends BaseLayer {
-
+  
   private final PointSymbology symbology;
   private final PointsSource<T> source;
-  private PointsTooltip pointsTooltip;
+  private LayerTooltip pointsTooltip;
   private final LayerHoverSelect<PointMarker<T>, T> hoverSelect;
 
   /**
@@ -124,11 +125,11 @@ public class PointsLayer<T> extends BaseLayer {
    *
    * @param pointsTooltipBuilder
    */
-  public void setTooltip(PointsTooltip.Builder pointsTooltipBuilder) {
+  public void setTooltip(LayerTooltip.Builder pointsTooltipBuilder) {
     if (this.pointsTooltip != null) {
       this.pointsTooltip.destroy();
     }
-    this.pointsTooltip = pointsTooltipBuilder.build(this);
+    this.pointsTooltip = pointsTooltipBuilder.build(this.hoverSelect);
   }
 
   /**

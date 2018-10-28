@@ -1,6 +1,5 @@
-package com.rm.panzoomcanvas.layers.points;
+package com.rm.panzoomcanvas.layers;
 
-import com.rm.panzoomcanvas.layers.HoveredMarkers;
 import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
@@ -11,23 +10,23 @@ import javafx.scene.control.Tooltip;
  * @author rmarquez
  * @param <T>
  */
-public final class PointsTooltip {
+public final class LayerTooltip {
   
-  private final PointsLayer host;
+  private final LayerHoverSelect host;
   private final ToolTipHolder holder = new ToolTipHolder();
   private final int heightOffset;
-  private final ChangeListener<? super HoveredMarkers<PointMarker<? extends Object>>> onHoveredListener;
+  private final ChangeListener<? super HoveredMarkers<Marker<? extends Object>>> onHoveredListener;
   
   /**
    *
    * @param builder
    * @param host
    */
-  private PointsTooltip(Builder builder, PointsLayer<?> host) {
+  private LayerTooltip(Builder builder, LayerHoverSelect host) {
     this.heightOffset = builder.heightOffset;
     this.host = host;
     this.onHoveredListener = (obs, old, change) -> onHovered(change);
-    this.host.hoveredMarkersProperty().addListener(this.onHoveredListener);
+    this.host.hovered().addListener(this.onHoveredListener);
   }
   
   /**
@@ -41,21 +40,21 @@ public final class PointsTooltip {
   /**
    *
    */
-  void destroy() {
-    this.host.hoveredMarkersProperty().removeListener(this.onHoveredListener);
+  public void destroy() {
+    this.host.hovered().removeListener(this.onHoveredListener);
   }
 
   /**
    *
    * @param hovered
    */
-  private void onHovered(HoveredMarkers<PointMarker<?>> hovered) {
+  private void onHovered(HoveredMarkers<Marker<?>> hovered) {
     if (holder.tooltip != null) {
       holder.tooltip.hide();
     }
-    List<PointMarker<?>> markers = hovered.markers;
+    List<Marker<?>> markers = hovered.markers;
     Node node = this.host.getNode();
-    for (PointMarker<?> pointMarker : markers) {
+    for (Marker<?> pointMarker : markers) {
       if (node != null) {
         String label = pointMarker.labelProperty().getValue();
         holder.tooltip = new Tooltip(label);
@@ -90,8 +89,8 @@ public final class PointsTooltip {
      * @param host
      * @return
      */
-    public PointsTooltip build(PointsLayer<?> host) {
-      return new PointsTooltip(this, host);
+    public LayerTooltip build(LayerHoverSelect host) {
+      return new LayerTooltip(this, host);
     }
   }
 

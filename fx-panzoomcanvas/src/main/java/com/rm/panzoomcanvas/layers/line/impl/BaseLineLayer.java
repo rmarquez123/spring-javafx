@@ -39,7 +39,7 @@ public abstract class BaseLineLayer<T> implements LineLayerSource<T> {
    */
   @Override
   public boolean intersects(ParamsIntersects args) {
-    Geometry jtsLine = this.getLineMarker().asJtsLine(); 
+    Geometry jtsLine = this.getLineMarker().getJtsGeometry(); 
     FxPoint geomPoint = args.getGeomPoint(this.spatialRef);
     boolean result = SpatialUtils.intersects(jtsLine, geomPoint, this.buffer);
     return result;

@@ -92,9 +92,7 @@ public class FxPoint {
    */
   public Geometry asJtsPoint() {
     if (this.jtsPoint == null) {
-      PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING);
-      GeometryFactory geom = new GeometryFactory(precisionModel, this.sr.getSrid());
-      this.jtsPoint = geom.createPoint(new Coordinate(this.x, this.y));
+      this.jtsPoint = SpatialUtils.createJtsPoint(this.getX(), this.getY(), this.sr);
     }
     return this.jtsPoint;
   }

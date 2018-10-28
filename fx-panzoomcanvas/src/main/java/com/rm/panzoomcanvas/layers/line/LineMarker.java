@@ -1,20 +1,25 @@
 package com.rm.panzoomcanvas.layers.line;
 
 import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.core.SpatialUtils;
+import com.rm.panzoomcanvas.layers.Marker;
 import com.vividsolutions.jts.geom.Geometry;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.util.Pair;
 
 /**
  *
  * @author rmarquez
  */
-public class LineMarker<T> {
+public class LineMarker<T> implements Marker<T> {
 
-  private final T object;
+  private final T userObject;
   private final FxPoint point1;
   private final FxPoint point2;
   private final Pair<FxPoint, FxPoint> pair;
-  
+  private final StringProperty labelProperty = new SimpleStringProperty();
+
   /**
    *
    * @param object
@@ -22,15 +27,46 @@ public class LineMarker<T> {
    * @param point2
    */
   public LineMarker(T object, FxPoint point1, FxPoint point2) {
-    this.object = object;
+    this.userObject = object;
     this.point1 = point1;
     this.point2 = point2;
-    this.pair = new Pair<>(point1, point2); 
+    this.pair = new Pair<>(point1, point2);
+    this.labelProperty.setValue(String.valueOf(this.userObject));
   }
   
   /**
-   * 
-   * @return 
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public StringProperty labelProperty() {
+    return labelProperty;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public T getUserObject() {
+    return this.userObject;
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public Geometry getJtsGeometry() {
+    return SpatialUtils.createJtsLine(this.point1, this.point2);
+  }
+
+  /**
+   *
+   * @return
    */
   public Pair<FxPoint, FxPoint> getPoints() {
     return this.pair;
@@ -38,11 +74,7 @@ public class LineMarker<T> {
 
   @Override
   public String toString() {
-    return "LineMarker{" + "object=" + object + ", point1=" + point1 + ", point2=" + point2 + '}';
+    return "LineMarker{" + "object=" + userObject + ", point1=" + point1 + ", point2=" + point2 + '}';
   }
 
-  public Geometry asJtsLine() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-  
 }

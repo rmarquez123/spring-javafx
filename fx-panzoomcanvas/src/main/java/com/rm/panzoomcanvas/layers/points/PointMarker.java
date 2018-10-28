@@ -43,7 +43,13 @@ public final class PointMarker<T> implements Marker<T>{
     }
     return result;
   }
-
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
   public StringProperty labelProperty() {
     return labelProperty;
   }

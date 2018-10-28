@@ -14,7 +14,7 @@ import com.rm.panzoomcanvas.layers.line.impl.FixedLineLayerSource;
 import com.rm.panzoomcanvas.layers.points.impl.ArrayPointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
-import com.rm.panzoomcanvas.layers.points.PointsTooltip;
+import com.rm.panzoomcanvas.layers.LayerTooltip;
 import com.rm.panzoomcanvas.layers.points.impl.DefaultPointSymbology;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
@@ -28,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
+import static javafx.application.Application.launch;
 import static javafx.application.Application.launch;
 
 /**
@@ -102,7 +103,7 @@ public class MainApp extends Application {
     PointsLayer pointsLayer = new PointsLayer("points", symbology, singlePointSource);
     pointsLayer.hoverableProperty().setValue(Boolean.TRUE);
     pointsLayer.selectableProperty().setValue(Boolean.TRUE);
-    pointsLayer.setTooltip(new PointsTooltip.Builder()
+    pointsLayer.setTooltip(new LayerTooltip.Builder()
             .setHeightOffset(54));
     pointsLayer.selectedMarkersProperty().addListener((obs, old, change) -> {
       System.out.println(change);
