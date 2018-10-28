@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.impl.points;
+package com.rm.panzoomcanvas.layers.impl;
 
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.layers.DrawArgs;

@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.impl.line;
+package com.rm.panzoomcanvas.layers.impl;
 
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.layers.line.LineMarker;
