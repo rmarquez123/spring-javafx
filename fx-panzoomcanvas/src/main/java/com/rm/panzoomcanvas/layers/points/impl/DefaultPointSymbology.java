@@ -21,6 +21,7 @@ public class DefaultPointSymbology implements PointSymbology {
   private final Property<Color> hoverColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<Color> strokeColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<PointShape> pointShapeProperty = new SimpleObjectProperty<>(PointShape.CIRCLE);
+  
   private final IntegerProperty lineWidthProperty = new SimpleIntegerProperty(2);
   
   public DefaultPointSymbology() {

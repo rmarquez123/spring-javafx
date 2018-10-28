@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.tooltip;
+package com.rm.panzoomcanvas.layers.text;
 
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.LayerGeometry;
@@ -11,9 +11,9 @@ import javafx.scene.Node;
  *
  * @author rmarquez
  */
-public class ToolTipLayer extends BaseLayer {
+public class TextLayer extends BaseLayer {
   
-  public ToolTipLayer(String name, LayerGeometry layerGeometry) {
+  public TextLayer(String name, LayerGeometry layerGeometry) {
     super(name, layerGeometry);
   }
   

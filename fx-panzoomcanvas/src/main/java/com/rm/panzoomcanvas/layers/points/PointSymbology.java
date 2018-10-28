@@ -10,10 +10,9 @@ import com.rm.panzoomcanvas.layers.DrawArgs;
 public interface PointSymbology {
 
   /**
-   * 
+   *
    * @param args
-   * @param screenPoint 
+   * @param screenPoint
    */
   public void apply(DrawArgs args, ScreenPoint screenPoint);
-  
 }

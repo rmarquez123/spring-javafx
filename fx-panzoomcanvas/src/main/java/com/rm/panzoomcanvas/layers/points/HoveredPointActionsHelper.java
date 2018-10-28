@@ -11,18 +11,19 @@ import javafx.scene.control.Tooltip;
  * @param <T>
  */
 public class HoveredPointActionsHelper<T> {
-  
+
   private final PointsLayer<T> host;
-  private PointsTooltip pointsTootip = new PointsTooltip();
-  
+  private PointsTooltip pointsTootip = new PointsTooltip.Builder().build();
+
   /**
-   * 
-   * @param host 
+   *
+   * @param host
    */
   public HoveredPointActionsHelper(PointsLayer<T> host) {
     this.host = host;
     this.bindHoveredActions();
   }
+
   /**
    *
    */
@@ -33,6 +34,7 @@ public class HoveredPointActionsHelper<T> {
       this.onHoveredToolTip(holder, change);
     });
   }
+
   /**
    *
    * @param hovered
@@ -40,13 +42,16 @@ public class HoveredPointActionsHelper<T> {
   private void onHoveredSelectable(HoveredPointMarkers<T> hovered) {
     List<PointMarker<T>> markers = hovered.markers;
     Node node = this.host.getNode();
-    if (this.host.selectableProperty().getValue()
-            && markers.isEmpty()) {
-      node.getParent().setCursor(Cursor.DEFAULT);
-    } else {
-      node.getParent().setCursor(Cursor.HAND);
+    Boolean selectable = this.host.selectableProperty().getValue();
+    if (selectable) {
+      if (markers.isEmpty()) {
+        node.getParent().setCursor(Cursor.DEFAULT);
+      } else {
+        node.getParent().setCursor(Cursor.HAND);
+      }
     }
   }
+
   /**
    *
    * @param holder
@@ -73,10 +78,10 @@ public class HoveredPointActionsHelper<T> {
       }
     }
   }
-  
+
   /**
-   * 
-   * @param pointsTooltip 
+   *
+   * @param pointsTooltip
    */
   void setPointsToolTip(PointsTooltip pointsTooltip) {
     this.pointsTootip = pointsTooltip;

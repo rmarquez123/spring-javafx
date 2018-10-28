@@ -55,10 +55,10 @@ public abstract class BasePointsSource<T> implements PointsSource<T> {
    * @param geomPoint
    * @return 
    */
+  @Override
   public boolean intersects(FxPoint point, FxPoint geomPoint) {
     boolean result;
     result = SpatialUtils.intersects(point, geomPoint, this.buffer);
     return result;
   }
-
 }

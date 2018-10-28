@@ -121,7 +121,7 @@ public class PointsLayer<T> extends BaseLayer {
    *
    * @param pointsTooltipBuilder
    */
-  public void setTooltip(PointMarkerTooltipBuilder pointsTooltipBuilder) {
+  public void setTooltip(PointsTooltip.Builder pointsTooltipBuilder) {
     PointsTooltip pointsTooltip = pointsTooltipBuilder.build();
     this.hoveredActionsHelper.setPointsToolTip(pointsTooltip);
   }
