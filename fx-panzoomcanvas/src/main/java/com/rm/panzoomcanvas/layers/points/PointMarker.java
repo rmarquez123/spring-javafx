@@ -10,7 +10,7 @@ import javafx.util.StringConverter;
  * @author rmarquez
  * @param <T>
  */
-public class PointMarker<T> {
+public final class PointMarker<T> {
   
   private final T userObject;
   private final FxPoint point;

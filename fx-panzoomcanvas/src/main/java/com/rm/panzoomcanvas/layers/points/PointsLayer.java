@@ -29,12 +29,13 @@ import javafx.scene.canvas.Canvas;
  * @param <T> A user object type.
  */
 public class PointsLayer<T> extends BaseLayer {
-
+  
   private final PointSymbology symbology;
   private final PointsSource<T> source;
   private final ListProperty<PointMarker<T>> selected = new SimpleListProperty<>();
   final Property<HoveredPointMarkers<T>> hovered = new SimpleObjectProperty<>();
-  private final HoveredPointActionsHelper hoveredActionsHelper;
+  private final PointLayerCursorHelper hoveredActionsHelper;
+  private PointsTooltip<T> pointsTooltip;
   /**
    *
    * @param name
@@ -48,7 +49,8 @@ public class PointsLayer<T> extends BaseLayer {
       throw new NullPointerException("Symbology cannot be null");
     }
     this.symbology = symbology;
-    this.hoveredActionsHelper = new HoveredPointActionsHelper(this);
+    this.hoveredActionsHelper = new PointLayerCursorHelper(this);
+    
   }
   
   
@@ -122,8 +124,10 @@ public class PointsLayer<T> extends BaseLayer {
    * @param pointsTooltipBuilder
    */
   public void setTooltip(PointsTooltip.Builder pointsTooltipBuilder) {
-    PointsTooltip pointsTooltip = pointsTooltipBuilder.build();
-    this.hoveredActionsHelper.setPointsToolTip(pointsTooltip);
+    if (this.pointsTooltip != null) {
+      this.pointsTooltip.destroy(); 
+    }
+    this.pointsTooltip = pointsTooltipBuilder.build(this);
   }
 
   /**

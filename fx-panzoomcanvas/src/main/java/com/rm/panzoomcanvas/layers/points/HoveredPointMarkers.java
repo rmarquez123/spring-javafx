@@ -19,7 +19,7 @@ public class HoveredPointMarkers<T> {
    * @param mouseEvt
    * @param markers 
    */
-  public HoveredPointMarkers(LayerMouseEvent mouseEvt, List<PointMarker<T>> markers) {
+  HoveredPointMarkers(LayerMouseEvent mouseEvt, List<PointMarker<T>> markers) {
     this.markers.addAll(markers); 
     this.mouseEvent = mouseEvt;
   }
