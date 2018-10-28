@@ -2,7 +2,6 @@ package com.rm.panzoomcanvas.app;
 
 import com.rm.panzoomcanvas.Content;
 import com.rm.panzoomcanvas.FxCanvas;
-import com.rm.panzoomcanvas.ParamsIntersects;
 import com.rm.panzoomcanvas.Layer;
 import com.rm.panzoomcanvas.components.CenterLayer;
 import com.rm.panzoomcanvas.components.PositionBar;
@@ -10,8 +9,8 @@ import com.rm.panzoomcanvas.components.VirtualBoxLayer;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.layers.line.LineLayer;
-import com.rm.panzoomcanvas.layers.line.LineLayerSource;
 import com.rm.panzoomcanvas.core.GeometryProjection;
+import com.rm.panzoomcanvas.layers.line.impl.FixedLineLayerSource;
 import com.rm.panzoomcanvas.layers.points.impl.ArrayPointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
@@ -28,7 +27,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import javafx.scene.paint.Color;
 import static javafx.application.Application.launch;
 
@@ -64,22 +62,27 @@ public class MainApp extends Application {
     ObservableList<Layer> value = mapCanvas.getContent().getLayers().getValue();
     value.add(new VirtualBoxLayer());
     value.add(new CenterLayer("center"));
-    value.add(new LineLayer("line", new LineLayerSource() {
-      private final SpatialRef sr = new MapCanvasSR();
-      Pair<FxPoint, FxPoint> points = new Pair<>(new FxPoint(0.0, 0.0, sr), new FxPoint(120.0, 120.0, sr));
-
-      @Override
-      public Pair<FxPoint, FxPoint> getFxPoints() {
-        return this.points;
-      }
-
-      @Override
-      public boolean intersects(ParamsIntersects screenPoint) {
-        return false;
-      }
-    }));
+    LineLayer lineLayer = this.getLineLayer();
+    value.add(lineLayer);
     PointsLayer pointsLayer = this.getPointsLayer();
     value.add(pointsLayer);
+  }
+  
+  /**
+   * 
+   * @param p1
+   * @param p2
+   * @return 
+   */
+  private LineLayer getLineLayer() {
+    
+    final SpatialRef sr = new MapCanvasSR();
+    FxPoint p1 = new FxPoint(0.0, 0.0, sr);
+    FxPoint p2 = new FxPoint(120.0, 120.0, sr);
+    LineLayer lineLayer = new LineLayer("line", new FixedLineLayerSource<>("line", p1, p2));
+    lineLayer.selectableProperty().setValue(Boolean.TRUE);
+    lineLayer.hoverableProperty().setValue(Boolean.TRUE);
+    return lineLayer;
   }
 
   /**

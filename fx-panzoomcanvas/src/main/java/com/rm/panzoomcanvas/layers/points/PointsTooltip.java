@@ -1,39 +1,35 @@
 package com.rm.panzoomcanvas.layers.points;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
+import com.rm.panzoomcanvas.layers.HoveredMarkers;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
 
 /**
  *
  * @author rmarquez
  * @param <T>
  */
-public final class PointsTooltip<T> {
-
-  private final PointsLayer<T> host;
+public final class PointsTooltip {
+  
+  private final PointsLayer host;
   private final ToolTipHolder holder = new ToolTipHolder();
   private final int heightOffset;
-  private final ChangeListener<HoveredPointMarkers<T>> onHoveredListener;
-
+  private final ChangeListener<? super HoveredMarkers<PointMarker<? extends Object>>> onHoveredListener;
+  
   /**
    *
    * @param builder
    * @param host
    */
-  private PointsTooltip(Builder builder, PointsLayer<T> host) {
+  private PointsTooltip(Builder builder, PointsLayer<?> host) {
     this.heightOffset = builder.heightOffset;
     this.host = host;
     this.onHoveredListener = (obs, old, change) -> onHovered(change);
-    this.host.hovered.addListener(onHoveredListener);
+    this.host.hoveredMarkersProperty().addListener(this.onHoveredListener);
   }
-
+  
   /**
    *
    * @return
@@ -41,23 +37,23 @@ public final class PointsTooltip<T> {
   int getHeightOffset() {
     return heightOffset;
   }
-  
+
   /**
    *
    */
   void destroy() {
-    this.host.hovered.removeListener(this.onHoveredListener);
+    this.host.hoveredMarkersProperty().removeListener(this.onHoveredListener);
   }
 
   /**
    *
    * @param hovered
    */
-  private void onHovered(HoveredPointMarkers<T> hovered) {
+  private void onHovered(HoveredMarkers<PointMarker<?>> hovered) {
     if (holder.tooltip != null) {
       holder.tooltip.hide();
     }
-    List<PointMarker<T>> markers = hovered.markers;
+    List<PointMarker<?>> markers = hovered.markers;
     Node node = this.host.getNode();
     for (PointMarker<?> pointMarker : markers) {
       if (node != null) {
@@ -75,41 +71,10 @@ public final class PointsTooltip<T> {
 
   /**
    *
-   * @param tooltip
-   * @param delayInSeconds
-   */
-  public static void hackTooltipStartTiming(Tooltip tooltip, double delayInSeconds) {
-
-    try {
-      Tooltip obj = tooltip;
-      Class<?> clazz = obj.getClass().getDeclaredClasses()[1];
-      Constructor<?> constructor = clazz.getDeclaredConstructor(
-              Duration.class,
-              Duration.class,
-              Duration.class,
-              boolean.class);
-      constructor.setAccessible(true);
-      Object tooltipBehavior = constructor.newInstance(
-              new Duration(delayInSeconds * 1000.0), //open
-              new Duration(5000), //visible
-              new Duration(200), //close
-              false);
-      Field fieldBehavior = obj.getClass().getDeclaredField("BEHAVIOR");
-      fieldBehavior.setAccessible(true);
-      fieldBehavior.set(obj, tooltipBehavior);
-    } catch (Exception e) {
-      Logger.getLogger(PointsTooltip.class.getName()).log(Level.WARNING, "message", e);
-    }
-
-  }
-
-  /**
-   *
    */
   public static class Builder {
-
+    
     private int heightOffset = 44;
-
     /**
      *
      * @param heightOffset
@@ -122,11 +87,10 @@ public final class PointsTooltip<T> {
 
     /**
      *
-     * @param <T>
      * @param host
      * @return
      */
-    public <T> PointsTooltip<T> build(PointsLayer<T> host) {
+    public PointsTooltip build(PointsLayer<?> host) {
       return new PointsTooltip(this, host);
     }
   }

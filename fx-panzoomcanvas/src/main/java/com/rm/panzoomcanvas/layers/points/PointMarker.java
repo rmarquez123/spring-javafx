@@ -1,6 +1,8 @@
 package com.rm.panzoomcanvas.layers.points;
 
 import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.layers.Marker;
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -11,7 +13,7 @@ import javafx.util.StringConverter;
  * @author rmarquez
  * @param <T>
  */
-public final class PointMarker<T> {
+public final class PointMarker<T> implements Marker<T>{
 
   private final T userObject;
   private final FxPoint point;
@@ -50,9 +52,21 @@ public final class PointMarker<T> {
    *
    * @return
    */
-  public Object getUserObject() {
+  @Override
+  public T getUserObject() {
     return userObject;
   }
+  
+  /**
+   * {@inheritDoc}
+   * <p>
+   * OVERRIDE: </p>
+   */
+  @Override
+  public Geometry getJtsGeometry() {
+    return this.point.asJtsPoint();
+  }
+  
 
   /**
    *

@@ -1,10 +1,13 @@
 package com.rm.panzoomcanvas.core;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 /**
  *
  * @author rmarquez
  */
 public class SpatialUtils {
+
   
   /**
    * 
@@ -26,4 +29,16 @@ public class SpatialUtils {
     boolean result = distance <= buffer; 
     return result; 
   }
+    
+  /**
+   * 
+   * @param geom
+   * @param geomPoint
+   * @param buffer 
+   */
+  public static boolean intersects(Geometry geom, FxPoint geomPoint, double buffer) {
+    boolean result = geom.intersects(geomPoint.asJtsPoint());
+    return result; 
+  }
+  
 }

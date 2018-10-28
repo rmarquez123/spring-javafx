@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.points;
+package com.rm.panzoomcanvas.layers;
 
 import java.util.List;
 import javafx.scene.Cursor;
@@ -9,16 +9,16 @@ import javafx.scene.Node;
  * @author rmarquez
  * @param <T>
  */
-public class PointLayerCursorHelper<T> {
-
-  private final PointsLayer<T> host;
+public class LayerCursorHelper<T> {
+  
+  private final LayerHoverSelect<?, T> hoverSelect;
   
   /**
    *
    * @param host
    */
-  PointLayerCursorHelper(PointsLayer<T> host) {
-    this.host = host;
+  LayerCursorHelper(LayerHoverSelect<?, T> hoverSelect) {
+    this.hoverSelect = hoverSelect;
     this.bindHoveredActions();
   }
 
@@ -26,9 +26,8 @@ public class PointLayerCursorHelper<T> {
    *
    */
   private void bindHoveredActions() {
-    this.host.hovered.addListener((obs, old, change) -> {
+    this.hoverSelect.hovered().addListener((obs, old, change) -> {
       this.onHoveredSelectable(change);
-      
     });
   }
 
@@ -36,10 +35,10 @@ public class PointLayerCursorHelper<T> {
    *
    * @param hovered
    */
-  private void onHoveredSelectable(HoveredPointMarkers<T> hovered) {
-    List<PointMarker<T>> markers = hovered.markers;
-    Node node = this.host.getNode();
-    Boolean selectable = this.host.selectableProperty().getValue();
+  private void onHoveredSelectable(HoveredMarkers<?> hovered) {
+    List<Marker<T>> markers = (List<Marker<T>>) hovered.markers;
+    Node node = this.hoverSelect.getNode();
+    Boolean selectable = this.hoverSelect.selectableProperty().getValue();
     if (selectable) {
       if (markers.isEmpty()) {
         node.getParent().setCursor(Cursor.DEFAULT);

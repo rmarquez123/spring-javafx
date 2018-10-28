@@ -1,6 +1,5 @@
 package com.rm.panzoomcanvas;
 
-import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

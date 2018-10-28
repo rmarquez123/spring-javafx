@@ -34,6 +34,7 @@ public abstract class BaseLayer implements Layer {
     this.name = name;
     this.geometry = layerGeometry;
   }
+  
 
   /**
    * {@inheritDoc}

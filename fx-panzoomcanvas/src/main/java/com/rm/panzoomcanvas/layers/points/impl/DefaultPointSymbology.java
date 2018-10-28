@@ -2,16 +2,14 @@ package com.rm.panzoomcanvas.layers.points.impl;
 
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.layers.DrawArgs;
-import com.rm.panzoomcanvas.layers.points.HoveredPointMarkers;
+import com.rm.panzoomcanvas.layers.HoveredMarkers;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
 import com.rm.panzoomcanvas.layers.points.PointSymbology;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -219,7 +217,7 @@ public class DefaultPointSymbology implements PointSymbology {
       if (!layer.hoverableProperty().getValue()) {
         return false;
       }
-      HoveredPointMarkers<?> hoveredMarkers = layer.hoveredMarkersProperty().getValue();
+      HoveredMarkers<?> hoveredMarkers = layer.hoveredMarkersProperty().getValue();
       if (hoveredMarkers == null) {
         return false;
       }

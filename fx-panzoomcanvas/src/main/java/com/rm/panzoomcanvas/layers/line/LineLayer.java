@@ -19,11 +19,13 @@ import javafx.util.Pair;
 /**
  *
  * @author rmarquez
+ * @param <T>
  */
-public class LineLayer extends BaseLayer {
+public class LineLayer<T> extends BaseLayer {
   
   private final Property<Color> color = new SimpleObjectProperty<>(Color.BLUE);
   private final LineLayerSource source;
+  
   /**
    *
    * @param name
@@ -34,7 +36,7 @@ public class LineLayer extends BaseLayer {
     this.source = source;
     
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -44,7 +46,7 @@ public class LineLayer extends BaseLayer {
   protected Node createLayerCanvas(double width, double height) {
     return new Canvas(width, height);
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -60,7 +62,7 @@ public class LineLayer extends BaseLayer {
             .projectVirtualToScreen(virtualEnv, screenEnv);
     return layerScreenEnv;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -70,7 +72,8 @@ public class LineLayer extends BaseLayer {
   protected void onDraw(DrawArgs args) {
     Projector projector = args.getCanvas().getProjector();
     GraphicsContext g = ((Canvas) args.getLayerCanvas()).getGraphicsContext2D();
-    Pair<FxPoint, FxPoint> points = this.source.getFxPoints();
+    LineMarker<T> lineMarker = this.source.getLineMarker();
+    Pair<FxPoint, FxPoint> points = lineMarker.getPoints();
     ScreenPoint a = projector.projectGeoToScreen(points.getKey(), args.getScreenEnv());
     ScreenPoint b = projector.projectGeoToScreen(points.getValue(), args.getScreenEnv());
     g.setStroke(this.color.getValue());

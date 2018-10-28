@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.points;
+package com.rm.panzoomcanvas.layers;
 
 import com.rm.panzoomcanvas.LayerMouseEvent;
 import java.util.ArrayList;
@@ -7,11 +7,11 @@ import java.util.List;
 /**
  *
  * @author rmarquez
- * @param <T>
+ * @param <TMarker>
  */
-public class HoveredPointMarkers<T> {
-  
-  public final List<PointMarker<T>> markers = new ArrayList<>();
+public class HoveredMarkers<TMarker extends Marker<?>> {
+    
+  public final List<TMarker> markers = new ArrayList<>();
   public final LayerMouseEvent mouseEvent;
 
   /**
@@ -19,7 +19,7 @@ public class HoveredPointMarkers<T> {
    * @param mouseEvt
    * @param markers 
    */
-  HoveredPointMarkers(LayerMouseEvent mouseEvt, List<PointMarker<T>> markers) {
+  HoveredMarkers(LayerMouseEvent mouseEvt, List<TMarker> markers) {
     this.markers.addAll(markers); 
     this.mouseEvent = mouseEvt;
   }
