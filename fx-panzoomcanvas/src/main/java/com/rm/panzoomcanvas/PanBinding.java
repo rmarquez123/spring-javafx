@@ -5,6 +5,7 @@ import com.rm.panzoomcanvas.core.ScreenPoint;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Cursor;
+import javafx.scene.input.MouseEvent;
 
 /**
  *
@@ -31,15 +32,17 @@ public class PanBinding {
             center.setValue(newCenter);
           }
         });
-        newParent.setOnDragDetected((event) -> {
+        
+        newParent.addEventHandler(MouseEvent.DRAG_DETECTED, (event) -> {
           mapCanvas.getParent().setCursor(Cursor.MOVE);
           lastMouse.setValue(null);
         });
-        newParent.setOnMouseReleased((event) -> {
+        
+        newParent.addEventHandler(MouseEvent.MOUSE_RELEASED, (event) -> {
           mapCanvas.getParent().setCursor(Cursor.DEFAULT);
           lastMouse.setValue(null);
         });
-        newParent.setOnMouseDragged((event) -> {
+        newParent.addEventHandler(MouseEvent.MOUSE_DRAGGED, (event) -> {
           ScreenPoint last = new ScreenPoint(event.getX(), event.getY());
           lastMouse.setValue(last);
         });
