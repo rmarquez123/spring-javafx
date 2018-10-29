@@ -13,7 +13,7 @@ import javafx.util.StringConverter;
  * @author rmarquez
  * @param <T>
  */
-public final class PointMarker<T> implements Marker<T>{
+public final class PointMarker<T> implements Marker<T> {
 
   private final T userObject;
   private final FxPoint point;
@@ -43,7 +43,7 @@ public final class PointMarker<T> implements Marker<T>{
     }
     return result;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -62,7 +62,7 @@ public final class PointMarker<T> implements Marker<T>{
   public T getUserObject() {
     return userObject;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -72,7 +72,6 @@ public final class PointMarker<T> implements Marker<T>{
   public Geometry getJtsGeometry() {
     return this.point.asJtsPoint();
   }
-  
 
   /**
    *
@@ -125,7 +124,7 @@ public final class PointMarker<T> implements Marker<T>{
     }
     return true;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>

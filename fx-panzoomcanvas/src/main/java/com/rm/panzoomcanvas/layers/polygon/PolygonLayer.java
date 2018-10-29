@@ -1,54 +1,98 @@
 package com.rm.panzoomcanvas.layers.polygon;
 
 import com.rm.panzoomcanvas.FxCanvas;
+import com.rm.panzoomcanvas.LayerMouseEvent;
+import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.ScreenEnvelope;
+import com.rm.panzoomcanvas.core.ScreenPoint;
+import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.core.VirtualEnvelope;
+import com.rm.panzoomcanvas.core.VirtualPoint;
 import com.rm.panzoomcanvas.layers.BaseLayer;
 import com.rm.panzoomcanvas.layers.DrawArgs;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import com.rm.panzoomcanvas.layers.HoveredMarkers;
+import com.rm.panzoomcanvas.layers.LayerHoverSelect;
+import com.rm.panzoomcanvas.layers.LayerTooltip;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 /**
  *
  * @author rmarquez
  */
-public class PolygonLayer extends BaseLayer {
+public class PolygonLayer<T> extends BaseLayer {
 
-  private final Property<Color> strokeColorProperty = new SimpleObjectProperty<>(Color.BLUE);
-  private final Property<Color> fillColorProperty = new SimpleObjectProperty<>(Color.BLUE);
-  private final PolygonSource source;
-  
+  private final PolygonSource<T> source;
+  private final PolygonSymbology symbology;
+  private LayerTooltip tooltip;
+  private final LayerHoverSelect<PolygonMarker<T>, T> hoverSelect;
+
   /**
-   * 
+   *
    * @param name
-   * @param source 
+   * @param source
    */
-  public PolygonLayer(String name, PolygonSource source) {
+  public PolygonLayer(String name, PolygonSymbology symbology, PolygonSource<T> source) {
     super(name, source);
     this.source = source;
+    this.symbology = symbology;
+
+    PolygonLayer<T> self = this;
+    this.hoverSelect = new LayerHoverSelect<PolygonMarker<T>, T>(this) {
+      @Override
+      protected List<PolygonMarker<T>> getMouseEvtList(LayerMouseEvent e) {
+        return self.getMouseEvtList(e);
+      }
+    };
   }
-    
+
   /**
-   * 
-   * @return 
+   *
+   * @param pointsTooltipBuilder
    */
-  public Property<Color> strokeColorProperty() {
-    return strokeColorProperty;
+  public void setTooltip(LayerTooltip.Builder pointsTooltipBuilder) {
+    if (this.tooltip != null) {
+      this.tooltip.destroy();
+    }
+    this.tooltip = pointsTooltipBuilder.build(this.hoverSelect);
   }
-  
+
   /**
-   * 
-   * @return 
+   *
    */
-  public Property<Color> fillColorProperty() {
-    return fillColorProperty;
+  Node getNode() {
+    return this.getLayerCanvas();
   }
-  
-  
+
+  /**
+   *
+   * @return
+   */
+  public ReadOnlyProperty<HoveredMarkers<PolygonMarker<T>>> hoveredMarkersProperty() {
+    return this.hoverSelect.hovered();
+  }
+
+  /**
+   *
+   * @return
+   */
+  public ReadOnlyListProperty<PolygonMarker<T>> selectedMarkersProperty() {
+    return this.hoverSelect.selected();
+  }
+
+  /**
+   *
+   * @return
+   */
+  public PolygonSymbology getSymbology() {
+    return symbology;
+  }
+
   /**
    * {@inheritDoc}
    * <p>
@@ -58,7 +102,7 @@ public class PolygonLayer extends BaseLayer {
   protected Node createLayerCanvas(double width, double height) {
     return new Canvas(width, height);
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -73,8 +117,8 @@ public class PolygonLayer extends BaseLayer {
     ScreenEnvelope layerScreenEnv = canvas.getProjector()
             .projectVirtualToScreen(virtualEnv, screenEnv);
     return layerScreenEnv;
-  } 
-  
+  }
+
   /**
    * {@inheritDoc}
    * <p>
@@ -82,11 +126,25 @@ public class PolygonLayer extends BaseLayer {
    */
   @Override
   protected void onDraw(DrawArgs args) {
-    PolygonPoints points = this.source.getScreenPoints(args);
-    GraphicsContext g = ((Canvas) args.getLayerCanvas()).getGraphicsContext2D();
-    g.setStroke(this.strokeColorProperty.getValue());
-    g.setFill(this.fillColorProperty.getValue());
-    g.strokePolygon(points.xArray, points.yArray, points.numPoints);
-    g.fillPolygon(points.xArray, points.yArray, points.numPoints);
+    PolygonMarker<T> points = this.source.getScreenPoints(args);
+    this.symbology.apply(points, args);
+  }
+  
+  /**
+   *
+   * @param e
+   * @return
+   */
+  private List<PolygonMarker<T>> getMouseEvtList(LayerMouseEvent e) {
+    double eX = e.mouseEvt.getX();
+    double eY = e.mouseEvt.getY();
+    ScreenPoint scrnPt = new ScreenPoint(eX, eY);
+    ScreenEnvelope env = e.screenEnv;
+    VirtualPoint virtual = e.projector.projectScreenToVirtual(scrnPt, env);
+    SpatialRef spatialRef = this.source.getSpatialRef(); 
+    FxPoint refPoint = e.projector.projectVirtualToGeo(virtual.asPoint(), spatialRef);
+    boolean intersects = this.source.intersect(refPoint);
+    List<PolygonMarker<T>> result = (intersects) ? Arrays.asList(this.source.getScreenPoints(null)) : Collections.EMPTY_LIST;
+    return result;
   }
 }

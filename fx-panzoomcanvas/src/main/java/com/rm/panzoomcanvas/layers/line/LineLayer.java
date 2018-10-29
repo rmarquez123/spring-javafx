@@ -141,7 +141,7 @@ public class LineLayer<T> extends BaseLayer {
     SpatialRef spatialRef = this.source.getSpatialRef();
     FxPoint refPoint = e.projector.projectVirtualToGeo(virtual.asPoint(), spatialRef);
     boolean intersects = this.source.intersects(refPoint);
-    List result = (intersects) ? Arrays.asList(this.source.getLineMarker()) : Collections.EMPTY_LIST;
+    List<LineMarker<T>> result = (intersects) ? Arrays.asList(this.source.getLineMarker()) : Collections.EMPTY_LIST;
     return result;
   }
 }

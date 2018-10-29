@@ -13,4 +13,5 @@ public interface LayerGeometry {
    */
   public boolean intersects(ParamsIntersects args);
   
+  
 }
