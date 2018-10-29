@@ -16,7 +16,7 @@ import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
 import com.rm.panzoomcanvas.layers.LayerTooltip;
 import com.rm.panzoomcanvas.impl.line.DefaultLineSymbology;
-import com.rm.panzoomcanvas.impl.points.DefaultPointSymbology;
+import com.rm.panzoomcanvas.impl.points.PointShapeSymbology;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
@@ -98,7 +98,7 @@ public class MainApp extends Application {
     PointMarker<String> pointMarker = new PointMarker<>("Point 1", fxPoint);
     ArrayPointsSource singlePointSource = new ArrayPointsSource(pointMarker);
 
-    DefaultPointSymbology symbology = new DefaultPointSymbology();
+    PointShapeSymbology symbology = new PointShapeSymbology();
     symbology.fillColorProperty().setValue(Color.ROSYBROWN);
     symbology.strokeColorProperty().setValue(Color.BLACK);
     symbology.getSelected().fillColorProperty().setValue(Color.ANTIQUEWHITE);

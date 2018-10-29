@@ -15,28 +15,28 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
-import com.rm.panzoomcanvas.layers.points.PointShapeSymbology;
+import com.rm.panzoomcanvas.layers.points.PointSymbology;
 
 /**
  *
  * @author rmarquez
  */
-public class DefaultPointSymbology implements PointShapeSymbology {
+public class PointShapeSymbology implements PointSymbology {
   
   private final Property<PointShape> pointShapeProperty = new SimpleObjectProperty<>(PointShape.CIRCLE);
   private final Property<Color> fillColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<Color> strokeColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<Integer> lineWidthProperty = new SimpleObjectProperty<>(2);
   
-  private final DefaultPointSymbology selected;
-  private final DefaultPointSymbology hovered;
+  private final PointShapeSymbology selected;
+  private final PointShapeSymbology hovered;
   private final Map<String, Property<?>> properties = new HashMap<>();
   private final Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate;
 
   /**
    *
    */
-  public DefaultPointSymbology() {
+  public PointShapeSymbology() {
     this(null);
   }
 
@@ -44,14 +44,14 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    *
    * @param predicate
    */
-  public DefaultPointSymbology(Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate) {
+  public PointShapeSymbology(Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate) {
     if (predicate == null) {
-      this.hovered = new DefaultPointSymbology(new HoveredPredicate());
+      this.hovered = new PointShapeSymbology(new HoveredPredicate());
       this.hovered.fillColorProperty.setValue(null);
       this.hovered.lineWidthProperty.setValue(4);
       this.hovered.pointShapeProperty.setValue(null);
       this.hovered.strokeColorProperty.setValue(null);
-      this.selected = new DefaultPointSymbology(new SelectedPredicate());
+      this.selected = new PointShapeSymbology(new SelectedPredicate());
       this.selected.fillColorProperty.setValue(Color.CYAN);
       this.selected.lineWidthProperty.setValue(null);
       this.selected.pointShapeProperty.setValue(null);
@@ -71,8 +71,8 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    * @param props
    * @return
    */
-  private static DefaultPointSymbology create(Map<String, Property<?>> props) {
-    DefaultPointSymbology result = new DefaultPointSymbology();
+  private static PointShapeSymbology create(Map<String, Property<?>> props) {
+    PointShapeSymbology result = new PointShapeSymbology();
     result.fillColorProperty.setValue((Color) props.get("fillColor").getValue());
     result.strokeColorProperty.setValue((Color) props.get("strokeColor").getValue());
     result.lineWidthProperty.setValue((Integer) props.get("lineWidth").getValue());
@@ -84,7 +84,7 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    * 
    * @return 
    */
-  public DefaultPointSymbology getSelected() {
+  public PointShapeSymbology getSelected() {
     return selected;
   }
   
@@ -92,7 +92,7 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    * 
    * @return 
    */
-  public DefaultPointSymbology getHovered() {
+  public PointShapeSymbology getHovered() {
     return hovered;
   }
 
@@ -127,7 +127,7 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    */
   @Override
   public void apply(PointsLayer<?> layer, PointMarker<?> marker, DrawArgs args, ScreenPoint screenPoint) {
-    DefaultPointSymbology symbolizer = this.getMarkerSymbolizer(layer, marker);
+    PointShapeSymbology symbolizer = this.getMarkerSymbolizer(layer, marker);
     GraphicsContext g = ((Canvas) args.getLayerCanvas()).getGraphicsContext2D();
     double x1 = screenPoint.getX();
     double y1 = screenPoint.getY();
@@ -152,8 +152,8 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    * @param marker
    * @return
    */
-  private DefaultPointSymbology getMarkerSymbolizer(PointsLayer<?> layer, PointMarker<?> marker) {
-    DefaultPointSymbology symbology = override(layer, marker, this, hovered);
+  private PointShapeSymbology getMarkerSymbolizer(PointsLayer<?> layer, PointMarker<?> marker) {
+    PointShapeSymbology symbology = override(layer, marker, this, hovered);
     symbology = override(layer, marker, symbology, this.selected);
     return symbology;
   }
@@ -166,8 +166,8 @@ public class DefaultPointSymbology implements PointShapeSymbology {
    * @param other
    * @return
    */
-  static DefaultPointSymbology override(PointsLayer<?> layer, PointMarker<?> marker, DefaultPointSymbology current, DefaultPointSymbology other) {
-    DefaultPointSymbology result;
+  static PointShapeSymbology override(PointsLayer<?> layer, PointMarker<?> marker, PointShapeSymbology current, PointShapeSymbology other) {
+    PointShapeSymbology result;
     if (other.predicate == null || other.predicate.test(new Pair<>(layer, marker))) {
       HashMap<String, Property<?>> props = new HashMap<>();
       for (String key : current.properties.keySet()) {
@@ -179,9 +179,9 @@ public class DefaultPointSymbology implements PointShapeSymbology {
           props.put(key, currentProp);
         }
       }
-      result = DefaultPointSymbology.create(props);
+      result = PointShapeSymbology.create(props);
     } else {
-      result = DefaultPointSymbology.create(current.properties);
+      result = PointShapeSymbology.create(current.properties);
     }
     return result;
   }
