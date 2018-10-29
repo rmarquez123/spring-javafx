@@ -1,6 +1,6 @@
-package com.rm.panzoomcanvas.layers.impl.points;
+package com.rm.panzoomcanvas.impl.points;
 
-import com.rm.panzoomcanvas.layers.impl.points.PointShape;
+import com.rm.panzoomcanvas.impl.points.PointShape;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.layers.HoveredMarkers;

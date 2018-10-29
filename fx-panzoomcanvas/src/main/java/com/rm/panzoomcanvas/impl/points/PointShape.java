@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.impl.points;
+package com.rm.panzoomcanvas.impl.points;
 
 /**
  *
