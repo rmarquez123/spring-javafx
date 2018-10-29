@@ -1,10 +1,10 @@
-package com.rm.panzoomcanvas.layers.impl;
+package com.rm.panzoomcanvas.layers.impl.points;
 
+import com.rm.panzoomcanvas.layers.impl.points.PointShape;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.layers.HoveredMarkers;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
-import com.rm.panzoomcanvas.layers.points.PointSymbology;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,22 +15,23 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
+import com.rm.panzoomcanvas.layers.points.PointShapeSymbology;
 
 /**
  *
  * @author rmarquez
  */
-public class DefaultPointSymbology implements PointSymbology {
-
+public class DefaultPointSymbology implements PointShapeSymbology {
+  
   private final Property<PointShape> pointShapeProperty = new SimpleObjectProperty<>(PointShape.CIRCLE);
   private final Property<Color> fillColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<Color> strokeColorProperty = new SimpleObjectProperty<>(Color.BLUE);
-  public final DefaultPointSymbology selected;
-  public final DefaultPointSymbology hovered;
-
-  private final Map<String, Property<?>> properties = new HashMap<>();
   private final Property<Integer> lineWidthProperty = new SimpleObjectProperty<>(2);
-  public final Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate;
+  
+  private final DefaultPointSymbology selected;
+  private final DefaultPointSymbology hovered;
+  private final Map<String, Property<?>> properties = new HashMap<>();
+  private final Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate;
 
   /**
    *
@@ -65,15 +66,6 @@ public class DefaultPointSymbology implements PointSymbology {
     this.properties.put("lineWidth", this.lineWidthProperty);
     this.predicate = predicate;
   }
-
-  public DefaultPointSymbology getSelected() {
-    return selected;
-  }
-
-  public DefaultPointSymbology getHovered() {
-    return hovered;
-  }
-
   /**
    *
    * @param props
@@ -86,6 +78,22 @@ public class DefaultPointSymbology implements PointSymbology {
     result.lineWidthProperty.setValue((Integer) props.get("lineWidth").getValue());
     result.pointShapeProperty.setValue((PointShape) props.get("pointShape").getValue());
     return result;
+  }
+    
+  /**
+   * 
+   * @return 
+   */
+  public DefaultPointSymbology getSelected() {
+    return selected;
+  }
+  
+  /**
+   * 
+   * @return 
+   */
+  public DefaultPointSymbology getHovered() {
+    return hovered;
   }
 
   /**

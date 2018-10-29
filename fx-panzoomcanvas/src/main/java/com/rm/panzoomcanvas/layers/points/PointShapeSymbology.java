@@ -7,7 +7,7 @@ import com.rm.panzoomcanvas.layers.DrawArgs;
  *
  * @author rmarquez
  */
-public interface PointSymbology {
+public interface PointShapeSymbology {
 
   /**
    *

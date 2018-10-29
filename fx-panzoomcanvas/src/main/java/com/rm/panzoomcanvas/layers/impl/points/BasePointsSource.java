@@ -1,4 +1,4 @@
-package com.rm.panzoomcanvas.layers.impl;
+package com.rm.panzoomcanvas.layers.impl.points;
 
 import com.rm.panzoomcanvas.ParamsIntersects;
 import com.rm.panzoomcanvas.core.FxPoint;

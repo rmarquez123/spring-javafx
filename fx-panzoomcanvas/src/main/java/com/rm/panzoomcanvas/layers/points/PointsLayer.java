@@ -28,7 +28,7 @@ import javafx.scene.canvas.Canvas;
  */
 public class PointsLayer<T> extends BaseLayer {
   
-  private final PointSymbology symbology;
+  private final PointShapeSymbology symbology;
   private final PointsSource<T> source;
   private LayerTooltip tooltip;
   private final LayerHoverSelect<PointMarker<T>, T> hoverSelect;
@@ -39,7 +39,7 @@ public class PointsLayer<T> extends BaseLayer {
    * @param symbology
    * @param source
    */
-  public PointsLayer(String name, PointSymbology symbology, PointsSource<T> source) {
+  public PointsLayer(String name, PointShapeSymbology symbology, PointsSource<T> source) {
     super(name, source);
     this.source = source;
     if (symbology == null) {

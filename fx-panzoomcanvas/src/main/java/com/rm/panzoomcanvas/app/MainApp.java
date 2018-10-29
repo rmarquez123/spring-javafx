@@ -10,13 +10,13 @@ import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.SpatialRef;
 import com.rm.panzoomcanvas.layers.line.LineLayer;
 import com.rm.panzoomcanvas.core.GeometryProjection;
-import com.rm.panzoomcanvas.layers.impl.FixedLineLayerSource;
-import com.rm.panzoomcanvas.layers.impl.ArrayPointsSource;
+import com.rm.panzoomcanvas.layers.impl.line.FixedLineLayerSource;
+import com.rm.panzoomcanvas.layers.impl.points.ArrayPointsSource;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
 import com.rm.panzoomcanvas.layers.LayerTooltip;
-import com.rm.panzoomcanvas.layers.impl.DefaultLineSymbology;
-import com.rm.panzoomcanvas.layers.impl.DefaultPointSymbology;
+import com.rm.panzoomcanvas.layers.impl.line.DefaultLineSymbology;
+import com.rm.panzoomcanvas.layers.impl.points.DefaultPointSymbology;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
@@ -101,7 +101,7 @@ public class MainApp extends Application {
     DefaultPointSymbology symbology = new DefaultPointSymbology();
     symbology.fillColorProperty().setValue(Color.ROSYBROWN);
     symbology.strokeColorProperty().setValue(Color.BLACK);
-    symbology.selected.fillColorProperty().setValue(Color.ANTIQUEWHITE);
+    symbology.getSelected().fillColorProperty().setValue(Color.ANTIQUEWHITE);
     
     PointsLayer pointsLayer = new PointsLayer("points", symbology, singlePointSource);
     pointsLayer.hoverableProperty().setValue(Boolean.TRUE);
