@@ -2,7 +2,7 @@ package com.rm.springjavafx.bindings;
 
 import com.rm.datasources.Invoker;
 import com.rm.springjavafx.components.*;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import javafx.scene.control.Button;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;

@@ -3,7 +3,7 @@ package com.rm.springjavafx.table;
 import com.rm.springjavafx.converters.Converter;
 import com.rm.datasources.DataSource;
 import com.rm.datasources.RecordValue;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

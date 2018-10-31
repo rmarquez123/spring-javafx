@@ -1,6 +1,6 @@
 package com.rm.springjavafx.bindings;
 
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import java.util.Objects;
 import javafx.scene.Node;
 import javafx.scene.control.SingleSelectionModel;

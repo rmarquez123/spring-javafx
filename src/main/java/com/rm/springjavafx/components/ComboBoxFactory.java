@@ -2,7 +2,7 @@ package com.rm.springjavafx.components;
 
 import com.rm.springjavafx.converters.Converter;
 import com.rm.datasources.DataSource;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;

@@ -1,7 +1,7 @@
 package com.rm.springjavafx.components;
 
 import com.rm.springjavafx.SpringFxUtils;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;

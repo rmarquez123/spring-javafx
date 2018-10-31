@@ -1,7 +1,7 @@
 package com.rm.springjavafx.tree;
 
 import com.rm.datasources.RecordValue;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -4,7 +4,7 @@ import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.converters.Converter;
 import com.rm.springjavafx.properties.ElementSelectableListProperty;
 import com.rm.springjavafx.properties.ListItem;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import java.util.List;
 import java.util.Objects;
 import javafx.scene.Parent;

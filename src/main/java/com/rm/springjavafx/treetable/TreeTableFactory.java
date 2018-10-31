@@ -4,7 +4,7 @@ import com.rm.datasources.RecordValue;
 import com.rm.springjavafx.tree.LevelCellFactory;
 import com.rm.springjavafx.tree.TreeModel;
 import com.rm.springjavafx.tree.TreeNode;
-import com.rm.testrmfxmap.javafx.FxmlInitializer;
+import com.rm.springjavafx.FxmlInitializer;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.Property;
