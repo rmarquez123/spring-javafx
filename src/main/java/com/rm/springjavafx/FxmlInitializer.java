@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -19,7 +20,9 @@ import org.springframework.context.ApplicationContext;
  * @author rmarquez
  */
 public class FxmlInitializer implements InitializingBean {
-
+  @Autowired 
+  ApplicationContext context;
+  
   private final List<String> fxmlList = new ArrayList<>();
   private final Map<String, Parent> rootNodes = new HashMap<>();
   private String sceneRoot;
@@ -128,6 +131,9 @@ public class FxmlInitializer implements InitializingBean {
    * @return 
    */
   public Parent getRoot(String fxml) {
+    if (!this.initialized) {
+      this.initializeRoots(this.context);
+    }
     return this.rootNodes.get(fxml); 
   }
 
