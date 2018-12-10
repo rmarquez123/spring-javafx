@@ -418,4 +418,14 @@
     </xsd:complexType>
   </xsd:element>
   
+  <xsd:element name="content-panel"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="parentFxml" type="xsd:string"/>
+      <xsd:attribute name="parentNode" type="xsd:string"/>
+      <xsd:attribute name="childFxml" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
 </xsd:schema>

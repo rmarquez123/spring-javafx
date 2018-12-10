@@ -20,17 +20,16 @@ import org.springframework.context.ApplicationContextAware;
  * @author rmarquez
  */
 public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, InitializingBean, ApplicationContextAware {
-    
-  
+
   private String dbConnectionRef;
-  private String queryFile; 
-  private String idField; 
-  private QueryParameters queryParams; 
+  private String queryFile;
+  private String idField;
+  private QueryParameters queryParams;
   private ApplicationContext appContext;
-  
+
   /**
-   * 
-   * @param queryParams 
+   *
+   * @param queryParams
    */
   public void setQueryParams(QueryParameters queryParams) {
     this.queryParams = queryParams;
@@ -47,49 +46,52 @@ public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, Initial
   public void setIdField(String idField) {
     this.idField = idField;
   }
-  
 
   @Override
   public void afterPropertiesSet() throws Exception {
     if (this.dbConnectionRef == null) {
-      throw new NullPointerException("db connection cannot be null"); 
+      throw new NullPointerException("db connection cannot be null");
     }
     if (this.queryFile == null) {
-      throw new NullPointerException("query file cannot be null"); 
+      throw new NullPointerException("query file cannot be null");
     }
     if (this.idField == null || this.idField.isEmpty()) {
-      throw new IllegalStateException("Id field cannot be null or empty"); 
+      throw new IllegalStateException("Id field cannot be null or empty");
     }
   }
-  
-  
+
   /**
-   * 
-   * @return
-   * @throws Exception 
+   *
+   * @return @throws Exception
    */
   @Override
   public SqlDataSource getObject() throws Exception {
     DbConnection connection = (DbConnection) this.appContext.getBean(this.dbConnectionRef);
     String queryString = this.getQueryString();
-    RecordValueQuery query = new RecordValueQuery(this.idField, queryString); 
-    SqlDataSource result = new SqlDataSource(connection, query, this.queryParams); 
-    return result; 
+    RecordValueQuery query = new RecordValueQuery(this.idField, queryString);
+    SqlDataSource result = new SqlDataSource(connection, query, this.queryParams);
+    return result;
   }
 
+  /**
+   * Get the query string from the {@linkplain #queryFile}.
+   *
+   * @return the query string.
+   * @throws Exception if the resource file does not exists.
+   */
   private String getQueryString() throws IOException {
     InputStream r = this.getClass().getClassLoader().getResourceAsStream(this.queryFile);
     if (r == null) {
-      throw new IllegalStateException("File does not exist : '" + this.queryFile + "'"); 
+      throw new IllegalStateException("File does not exist : '" + this.queryFile + "'");
     }
     List<String> lines = IOUtils.readLines(r, Charset.forName("UTF-8"));
     String query = String.join("\n", lines);
     return query;
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   @Override
   public Class<?> getObjectType() {
@@ -100,5 +102,5 @@ public class SqlDataSourceFactory implements FactoryBean<SqlDataSource>, Initial
   public void setApplicationContext(ApplicationContext ac) throws BeansException {
     this.appContext = ac;
   }
-  
+
 }

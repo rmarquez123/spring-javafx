@@ -1,6 +1,7 @@
 package com.rm.springjavafx.tree;
 
 import com.rm.datasources.DataSource;
+import com.rm.datasources.RecordValue;
 
 /**
  *
@@ -19,7 +20,7 @@ public class TreeDataSource {
     this.level = level;
   }
 
-  public void setDatasource(DataSource datasource) {
+  public void setDatasource(DataSource<RecordValue> datasource) {
     this.datasource = datasource;
   }
 
@@ -27,7 +28,7 @@ public class TreeDataSource {
     return level;
   }
 
-  public DataSource getDatasource() {
+  public DataSource<RecordValue> getDatasource() {
     return datasource;
   }
 

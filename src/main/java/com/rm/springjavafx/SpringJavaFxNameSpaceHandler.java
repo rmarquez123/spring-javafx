@@ -2,6 +2,7 @@ package com.rm.springjavafx;
 
 import com.rm.springjavafx.properties.ListPropertyBeanDefParser;
 import com.rm.springjavafx.bindings.ButtonBindBeanDefParser;
+import com.rm.springjavafx.bindings.ContentPanelBeanDefParser;
 import com.rm.springjavafx.bindings.TabsBindingBeanDefParser;
 import com.rm.springjavafx.components.ComboBoxBeanDefParser;
 import com.rm.springjavafx.components.DatePickerBeanDefParser;
@@ -47,6 +48,7 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     
     this.registerBeanDefinitionParser("button-bind", new ButtonBindBeanDefParser());
     this.registerBeanDefinitionParser("tabs-binding", new TabsBindingBeanDefParser());
+    this.registerBeanDefinitionParser("content-panel", new ContentPanelBeanDefParser());
     
   }
 }

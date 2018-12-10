@@ -17,63 +17,61 @@ import javafx.collections.ObservableList;
 public abstract class AbstractDataSource<T> implements DataSource<T> {
   
   protected ListProperty<T> records = new SimpleListProperty<>();
-  
+
   /**
-   * 
+   *
    * @param <E>
    * @param items
-   * @param converter 
+   * @param converter
    */
   @Override
   public final <E> void bind(ObservableList<E> items, Converter<T, E> converter) {
-    this.records.addListener((obs, old, change)->{
+    this.records.addListener((obs, old, change) -> {
       this.setValues(items, change, converter);
     });
     this.setValues(items, records.getValue(), converter);
   }
-  
-  
-  private <E> void setValues(ObservableList<E> items, ObservableList<T> change, Converter<T, E> converter) {
-    items.clear();
-    List<E> mapped = change.stream().map((c)->{
-      return converter.convert(c);
-    }).collect(Collectors.toList());
-    items.addAll(mapped);
-  }
-  
+
   /**
-   * 
+   *
    * @param <E>
    * @param items
-   * @param converter 
+   * @param converter
    */
   @Override
   public final <E> void bind(ListProperty<E> items, Converter<T, E> converter) {
-    this.records.addListener((obs, old, change)->{
+    this.records.addListener((obs, old, change) -> {
       items.clear();
-      List<E> mapped = change.stream().map((c)->{
+      List<E> mapped = change.stream().map((c) -> {
         return converter.convert(c);
-      }).collect(Collectors.toList()); 
+      }).collect(Collectors.toList());
       items.setValue(FXCollections.observableArrayList(mapped));
     });
   }
-  
+
   /**
-   * 
-   * @param records 
+   *
+   * @param records
    */
   protected void setRecords(List<T> records) {
     this.records.setValue(FXCollections.observableArrayList(records));
-  } 
-  
+  }
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   @Override
   public ListProperty<T> listProperty() {
     return this.records;
   }
-  
-  
+
+  private <E> void setValues(ObservableList<E> items, ObservableList<T> change, Converter<T, E> converter) {
+    items.clear();
+    List<E> mapped = change.stream().map((c) -> {
+      return converter.convert(c);
+    }).collect(Collectors.toList());
+    items.addAll(mapped);
+  }
+
 }

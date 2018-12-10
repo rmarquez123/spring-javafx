@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.property.ListProperty;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -25,7 +26,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
 
   @Autowired
   FxmlInitializer fxmlInitializer;
-
+  
   private String id;
   private String fxml;
   private String fxmlId;
@@ -70,7 +71,6 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
   public TreeView getObject() throws Exception {
     TreeView<Object> result = (TreeView) this.fxmlInitializer.getNode(fxml, fxmlId);
     TreeItem<Object> rootItem = new TreeItem<>("Inbox");
-    this.addTreeItems(rootItem);
     result.setRoot(rootItem);
     Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>(); 
     for (LevelCellFactory cellFactory : cellFactories) {
@@ -96,6 +96,14 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
         }
       }
     });
+    for (int level = 0; level < this.treeModel.getNumberOfLevels(); level++) {
+      ListProperty listProperty = this.treeModel.getNodes(level); 
+      listProperty.addListener((obs, old, change)->{
+        result.getRoot().getChildren().clear();
+        this.addTreeItems(rootItem);
+      });
+    }
+    this.addTreeItems(rootItem);
     return result;
   }
 
@@ -106,7 +114,6 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
    */
   private void addTreeItems(TreeItem<Object> parentTreeItem) {
     List<TreeNode> childNodes = this.getChildNodes(parentTreeItem);
-
     for (TreeNode node : childNodes) {
       TreeItem<Object> treeItem = new TreeItem<>();
       treeItem.setValue(node);
@@ -117,14 +124,15 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
 
   private List<TreeNode> getChildNodes(TreeItem<Object> rootItem) {
     Object val = rootItem.getValue();
-    List<TreeNode> nodes;
+    List<TreeNode> result;
     if (val instanceof TreeNode) {
-      nodes = this.treeModel.getNodes((TreeNode) val);
+      result = this.treeModel.getNodes((TreeNode) val);
     } else {
       int level = 0;
-      nodes = this.treeModel.getNodes(level);
+      ListProperty nodesProperty = this.treeModel.getNodes(level);
+      result = nodesProperty.getValue();
     }
-    return nodes;
+    return result;
   }
 
   /**

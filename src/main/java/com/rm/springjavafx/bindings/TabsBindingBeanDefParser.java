@@ -26,7 +26,6 @@ public class TabsBindingBeanDefParser extends AbstractBeanDefinitionParser {
   @Override
   protected AbstractBeanDefinition parseInternal(Element elmnt, ParserContext pc) {
     BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(TabsBinding.class);
-    
     String id = elmnt.getAttribute(ID_ATTRIBUTE);
     if (id != null && !id.isEmpty()) {
       result.addPropertyValue(ID_ATTRIBUTE, id); 

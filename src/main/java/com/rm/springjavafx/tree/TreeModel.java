@@ -1,7 +1,7 @@
 package com.rm.springjavafx.tree;
 
-import com.rm.datasources.RecordValue;
 import java.util.List;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 
 /**
@@ -53,7 +53,12 @@ public interface TreeModel<T> {
    * @return 
    */
   public TreeNode<T> getNode(TreeNode<T> parentNode, Object idValue); 
-
-  public List<TreeNode<T>> getNodes(int level);
+  
+  /**
+   * 
+   * @param level
+   * @return 
+   */
+  public ListProperty<TreeNode<T>> getNodes(int level);
 
 }

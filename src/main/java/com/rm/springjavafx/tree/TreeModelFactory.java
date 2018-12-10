@@ -1,6 +1,5 @@
 package com.rm.springjavafx.tree;
 
-import com.rm.datasources.DataSource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +45,12 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
       Integer level = link.getLevel();
       linksMap.put(level, link);
     }
-    int level = -1;
+    int level;
     for (TreeDataSource treeDs : this.datasources) {
       level = treeDs.getLevel();
       ListProperty prop = treeDs.getDatasource().listProperty();
       Link link = (level == 0) ? null : linksMap.get(level);
-      result.addLevel(id, link, prop);
+      result.addLevel(this.id, link, prop);
     }
     return result;
   }

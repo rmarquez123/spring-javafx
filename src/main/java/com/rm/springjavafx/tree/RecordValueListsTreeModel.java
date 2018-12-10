@@ -14,7 +14,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 
 /**
  *
@@ -22,7 +21,7 @@ import javafx.collections.transformation.FilteredList;
  */
 public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
 
-  private final ListProperty<ListProperty<TreeNode<RecordValue>>> recordValues = new SimpleListProperty<>(FXCollections.observableArrayList());
+  private final ListProperty<ListProperty<TreeNode<RecordValue>>> treeNodes = new SimpleListProperty<>(FXCollections.observableArrayList());
   private final IntegerProperty numLevelsProperty = new SimpleIntegerProperty();
   private final Map<Integer, String> idFields = new HashMap<>();
   private final Map<Integer, Link> links = new HashMap<>();
@@ -31,8 +30,8 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
    *
    */
   public RecordValueListsTreeModel() {
-    this.recordValues.addListener((obs, old, change) -> {
-      this.numLevelsProperty.setValue(this.recordValues.size());
+    this.treeNodes.addListener((obs, old, change) -> {
+      this.numLevelsProperty.setValue(this.treeNodes.size());
     });
   }
 
@@ -40,19 +39,22 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
    *
    * @param idField
    * @param link
-   * @param records
+   * @param recordsProperty
    */
-  public void addLevel(String idField, Link link, ListProperty<RecordValue> records) {
+  public void addLevel(String idField, Link link, ListProperty<RecordValue> recordsProperty) {
     int level = this.getNumberOfLevels();
     if (level > 0) {
       link.setLevel(level);
       this.links.put(level, link);
     }
     this.idFields.put(level, idField);
-    List<TreeNode<RecordValue>> a = records.getValue().stream().map((r) -> new TreeNode<>(level, r))
-            .collect(Collectors.toList());
-    SimpleListProperty<TreeNode<RecordValue>> listProp = new SimpleListProperty<>(FXCollections.observableArrayList(a));
-    this.recordValues.getValue().add(listProp);
+    recordsProperty.getClass().getGenericInterfaces();
+    recordsProperty.getClass().getGenericSuperclass();
+    recordsProperty.addListener((obs, old, change) -> {
+      this.setTreeNodes(level, change);
+    });
+    List<RecordValue> records = recordsProperty.getValue();
+    this.setTreeNodes(level, records);
   }
 
   /**
@@ -76,7 +78,7 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
 
   @Override
   public TreeNode<RecordValue> getNode(int level, Object idValue) {
-    ListProperty<TreeNode<RecordValue>> levelRecords = this.recordValues.getValue().get(level);
+    ListProperty<TreeNode<RecordValue>> levelRecords = this.treeNodes.getValue().get(level);
     TreeNode<RecordValue> result = null;
     for (TreeNode<RecordValue> node : levelRecords.getValue()) {
       String idField = this.idFields.get(level);
@@ -99,7 +101,8 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
     int childLevel = parentLevel + 1;
     List<TreeNode<RecordValue>> result;
     if (childLevel < this.getNumberOfLevels()) {
-      List<TreeNode<RecordValue>> allChildren = this.recordValues.getValue().get(childLevel).getValue();
+      ListProperty<TreeNode<RecordValue>> childLevelNodes = this.treeNodes.getValue().get(childLevel);
+      List<TreeNode<RecordValue>> allChildren = childLevelNodes.getValue();
       Link link = this.links.get(childLevel);
       result = allChildren.stream().filter((TreeNode<RecordValue> child) -> {
         return link.isAssociated(parentNode, child);
@@ -137,8 +140,41 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
    * @return
    */
   @Override
-  public List<TreeNode<RecordValue>> getNodes(int level) {
-    return this.recordValues.get(level).getValue();
+  public ListProperty<TreeNode<RecordValue>> getNodes(int level) {
+    ListProperty<TreeNode<RecordValue>> result;
+    if (level >= this.treeNodes.size()) {
+      if (level == 0) {
+        result = new SimpleListProperty<>();
+      } else {
+        throw new IllegalArgumentException("Level index exceeds size. Check args : {"
+                + "level = " + level
+                + ", size = " + this.treeNodes.size()
+                + "}");
+      }
+    } else {
+      result = this.treeNodes.getValue().get(level);
+    }
+    return result;
   }
 
+  /**
+   *
+   * @param records
+   * @param level
+   */
+  private void setTreeNodes(int level, List<RecordValue> records) {
+    ObservableList<TreeNode<RecordValue>> result;
+    if (records != null) {
+      List<TreeNode<RecordValue>> a = records.stream().map((r) -> new TreeNode<>(level, r))
+              .collect(Collectors.toList());
+      result = FXCollections.observableArrayList(a);
+    } else {
+      result = FXCollections.emptyObservableList();
+    }
+    if (level >= this.treeNodes.getValue().size()) {
+      this.treeNodes.getValue().add(new SimpleListProperty<>(result));
+    } else {
+      this.treeNodes.getValue().get(level).setValue(result);
+    }
+  }
 }

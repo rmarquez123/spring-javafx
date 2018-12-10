@@ -86,14 +86,12 @@ public final class SpringFxUtils {
       TitledPane titledPane = (TitledPane) parent;
       Node content = titledPane.getContent();
       nodeId = content.idProperty().get();
-
       if (nodeId != null && nodeId.equals(id)) {
         return (T) content;
       }
 
       if (content instanceof Parent) {
         T child = getChildByID((Parent) content, id);
-
         if (child != null) {
           return child;
         }
@@ -102,6 +100,7 @@ public final class SpringFxUtils {
 
     for (Node node : parent.getChildrenUnmodifiable()) {
       nodeId = node.idProperty().get();
+      node.getProperties();
       if (nodeId != null && nodeId.equals(id)) {
         return (T) node;
       }
