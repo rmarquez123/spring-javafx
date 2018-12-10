@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.rm.panzoomcanvas.projections;
 
 import com.rm.panzoomcanvas.core.Level;
@@ -10,16 +5,13 @@ import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import com.rm.panzoomcanvas.core.VirtualPoint;
 import com.rm.panzoomcanvas.core.VirtualEnvelope;
 import com.rm.panzoomcanvas.core.ScreenPoint;
-import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
-import com.rm.panzoomcanvas.core.Point;
 import com.rm.panzoomcanvas.core.SpatialRef;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 
 /**
