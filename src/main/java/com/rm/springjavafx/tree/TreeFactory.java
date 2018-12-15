@@ -71,6 +71,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
   public TreeView getObject() throws Exception {
     TreeView<Object> result = (TreeView) this.fxmlInitializer.getNode(fxml, fxmlId);
     TreeItem<Object> rootItem = new TreeItem<>("Inbox");
+    result.showRootProperty().setValue(false);
     result.setRoot(rootItem);
     Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>(); 
     for (LevelCellFactory cellFactory : cellFactories) {

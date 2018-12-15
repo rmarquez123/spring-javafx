@@ -1,16 +1,21 @@
 package com.rm.springjavafx.properties;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author rmarquez
  */
 public class DateRange {
-  private final Date startDate; 
+
+  private final Date startDate;
   private final Date endDate;
-  
+
   public DateRange(Date startDate, Date endDate) {
     this.startDate = startDate;
     this.endDate = endDate;
@@ -22,6 +27,30 @@ public class DateRange {
 
   public Date getEndDate() {
     return endDate;
+  }
+  
+  /**
+   * 
+   * @param startDtText
+   * @param endDtText
+   * @return 
+   */
+  public static DateRange create(String startDtText, String endDtText, String format){
+    SimpleDateFormat formatter = new SimpleDateFormat(format);
+    Date startDt; 
+    try {
+      startDt = formatter.parse(startDtText);
+    } catch (ParseException ex) {
+      throw new RuntimeException(ex);
+    }
+    Date endDt; 
+    try {
+      endDt = formatter.parse(endDtText);
+    } catch (ParseException ex) {
+      throw new RuntimeException(ex); 
+    }
+    DateRange result = new DateRange(startDt, endDt); 
+    return result; 
   }
 
   @Override
@@ -52,14 +81,14 @@ public class DateRange {
     }
     return true;
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   @Override
   public String toString() {
     return "DateRange{" + "startDate=" + startDate + ", endDate=" + endDate + '}';
   }
-  
+
 }

@@ -2,7 +2,9 @@ package com.rm.springjavafx;
 
 import java.lang.reflect.Field;
 import javafx.beans.property.Property;
+import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -16,13 +18,13 @@ public final class SpringFxUtils {
 
   private SpringFxUtils() {
   }
-  
+
   /**
-   * 
+   *
    * @param refPane
-   * @param newNode 
+   * @param newNode
    */
-  public static void setNodeOnRefPane(Pane refPane, Parent newNode) {
+  public static void setNodeOnRefPane(Pane refPane, Node newNode) {
     refPane.getChildren().clear();
     refPane.getChildren().add(newNode);
     if (refPane instanceof AnchorPane) {
@@ -31,13 +33,20 @@ public final class SpringFxUtils {
       AnchorPane.setRightAnchor(newNode, 0d);
       AnchorPane.setBottomAnchor(newNode, 0d);
     } else if (refPane instanceof StackPane) {
-      
+      StackPane.setAlignment(newNode, Pos.CENTER);
+      if (newNode instanceof Canvas) {
+        ((Canvas) newNode).widthProperty().bind(refPane.widthProperty());
+        ((Canvas) newNode).heightProperty().bind(refPane.heightProperty());
+        refPane.widthProperty().addListener( (obs, old, change)->{
+          System.out.println("changed");
+        }); 
+      }
     } else if (refPane instanceof HBox) {
       HBox.setHgrow(newNode, Priority.ALWAYS);
     } else if (refPane instanceof VBox) {
       VBox.setVgrow(newNode, Priority.ALWAYS);
     }
-    
+
   }
 
   /**
