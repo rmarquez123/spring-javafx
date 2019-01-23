@@ -1,5 +1,6 @@
 package com.rm.panzoomcanvas;
 
+import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.Level;
 import com.rm.panzoomcanvas.projections.Projector;
@@ -32,11 +33,12 @@ public class FxCanvas extends Canvas {
   private static final ScreenPoint INITIAL_SCREEN_POINT = new ScreenPoint(0, 0);
   private final Content content;
   private final Property<VirtualEnvelope> virtualEnvelope = new SimpleObjectProperty<>();
-  private final Property<ScreenEnvelope> screenEnvelope = new SimpleObjectProperty<>();
+  private final Property<ScreenEnvelope> screenEnvelopeProperty = new SimpleObjectProperty<>();
   private final Property<Level> level = new SimpleObjectProperty<>(new Level(0, null));
   private final Property<ScreenPoint> center = new SimpleObjectProperty<>(INITIAL_SCREEN_POINT);
   private final Projector projector;
   private final BooleanProperty scrolling = new SimpleBooleanProperty(false);
+  private FxEnvelope requestedEnv = null;
 
   /**
    *
@@ -56,7 +58,7 @@ public class FxCanvas extends Canvas {
       this.updateCenterAfterLevelChanged(newLevel, oldLevel);
     });
 
-    this.screenEnvelope.addListener((e) -> this.updateVirtualView());
+    this.screenEnvelopeProperty.addListener((e) -> this.updateVirtualView());
     this.parentProperty().addListener((obs, newVal, oldVal) -> {
       onParentPropertyChanged();
     });
@@ -85,7 +87,7 @@ public class FxCanvas extends Canvas {
    * @return
    */
   public ReadOnlyProperty<ScreenEnvelope> screenEnvelopeProperty() {
-    return screenEnvelope;
+    return screenEnvelopeProperty;
   }
 
   /**
@@ -114,11 +116,22 @@ public class FxCanvas extends Canvas {
 
   /**
    *
+   */
+  public void zoomToEnvelope(FxEnvelope envelope) {
+    ScreenEnvelope screenEnv = this.screenEnvelopeProperty.getValue();
+    if (screenEnv != null) {
+      ScreenEnvelope projectedEnv = this.projector.projectGeoToScreen(envelope, screenEnv);
+      this.screenEnvelopeProperty.setValue(projectedEnv);
+    }
+  }
+
+  /**
+   *
    * @param geometricLayer
    */
   public void zoomToLayer(GeometricLayer geometricLayer) {
     FxPoint value = geometricLayer.centerProperty().getValue();
-    this.goToVirtualPoint(this.level.getValue().getValue(), value);
+    this.zoomToVirtualPoint(this.level.getValue().getValue(), value);
   }
 
   /**
@@ -126,9 +139,9 @@ public class FxCanvas extends Canvas {
    * @param newLevel
    * @param point
    */
-  public void goToVirtualPoint(int newLevel, FxPoint point) {
-    ScreenEnvelope screenEnvVal = this.screenEnvelope.getValue();
-    ScreenPoint refPoint = this.getProjector().projectGeoToScreen(point, screenEnvVal);
+  public void zoomToVirtualPoint(int newLevel, FxPoint point) {
+    ScreenEnvelope screenEnv = this.screenEnvelopeProperty.getValue();
+    ScreenPoint refPoint = this.getProjector().projectGeoToScreen(point, screenEnv);
     ScreenPoint centerVal = this.getCenterOfScreenPoint();
     ScreenPoint diff = centerVal.difference(refPoint);
     double f = 1;
@@ -206,7 +219,7 @@ public class FxCanvas extends Canvas {
       List<Layer> layers = this.getContent().getSelectableLayers(s);
       this.getContent().onLayersMouseClicked(e, layers);
     });
-    
+
     this.getParent().addEventHandler(MouseEvent.MOUSE_MOVED, (e) -> {
       List<Layer> layers = this.getContent().getHoverableLayers();
       this.getContent().onLayersMouseHovered(e, layers);
@@ -223,7 +236,7 @@ public class FxCanvas extends Canvas {
    *
    */
   private void updateVirtualView() {
-    ScreenEnvelope screenEnvVal = this.screenEnvelope.getValue();
+    ScreenEnvelope screenEnvVal = this.screenEnvelopeProperty.getValue();
     VirtualEnvelope newVal = this.projector.projectScreenToVirtualStrict(screenEnvVal);
     this.virtualEnvelope.setValue(newVal);
   }
@@ -237,7 +250,7 @@ public class FxCanvas extends Canvas {
     Level levelVal = this.level.getValue();
     ScreenPoint centerVal = this.center.getValue();
     ScreenEnvelope newScreenEnv = new ScreenEnvelope(min, max, levelVal, centerVal);
-    this.screenEnvelope.setValue(newScreenEnv);
+    this.screenEnvelopeProperty.setValue(newScreenEnv);
   }
 
   /**

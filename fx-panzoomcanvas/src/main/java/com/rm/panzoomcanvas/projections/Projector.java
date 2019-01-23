@@ -102,11 +102,12 @@ public class Projector {
           VirtualEnvelope virtualEnv, ScreenEnvelope screenEnv) {
     ScreenPoint min = this.projectVirtualToScreen(virtualEnv.getMin(), screenEnv);
     ScreenPoint max = this.projectVirtualToScreen(virtualEnv.getMax(), screenEnv);
-    return new ScreenEnvelope(
+    ScreenEnvelope result = new ScreenEnvelope(
             new ScreenPoint(min.getX(), max.getY()),
             new ScreenPoint(max.getX(), min.getY()),
             screenEnv.getLevel(),
             screenEnv.getCenter());
+    return result;
   }
 
   /**
