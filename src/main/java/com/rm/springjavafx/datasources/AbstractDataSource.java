@@ -10,12 +10,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
+ * Implement {@linkplain DataSource} by internally holdings records using
+ * {@linkplain ListProperty} -- which means the list property event handlers can
+ * be used instead of using binding methods.
+ * <p>
+ * Subtypes can also use set records which will add all records to the list
+ * property thus changing it and triggering a change event.
+ * </p>
  *
  * @author rmarquez
  * @param <T>
  */
 public abstract class AbstractDataSource<T> implements DataSource<T> {
-  
+
   protected ListProperty<T> records = new SimpleListProperty<>();
 
   /**
@@ -51,6 +58,15 @@ public abstract class AbstractDataSource<T> implements DataSource<T> {
 
   /**
    *
+   * @return
+   */
+  @Override
+  public ListProperty<T> listProperty() {
+    return this.records;
+  }
+
+  /**
+   *
    * @param records
    */
   protected void setRecords(List<T> records) {
@@ -59,14 +75,21 @@ public abstract class AbstractDataSource<T> implements DataSource<T> {
 
   /**
    *
-   * @return
+   * @param <E>
+   * @param items
+   * @param change
+   * @param converter
    */
-  @Override
-  public ListProperty<T> listProperty() {
-    return this.records;
-  }
-
   private <E> void setValues(ObservableList<E> items, ObservableList<T> change, Converter<T, E> converter) {
+    if (items == null) {
+      throw new NullPointerException("Items cannot be null.");
+    }
+    if (change == null) {
+      throw new NullPointerException("Change list cannot be null.");
+    }
+    if (converter == null) {
+      throw new NullPointerException("converter cannot be null.");
+    }
     items.clear();
     List<E> mapped = change.stream().map((c) -> {
       return converter.convert(c);

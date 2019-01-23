@@ -428,4 +428,14 @@
   </xsd:element>
   
   
+  
+  <xsd:element name="popup"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="contentFxml" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  
 </xsd:schema>

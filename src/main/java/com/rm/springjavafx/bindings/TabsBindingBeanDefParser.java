@@ -31,8 +31,9 @@ public class TabsBindingBeanDefParser extends AbstractBeanDefinitionParser {
       result.addPropertyValue(ID_ATTRIBUTE, id); 
       pc.getRegistry().registerBeanDefinition(id, result.getBeanDefinition());
     }
-    List<Element> els = DomUtils.getChildElements(elmnt); 
     ManagedList<BeanDefinition> tabBeans = new ManagedList<>();  
+    
+    List<Element> els = DomUtils.getChildElements(elmnt);
     for (Element el : els) {
       if (el.getTagName().endsWith("contentpanel")) {
         result.addPropertyValue("fxml", el.getAttribute("fxml")); 

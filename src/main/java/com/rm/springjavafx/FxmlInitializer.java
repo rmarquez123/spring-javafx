@@ -25,6 +25,7 @@ public class FxmlInitializer implements InitializingBean {
   
   private final List<String> fxmlList = new ArrayList<>();
   private final Map<String, Parent> rootNodes = new HashMap<>();
+  private final Map<String, Object> controllers = new HashMap<>();
   private String sceneRoot;
   private boolean initialized = false;
 
@@ -119,6 +120,8 @@ public class FxmlInitializer implements InitializingBean {
                   + "}", ex);
         }
         this.rootNodes.put(fxml, root);
+        Object controller = loader.getController();
+        this.controllers.put(fxml, controller);
         this.initialized = true;
       });
     }
@@ -136,7 +139,20 @@ public class FxmlInitializer implements InitializingBean {
     }
     return this.rootNodes.get(fxml); 
   }
-
+  
+  /**
+   * 
+   * @param fxml
+   * @return 
+   */
+  public Object getController(String fxml) {
+    if (!this.initialized) {
+      this.initializeRoots(this.context);
+    }
+    return this.controllers.get(fxml); 
+  }
+  
+  
   /**
    *
    * @param fxml

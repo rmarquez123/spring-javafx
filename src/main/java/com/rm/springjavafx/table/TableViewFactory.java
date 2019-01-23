@@ -7,13 +7,10 @@ import com.rm.springjavafx.FxmlInitializer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -52,7 +49,6 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
   public void setFxmlId(String fxmlId) {
     this.fxmlId = fxmlId;
   }
-  
 
   public void setDatasourceRef(String datasourceRef) {
     this.datasourceRef = datasourceRef;
@@ -73,10 +69,10 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
   @Override
   public void afterPropertiesSet() throws Exception {
     if (this.fxml != null && this.fxmlId == null) {
-      throw new IllegalStateException("fxmlId cannot be null if fxml is not null"); 
+      throw new IllegalStateException("fxmlId cannot be null if fxml is not null");
     }
     if (this.fxml != null && this.fxmlInitializer == null) {
-      throw new IllegalStateException("fxml initializer cannot be null if fxml is not null"); 
+      throw new IllegalStateException("fxml initializer cannot be null if fxml is not null");
     }
     if (this.datasourceRef == null) {
       throw new NullPointerException("Data source cannot be null");
@@ -96,6 +92,12 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
         this.fxmlInitializer.initializeRoots(this.appContext);
       }
       result = (TableView<?>) this.fxmlInitializer.getNode(this.fxml, this.fxmlId);
+      if (result == null) {
+        throw new IllegalStateException("table view does not exists.  Check args: {"
+                + "fxml = " + fxml
+                + ", fxmlId = " + this.fxmlId
+                + "}"); 
+      }
     } else {
       result = new TableView<>();
     }
@@ -159,12 +161,18 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
 
   /**
    *
-   * @param result
+   * @param tableView
    * @throws BeansException
    */
-  private void initDataSourceBinding(TableView result) throws BeansException {
+  private void initDataSourceBinding(TableView tableView) throws BeansException {
+    if (tableView == null) {
+      throw new NullPointerException("table view cannot be null.");
+    }
     DataSource dataSource = (DataSource) this.appContext.getBean(this.datasourceRef);
-    dataSource.bind(result.getItems(), this.converter);
+    if (dataSource == null) {
+      throw new IllegalStateException("Bean does not exists for bean name: '" + this.datasourceRef + "'");
+    }
+    dataSource.bind(tableView.getItems(), this.converter);
   }
 
   /**
