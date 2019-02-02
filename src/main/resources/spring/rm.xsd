@@ -436,6 +436,16 @@
     </xsd:complexType>
   </xsd:element>
   
+  <xsd:element name="null_if_null"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="referenceProperty" type="xsd:string"/>
+      <xsd:attribute name="property" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  
   
   
 </xsd:schema>

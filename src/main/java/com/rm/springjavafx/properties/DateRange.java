@@ -4,8 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -15,6 +13,7 @@ public class DateRange {
 
   private final Date startDate;
   private final Date endDate;
+  public final static DateRange EMPTY = new DateRange(null, null);
 
   public DateRange(Date startDate, Date endDate) {
     this.startDate = startDate;
@@ -29,10 +28,29 @@ public class DateRange {
     return endDate;
   }
   
+  
+  /**
+   * 
+   * @param dateRange
+   * @return 
+   */
+  public static boolean isEmpty(DateRange dateRange) {
+    return dateRange == EMPTY;
+  }
+  
+  /**
+   * 
+   * @return 
+   */
+  public static DateRange Empty(){
+    return EMPTY; 
+  }
+  
   /**
    * 
    * @param startDtText
    * @param endDtText
+   * @param format
    * @return 
    */
   public static DateRange create(String startDtText, String endDtText, String format){

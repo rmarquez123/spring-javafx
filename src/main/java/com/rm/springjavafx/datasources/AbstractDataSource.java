@@ -1,21 +1,24 @@
 package com.rm.springjavafx.datasources;
 
-import com.rm.springjavafx.converters.Converter;
 import com.rm.datasources.DataSource;
+import com.rm.springjavafx.converters.Converter;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.SelectionMode;
 
 /**
  * Implement {@linkplain DataSource} by internally holdings records using
- * {@linkplain ListProperty} -- which means the list property event handlers can
- * be used instead of using binding methods.
+ * {@linkplain ListProperty} -- which means the list property event handlers can be used
+ * instead of using binding methods.
  * <p>
- * Subtypes can also use set records which will add all records to the list
- * property thus changing it and triggering a change event.
+ * Subtypes can also use set records which will add all records to the list property thus
+ * changing it and triggering a change event.
  * </p>
  *
  * @author rmarquez
@@ -24,6 +27,44 @@ import javafx.collections.ObservableList;
 public abstract class AbstractDataSource<T> implements DataSource<T> {
 
   protected ListProperty<T> records = new SimpleListProperty<>();
+  private final ObjectProperty<T> singleSelection = new SimpleObjectProperty<>();
+  private final ObservableList<T> multiSelection = FXCollections.observableArrayList();
+  private final SelectionMode selectionMode;
+
+  /**
+   *
+   */
+  protected AbstractDataSource() {
+    this(SelectionMode.SINGLE);
+  }
+
+  
+  public SelectionMode getSelectionMode() {
+    return selectionMode;
+  }
+
+  @Override
+  public ObservableList<T> getMultiSelectionProperty() {
+    return multiSelection;
+  }
+
+  @Override
+  public ObjectProperty<T> getSingleSelectionProperty() {
+    return singleSelection;
+  }
+  
+
+  /**
+   *
+   * @param selectionMode
+   */
+  protected AbstractDataSource(SelectionMode selectionMode) {
+    if (null == selectionMode) {
+      throw new IllegalArgumentException("Invalid selection mode : '" + String.valueOf(selectionMode) + "'");
+    } else {
+      this.selectionMode = selectionMode;
+    }
+  }
 
   /**
    *

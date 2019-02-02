@@ -2,6 +2,12 @@ package com.rm.datasources;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -43,7 +49,30 @@ public class DbConnection {
   public Integer getPort() {
     return port;
   }
-
+  
+  /**
+   * 
+   * @param sql
+   * @param consumer 
+   */
+  public void executeQuery(String sql, Consumer<ResultSet> consumer) {
+    Connection conn = this.getConnection();
+    try {
+      PreparedStatement statement = conn.prepareStatement(sql); 
+      ResultSet resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        consumer.accept(resultSet);
+      }
+    } catch(Exception ex) {
+      throw new RuntimeException(ex);
+    } finally {
+      try {
+        conn.close();
+      } catch (SQLException ex) {
+        Logger.getLogger(DbConnection.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }; 
     
   @Override
   public String toString() {

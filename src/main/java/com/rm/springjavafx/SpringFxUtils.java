@@ -22,29 +22,35 @@ public final class SpringFxUtils {
   /**
    *
    * @param refPane
-   * @param newNode
+   * @param childNode
    */
-  public static void setNodeOnRefPane(Pane refPane, Node newNode) {
+  public static void setNodeOnRefPane(Pane refPane, Node childNode) {
+    if (refPane == null) {
+      throw new NullPointerException("Reference pane cannot be null");
+    }
+    if (childNode == null) {
+      throw new NullPointerException("Child node cannot be null");
+    }
     refPane.getChildren().clear();
-    refPane.getChildren().add(newNode);
+    refPane.getChildren().add(childNode);
     if (refPane instanceof AnchorPane) {
-      AnchorPane.setLeftAnchor(newNode, 0d);
-      AnchorPane.setTopAnchor(newNode, 0d);
-      AnchorPane.setRightAnchor(newNode, 0d);
-      AnchorPane.setBottomAnchor(newNode, 0d);
+      AnchorPane.setLeftAnchor(childNode, 0d);
+      AnchorPane.setTopAnchor(childNode, 0d);
+      AnchorPane.setRightAnchor(childNode, 0d);
+      AnchorPane.setBottomAnchor(childNode, 0d);
     } else if (refPane instanceof StackPane) {
-      StackPane.setAlignment(newNode, Pos.CENTER);
-      if (newNode instanceof Canvas) {
-        ((Canvas) newNode).widthProperty().bind(refPane.widthProperty());
-        ((Canvas) newNode).heightProperty().bind(refPane.heightProperty());
-        refPane.widthProperty().addListener( (obs, old, change)->{
-          System.out.println("changed");
-        }); 
+      StackPane.setAlignment(childNode, Pos.CENTER);
+      if (childNode instanceof Canvas) {
+        ((Canvas) childNode).widthProperty().bind(refPane.widthProperty());
+        ((Canvas) childNode).heightProperty().bind(refPane.heightProperty());
       }
     } else if (refPane instanceof HBox) {
-      HBox.setHgrow(newNode, Priority.ALWAYS);
+      HBox.setHgrow(childNode, Priority.ALWAYS);
     } else if (refPane instanceof VBox) {
-      VBox.setVgrow(newNode, Priority.ALWAYS);
+      VBox.setVgrow(childNode, Priority.ALWAYS);
+    } else {
+      throw new UnsupportedOperationException("Reference pane type is not supported: '"
+        + refPane.getClass().getName() + "'");
     }
 
   }
@@ -77,10 +83,9 @@ public final class SpringFxUtils {
   /**
    * Find a {@link Node} within a {@link Parent} by it's ID.
    * <p>
-   * This might not cover all possible {@link Parent} implementations but it's a
-   * decent crack. {@link Control} implementations all seem to have their own
-   * method of storing children along side the usual
-   * {@link Parent#getChildrenUnmodifiable()} method.
+   * This might not cover all possible {@link Parent} implementations but it's a decent
+   * crack. {@link Control} implementations all seem to have their own method of storing
+   * children along side the usual {@link Parent#getChildrenUnmodifiable()} method.
    *
    * @param parent The parent of the node you're looking for.
    * @param id The ID of node you're looking for.
@@ -146,6 +151,23 @@ public final class SpringFxUtils {
             return child;
           }
         }
+      } else if (node instanceof TabPane) {
+        TabPane accordion = (TabPane) node;
+        for (Tab tab : accordion.getTabs()) {
+          Node tabContent = tab.getContent();
+          nodeId = tabContent.idProperty().get();
+          if (nodeId != null && nodeId.equals(id)) {
+            return (T) tabContent;
+          }
+          if (tabContent instanceof Parent) {
+            T child = getChildByID((Parent) tabContent, id);
+            if (child != null) {
+              return child;
+            }
+          }
+
+        }
+
       } else if (node instanceof Parent) {
         T child = getChildByID((Parent) node, id);
 

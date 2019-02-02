@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.property.ListProperty;
+import javafx.collections.ListChangeListener;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -70,7 +72,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
   @Override
   public TreeView getObject() throws Exception {
     TreeView<Object> result = (TreeView) this.fxmlInitializer.getNode(fxml, fxmlId);
-    TreeItem<Object> rootItem = new TreeItem<>("Inbox");
+    TreeItem<Object> rootItem = new TreeItem<>("Root");
     result.showRootProperty().setValue(false);
     result.setRoot(rootItem);
     Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>(); 
@@ -105,6 +107,23 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
       });
     }
     this.addTreeItems(rootItem);
+    if (this.treeModel.getSelectionMode() == SelectionMode.SINGLE) {
+      result.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<Object>> c) -> {
+        while(c.next()) {
+          if (c.wasAdded()) {
+            for (TreeItem<Object> treeItem : c.getAddedSubList()) {
+              treeModel.getSingleSelectionProperty().setValue(treeItem);
+              
+            }
+          } else if (c.wasRemoved()) {
+            treeModel.getSingleSelectionProperty().setValue(null);
+          }
+        } 
+      });
+      
+      
+    }
+    
     return result;
   }
 

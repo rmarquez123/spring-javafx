@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -14,25 +15,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Helper class for initializing fxml with controllers instantiated through
- * spring. Collaborates with the main class in a Spring boot environment.
+ * Helper class for initializing fxml with controllers instantiated through spring.
+ * Collaborates with the main class in a Spring boot environment.
  *
  * @author rmarquez
  */
 public class FxmlInitializer implements InitializingBean {
-  @Autowired 
+
+  @Autowired
   ApplicationContext context;
-  
+
   private final List<String> fxmlList = new ArrayList<>();
   private final Map<String, Parent> rootNodes = new HashMap<>();
   private final Map<String, Object> controllers = new HashMap<>();
   private String sceneRoot;
   private boolean initialized = false;
+  private List<Consumer<FxmlInitializer>> listeners = new ArrayList<>();
 
   /**
    * Public constructor. Set properties using setters.
    */
   public FxmlInitializer() {
+  }
+
+  public void addListener(Consumer<FxmlInitializer> listener) {
+    if (this.isInitialized()) {
+      listener.accept(this);
+    } else {
+      this.listeners.add(listener);
+    }
   }
 
   /**
@@ -46,8 +57,8 @@ public class FxmlInitializer implements InitializingBean {
 
   /**
    * Scene root setter. The scene root must be set otherwise the
-   * {@linkplain #load(org.springframework.context.ApplicationContext)} method
-   * will fail with a null pointer exception.
+   * {@linkplain #load(org.springframework.context.ApplicationContext)} method will fail
+   * with a null pointer exception.
    *
    * @param sceneRoot
    * @see #load(org.springframework.context.ApplicationContext)
@@ -57,8 +68,8 @@ public class FxmlInitializer implements InitializingBean {
   }
 
   /**
-   * {@inheritDoc} OVERRIDE : Checks if scene root is null. Adds the scene root
-   * to the fxml list if not already present.
+   * {@inheritDoc} OVERRIDE : Checks if scene root is null. Adds the scene root to the
+   * fxml list if not already present.
    *
    * @throws Exception if scene root has not been set.
    */
@@ -73,12 +84,12 @@ public class FxmlInitializer implements InitializingBean {
   }
 
   /**
-   * Sets the controller factories to fxml loaders. Stores the roots for each
-   * fxml node graph into a map. This method should be called by the main
-   * application to load and get the scene root.
+   * Sets the controller factories to fxml loaders. Stores the roots for each fxml node
+   * graph into a map. This method should be called by the main application to load and
+   * get the scene root.
    *
-   * @param context The application context which contains beans for the
-   * controllers of the fxml list.
+   * @param context The application context which contains beans for the controllers of
+   * the fxml list.
    * @return The parent node for the scene root fxml node graph.
    * @see #sceneRoot
    * @see #setFxmlList(java.util.List)
@@ -116,43 +127,45 @@ public class FxmlInitializer implements InitializingBean {
           root = loader.load();
         } catch (IOException ex) {
           throw new RuntimeException("Error loading fxml from resource.  Check args : {"
-                  + "fxml = " + fxml
-                  + "}", ex);
+            + "fxml = " + fxml
+            + "}", ex);
         }
         this.rootNodes.put(fxml, root);
         Object controller = loader.getController();
         this.controllers.put(fxml, controller);
-        this.initialized = true;
+
       });
     }
+    this.initialized = true;
+    for (Consumer<FxmlInitializer> listener : this.listeners) {
+      listener.accept(this);
+    }
   }
-  
-    
+
   /**
-   * 
+   *
    * @param fxml
-   * @return 
+   * @return
    */
   public Parent getRoot(String fxml) {
     if (!this.initialized) {
       this.initializeRoots(this.context);
     }
-    return this.rootNodes.get(fxml); 
+    return this.rootNodes.get(fxml);
   }
-  
+
   /**
-   * 
+   *
    * @param fxml
-   * @return 
+   * @return
    */
   public Object getController(String fxml) {
     if (!this.initialized) {
       this.initializeRoots(this.context);
     }
-    return this.controllers.get(fxml); 
+    return this.controllers.get(fxml);
   }
-  
-  
+
   /**
    *
    * @param fxml
@@ -162,7 +175,7 @@ public class FxmlInitializer implements InitializingBean {
    */
   public Node getNode(String fxml, String fxmlId) throws IllegalAccessException {
     if (!this.isInitialized()) {
-      throw new IllegalAccessException("Attempting to get node without initializing"); 
+      throw new IllegalAccessException("Attempting to get node without initializing");
     }
     Parent root = this.rootNodes.get(fxml);
     if (root == null) {
@@ -171,9 +184,9 @@ public class FxmlInitializer implements InitializingBean {
     Object result = SpringFxUtils.getChildByID(root, fxmlId);
     if (result == null) {
       throw new IllegalArgumentException("Component not found. Check args : {"
-              + "fxml = "  + fxml 
-              + ", fxmlId = " + fxmlId
-              + "}"); 
+        + "fxml = " + fxml
+        + ", fxmlId = " + fxmlId
+        + "}");
     }
     return (Node) result;
   }

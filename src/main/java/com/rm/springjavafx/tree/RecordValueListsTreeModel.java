@@ -9,11 +9,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.SelectionMode;
 
 /**
  *
@@ -25,14 +28,34 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
   private final IntegerProperty numLevelsProperty = new SimpleIntegerProperty();
   private final Map<Integer, String> idFields = new HashMap<>();
   private final Map<Integer, Link> links = new HashMap<>();
+  private final ObjectProperty singleSelection = new SimpleObjectProperty<>();
+  private final ObservableList multiSelection = FXCollections.observableArrayList();
+  private final SelectionMode selectionMode;
 
   /**
    *
    */
   public RecordValueListsTreeModel() {
+    this.selectionMode = SelectionMode.SINGLE;
     this.treeNodes.addListener((obs, old, change) -> {
       this.numLevelsProperty.setValue(this.treeNodes.size());
     });
+    
+  }
+
+  @Override
+  public SelectionMode getSelectionMode() {
+    return selectionMode;
+  }
+
+  @Override
+  public ObservableList getMultiSelectionProperty() {
+    return multiSelection;
+  }
+
+  @Override
+  public ObjectProperty getSingleSelectionProperty() {
+    return singleSelection;
   }
 
   /**
@@ -147,9 +170,9 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
         result = new SimpleListProperty<>();
       } else {
         throw new IllegalArgumentException("Level index exceeds size. Check args : {"
-                + "level = " + level
-                + ", size = " + this.treeNodes.size()
-                + "}");
+          + "level = " + level
+          + ", size = " + this.treeNodes.size()
+          + "}");
       }
     } else {
       result = this.treeNodes.getValue().get(level);
@@ -166,7 +189,7 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
     ObservableList<TreeNode<RecordValue>> result;
     if (records != null) {
       List<TreeNode<RecordValue>> a = records.stream().map((r) -> new TreeNode<>(level, r))
-              .collect(Collectors.toList());
+        .collect(Collectors.toList());
       result = FXCollections.observableArrayList(a);
     } else {
       result = FXCollections.emptyObservableList();

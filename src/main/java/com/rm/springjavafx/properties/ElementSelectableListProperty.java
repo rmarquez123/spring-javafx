@@ -4,10 +4,7 @@ import com.rm.springjavafx.converters.Converter;
 import java.util.List;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.scene.control.SelectionModel;
 import javafx.scene.control.SingleSelectionModel;
 
 /**
@@ -16,7 +13,7 @@ import javafx.scene.control.SingleSelectionModel;
  */
 public class ElementSelectableListProperty<E> {
 
-    private final ListProperty<E> listProperty = new SimpleListProperty<>();
+  private final ListProperty<E> listProperty = new SimpleListProperty<>();
   private final SingleSelectionModel<E> selection = new SingleSelectionModel<E>() {
     @Override
     protected E getModelItem(int index) {
@@ -36,7 +33,6 @@ public class ElementSelectableListProperty<E> {
   public SingleSelectionModel<E> getSelection() {
     return selection;
   }
-  
 
   /**
    *
@@ -58,14 +54,14 @@ public class ElementSelectableListProperty<E> {
   public void setListItems(List<E> listProperty) {
     this.listProperty.setValue(FXCollections.observableList(listProperty));
   }
-    
+
   /**
-   * 
+   *
    * @param <E1>
    * @param <E2>
    * @param items1
    * @param items2
-   * @param converter 
+   * @param converter
    */
   public static <E1, E2> void bind(SingleSelectionModel<E1> items1, SingleSelectionModel<E2> items2, Converter<E1, E2> converter) {
     items1.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -77,6 +73,5 @@ public class ElementSelectableListProperty<E> {
       items1.select(result);
     });
   }
-
 
 }

@@ -2,13 +2,34 @@ package com.rm.springjavafx.tree;
 
 import java.util.List;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.collections.ObservableList;
+import javafx.scene.control.SelectionMode;
 
 /**
  *
  * @author rmarquez
  */
 public interface TreeModel<T> {
+
+  /**
+   *
+   * @return
+   */
+  public SelectionMode getSelectionMode();
+
+  /**
+   *
+   * @return
+   */
+  public ObservableList<T> getMultiSelectionProperty();
+
+  /**
+   *
+   * @return
+   */
+  public ObjectProperty<T> getSingleSelectionProperty();
 
   /**
    *
@@ -21,43 +42,41 @@ public interface TreeModel<T> {
    * @return
    */
   public ReadOnlyIntegerProperty getNumberOfLevelsProperty();
-  
-  
+
   /**
-   * 
+   *
    * @param level
-   * @return 
+   * @return
    */
-  public String getIdField(int level); 
-  
+  public String getIdField(int level);
+
   /**
-   * 
+   *
    * @param level
    * @param idValue
-   * @return 
+   * @return
    */
-  public TreeNode<T> getNode(int level, Object idValue); 
-  
+  public TreeNode<T> getNode(int level, Object idValue);
+
   /**
    *
    * @param node
    * @return
    */
   public List<TreeNode<T>> getNodes(TreeNode<T> node);
-  
-  
+
   /**
-   * 
+   *
    * @param parentNode
    * @param idValue
-   * @return 
+   * @return
    */
-  public TreeNode<T> getNode(TreeNode<T> parentNode, Object idValue); 
-  
+  public TreeNode<T> getNode(TreeNode<T> parentNode, Object idValue);
+
   /**
-   * 
+   *
    * @param level
-   * @return 
+   * @return
    */
   public ListProperty<TreeNode<T>> getNodes(int level);
 
