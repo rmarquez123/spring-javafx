@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:rm="http://www.mycompany.com/schema/rm"
+       xmlns:fxmap="http://www.mycompany.com/schema/fxmap"
+       
+        
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+          http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-5.0.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-5.0.xsd
+          http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-5.0.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-5.0.xsd
+          http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd
+          http://www.mycompany.com/schema/fxmap http://www.mycompany.com/schema/fxmap/fxmap.xsd"  
+>  
+    <bean class="com.rm.springjavafx.FxmlInitializer"> 
+        <property name="sceneRoot" value="fxml/Main.fxml"/>
+        <property name="fxmlList"> 
+            <list> 
+                <value>fxml/Main.fxml</value>
+                <value>fxml/EditorPane.fxml</value>
+                <value>fxml/NavigationPane.fxml</value>
+                <value>fxml/NotificationsPane.fxml</value>
+                <value>fxml/ResourceSelectorTree.fxml</value>
+                <value>fxml/ModelPointsInfoPane.fxml</value>
+                <value>fxml/SeriesViewPane.fxml</value>
+                <value>fxml/actions/ConfirmOpenProject.fxml</value>
+                <value>fxml/actions/ConfirmLoadSeries.fxml</value>
+                <value>fxml/actions/CalculateDLR.fxml</value>
+                <value>fxml/actions/ConfigureDbConnection.fxml</value>
+                <value>fxml/actions/RealTimeFcstOptions.fxml</value>
+            </list>
+        </property>
+    </bean>
+    
+    <rm:content-panel 
+        id="bindNavigationPane.fxml"
+        parentFxml="fxml/Main.fxml"
+        parentNode="leftPane"
+        childFxml="fxml/NavigationPane.fxml"
+    /> 
+    <rm:content-panel 
+        id="bindResourceSelectorTree.fxml"
+        parentFxml="fxml/NavigationPane.fxml"
+        parentNode="topPane"
+        childFxml="fxml/ResourceSelectorTree.fxml"
+    /> 
+    <rm:content-panel 
+        id="bindModelPointsInfoPane.fxml"
+        parentFxml="fxml/Main.fxml"
+        parentNode="rightPane"
+        childFxml="fxml/ModelPointsInfoPane.fxml"
+    /> 
+    <rm:content-panel 
+        id="bindSeriesViewPane.fxml"
+        parentFxml="fxml/EditorPane.fxml"
+        parentNode="seriesTabPane"
+        childFxml="fxml/SeriesViewPane.fxml"
+    /> 
+    <rm:content-panel 
+        id="bindEditorPane.fxml"
+        parentFxml="fxml/Main.fxml"
+        parentNode="middlePane"
+        childFxml="fxml/EditorPane.fxml"
+    /> 
+    
+        
+    
+    
+    <bean id="glassModelProperty" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="selectedModelPoint" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="weatherRecordsProperty" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="modelPointAmapacitiesProperty" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="frcstModelPointAmpacities" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="seriesDirectoryHistorical" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="modelConfigurationFile" class="javafx.beans.property.SimpleObjectProperty"/> 
+    
+    <bean id="zoneId" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="startDtHistorical" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="endDtHistorical" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="timeIntervalHistorical" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="realtimemode" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="simulatimeconfigHistorical" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="referenceDate" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="selectedSourceType" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="dbConnection" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="fcstTimeSteps" class="javafx.beans.property.SimpleIntegerProperty"/> 
+    <bean id="repeatFcstTimeSteps" class="javafx.beans.property.SimpleIntegerProperty"/> 
+    <bean id="requestProjectOpenAction" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <bean id="requestLoadSeriesAction" class="javafx.beans.property.SimpleObjectProperty"/> 
+    
+    
+    <rm:null_if_null id="null_if_null_1" referenceProperty="glassModelProperty" property="selectedModelPoint"/>
+    <rm:null_if_null id="null_if_null_2" referenceProperty="glassModelProperty" property="weatherRecordsProperty"/>
+    <rm:null_if_null id="null_if_null_3" referenceProperty="glassModelProperty" property="modelPointAmapacitiesProperty"/>
+    <rm:null_if_null id="null_if_null_4" referenceProperty="glassModelProperty" property="seriesDirectoryHistorical"/>
+    <rm:null_if_null id="null_if_null_5" referenceProperty="glassModelProperty" property="modelConfigurationFile"/>
+    
+    
+    <rm:treemodel id="resourcesTreeModel">
+        <rm:datasources>
+            <rm:datasource-ref level="0" idField="lineSectionId" ref="linesections_datasource"/> 
+            <rm:datasource-ref level="1" idField="modelPointId" ref="modelpoints_datasource"/> 
+        </rm:datasources>
+        <rm:links> 
+            <rm:link childLevel="1" parentField="lineSectionId" childField="lineSectionId"/> 
+        </rm:links>
+    </rm:treemodel> 
+    
+    <rm:treeview 
+        id="resourcesTree"
+        fxml="fxml/ResourceSelectorTree.fxml"
+        fxmlId="resourcesTree"
+        treemodelRef="resourcesTreeModel"
+    >
+        <rm:level-cellfactory level="0" textField="lineSectionId"/> 
+        <rm:level-cellfactory level="1" textField="modelPointId"/> 
+    </rm:treeview>
+    
+    
+    
+    <fxmap:bbox-property id="bboxProperty" 
+                         xmin="-121.0" 
+                         xmax="-120.0" 
+                         ymin="37.0" 
+                         ymax="38.0"
+                         sid="4326"/> 
+
+    <fxmap:layers id="layersList">
+        <fxmap:layer id="sample-point" 
+                     name="sample-point"
+                     type="point"/>
+        <fxmap:layer id="sample-polygon" 
+                     name="sample-polygon"
+                     type="polygon"/>
+    </fxmap:layers> 
+    
+    <fxmap:map id = "samplemap"
+               parentFxml="fxml/EditorPane.fxml" 
+               parentNode="centerPane"
+               layersRef="layersList"
+               bbox="bboxProperty"/> 
+    
+    
+    <bean id="selectedSeriesType" class="javafx.beans.property.SimpleObjectProperty">
+        <constructor-arg> 
+            <bean class="com.windsim.wpls.view.series.SeriesType"  factory-method="valueOf"> 
+                <constructor-arg value="STATION_AMB_TEMPERATURE"/> 
+            </bean>
+        </constructor-arg>
+    </bean> 
+    
+    <bean id="confirmOpenModelProperty" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <rm:popup id="confirmOpenProjectPopup" contentFxml="fxml/actions/ConfirmOpenProject.fxml"/> 
+    
+    <bean id="confirmLoadSeriesProperty" class="javafx.beans.property.SimpleObjectProperty"/> 
+    <rm:popup id="confirmLoadSeriesPopup" contentFxml="fxml/actions/ConfirmLoadSeries.fxml"/> 
+    
+    
+    <rm:popup id="calculateDlrPopup" contentFxml="fxml/actions/CalculateDLR.fxml"/> 
+    <rm:popup id="configureDbConnectionPopup" contentFxml="fxml/actions/ConfigureDbConnection.fxml"/>
+    <rm:popup id="realTimeFcstOptions" contentFxml="fxml/actions/RealTimeFcstOptions.fxml"/> 
+    
+    
+    <rm:tableview id="confirm_projopen_conductors_table" 
+                  fxml="fxml/actions/ConfirmOpenProject.fxml"
+                  fxmlId="confirm_projopen_conductors_table"
+                  datasource-ref="confirm_projopen_conductors_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Type" columnIndex="0" propertyName="type"/>
+        <rm:columndef label="Name" columnIndex="0" propertyName="name"/>
+        <rm:columndef label="Diameter" columnIndex="0" propertyName="diameter"/>
+        <rm:columndef label="Min Resistance" columnIndex="0" propertyName="min resistence"/>
+        <rm:columndef label="Max Resistance" columnIndex="0" propertyName="max resistence"/>
+        <rm:columndef label="Min Temperature" columnIndex="0" propertyName="min temperature"/>
+        <rm:columndef label="Max Temperature" columnIndex="0" propertyName="max temperature"/>
+        <rm:columndef label="Heat Capacity" columnIndex="0" propertyName="heat capacity"/>
+      </rm:columns>  
+    </rm:tableview>
+    
+    <rm:tableview id="confirm_projopen_linesections_table" 
+                  fxml="fxml/actions/ConfirmOpenProject.fxml"
+                  fxmlId="confirm_projopen_linesections_table"
+                  datasource-ref="confirm_projopen_linesections_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Line Section ID" columnIndex="0" propertyName="linesectionId"/>
+        <rm:columndef label="Conductor ID" columnIndex="1" propertyName="conductorId"/>
+        <rm:columndef label="Bundle" columnIndex="2" propertyName="bundle"/>
+        <rm:columndef label="Air Quality" columnIndex="3" propertyName="airQuality"/>
+        <rm:columndef label="Absorptivity" columnIndex="4" propertyName="absorptivity"/>
+        <rm:columndef label="Emissivity" columnIndex="5" propertyName="emissivity"/>
+        <rm:columndef label="Max Temperature" columnIndex="6" propertyName="maxTemp"/>
+        <rm:columndef label="Emergency Temperature" columnIndex="7" propertyName="emergencyTemp"/>
+      </rm:columns>  
+    </rm:tableview>
+    <rm:tableview id="confirm_projopen_modelpoints_table" 
+                  fxml="fxml/actions/ConfirmOpenProject.fxml"
+                  fxmlId="confirm_projopen_modelpoints_table"
+                  datasource-ref="confirm_projopen_modelpoints_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Model Point ID" columnIndex="0" propertyName="modelPointId"/>
+        <rm:columndef label="Line Section ID" columnIndex="1" propertyName="linesectionId"/>
+        <rm:columndef label="Weather Station ID" columnIndex="1" propertyName="weatherStationId"/>
+        <rm:columndef label="Azimuth" columnIndex="1" propertyName="azimuth"/>
+        <rm:columndef label="Elevation" columnIndex="1" propertyName="elevation"/>
+        <rm:columndef label="Longitude" columnIndex="1" propertyName="longitude"/>
+        <rm:columndef label="Latitude" columnIndex="1" propertyName="latitude"/>
+      </rm:columns>  
+    </rm:tableview>
+    <rm:tableview id="confirm_projopen_weatherstations_table" 
+                  fxml="fxml/actions/ConfirmOpenProject.fxml"
+                  fxmlId="confirm_projopen_weatherstations_table"
+                  datasource-ref="confirm_projopen_weatherstations_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Name" columnIndex="0" propertyName="name"/>
+        <rm:columndef label="Elevation" columnIndex="1" propertyName="elevation"/>
+        <rm:columndef label="Latitude" columnIndex="1" propertyName="latitude"/>
+        <rm:columndef label="Longitude" columnIndex="1" propertyName="longitude"/>
+      </rm:columns>  
+    </rm:tableview>
+    <rm:tableview id="confirm_projopen_lookuptables_table" 
+                  fxml="fxml/actions/ConfirmOpenProject.fxml"
+                  fxmlId="confirm_projopen_lookuptables_table"
+                  datasource-ref="confirm_projopen_lookuptables_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Model Point ID" columnIndex="0" propertyName="modelPointId"/>
+        <rm:columndef label="Sector Angle" columnIndex="1" propertyName="sectorAngle"/>
+        <rm:columndef label="Speed Up" columnIndex="1" propertyName="speedUp"/>
+        <rm:columndef label="Direction Shift" columnIndex="1" propertyName="directionShift"/>
+      </rm:columns>  
+    </rm:tableview>
+    
+    <rm:tableview id="confirm_loadseries_weatherrecords_table" 
+                  fxml="fxml/actions/ConfirmLoadSeries.fxml"
+                  fxmlId="confirm_loadseries_weatherrecords_table"
+                  datasource-ref="confirm_loadseries_weatherrecords_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Station ID" columnIndex="0" propertyName="stationId"/>
+        <rm:columndef label="Date" columnIndex="1" propertyName="datetime"/>
+        <rm:columndef label="Ambient Temperature" columnIndex="1" propertyName="ambientTemperature"/>
+        <rm:columndef label="Wind Speed" columnIndex="1" propertyName="windSpeed"/>
+        <rm:columndef label="Wind Direction" columnIndex="1" propertyName="windDir"/>
+        <rm:columndef label="Solar" columnIndex="1" propertyName="solar"/>
+      </rm:columns>  
+    </rm:tableview>
+    
+    <rm:tableview id="modelinfo_lookuptable" 
+                  fxml="fxml/ModelPointsInfoPane.fxml"
+                  fxmlId="lookupTable"
+                  datasource-ref="modelinfo_lookuptable_tabledata"> 
+      <rm:columns> 
+        <rm:columndef label="Sector Angle" columnIndex="0" propertyName="sectorAngle"/>
+        <rm:columndef label="Speed Up" columnIndex="1" propertyName="speedUp"/>
+        <rm:columndef label="Directional Shift" columnIndex="1" propertyName="directionShift"/>
+      </rm:columns>  
+    </rm:tableview>
+    
+    
+    <rm:childnode id="startDtDatePicker" fxml="fxml/Main.fxml" fxmlId="startDtDatePicker"/>
+    <rm:childnode id="endDtDatePicker" fxml="fxml/Main.fxml" fxmlId="endDtDatePicker"/>
+    <rm:childnode id="zondIdComboBox" fxml="fxml/Main.fxml" fxmlId="zondIdComboBox"/>
+    <rm:childnode id="timeCountSpinner" fxml="fxml/Main.fxml" fxmlId="timeCountSpinner"/>
+    <rm:childnode id="timeUnitCmbBox" fxml="fxml/Main.fxml" fxmlId="timeUnitCmbBox"/>
+    
+    <rm:childnode id="importsettings_radiobtn_filesystem" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_radiobtn_filesystem"/>
+    <rm:childnode id="importsettings_radiobtn_database" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_radiobtn_database"/>
+    <rm:childnode id="importsettings_radiobtn_piserver" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_radiobtn_piserver"/>
+    
+    <rm:childnode id="importsettings_txtfield_modelconf" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_txtfield_modelconf"/>
+    <rm:childnode id="importsettings_txtfield_seriesdir" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_txtfield_seriesdir"/>
+    
+    <rm:childnode id="importsettings_btn_seriesdir" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_btn_seriesdir"/>
+    <rm:childnode id="importsettings_btn_modelconf" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_btn_modelconf"/>
+    
+    <rm:childnode id="importsettings_btn_dbconnection" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_btn_dbconnection"/>
+    <rm:childnode id="importsettings_btn_dbloaddata" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_btn_dbloaddata"/>
+    <rm:childnode id="importsettings_btn_dbloadseries" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_btn_dbloadseries"/>
+    <rm:childnode id="importsettings_txtfield_dburl" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_txtfield_dburl"/>
+    <rm:childnode id="importsettings_txtfield_user" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_txtfield_user"/>
+    <rm:childnode id="importsettings_txtfield_password" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_txtfield_password"/>
+    <rm:childnode id="importsettings_txtfield_port" fxml="fxml/ModelPointsInfoPane.fxml" fxmlId="importsettings_txtfield_port"/>
+    <rm:childnode id="realTimeSwitch" fxml="fxml/Main.fxml" fxmlId="realTimeSwitch"/>
+
+</beans>

@@ -1,0 +1,28 @@
+
+/* 
+    Created on : Feb 7, 2019, 10:44:06 PM
+    Author     : Ricardo Marquez
+*/
+.root {
+  -fx-background-color: white;
+  -fx-font-size: 12px;
+}
+
+.button {
+  -fx-background-color: white;
+  -fx-border-color: #738c97;
+  -fx-border-width: 2px;
+  -fx-border-radius: 5px;
+}
+
+.label {
+  /*-fx-fill-color : #085A7B;*/
+}
+
+.combo-box {
+  -fx-background-color: white;
+  -fx-border-color: #738c97;
+  -fx-border-width: 1px;
+  -fx-border-radius: 5px;
+  -fx-height: 20px;
+}
