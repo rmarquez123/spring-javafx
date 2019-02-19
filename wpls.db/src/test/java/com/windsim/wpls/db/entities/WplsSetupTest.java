@@ -15,7 +15,6 @@ import com.windsim.wpls.plsetup.impl.pg.PgWeatherRecords;
 import com.windsim.wpls.plsetup.impl.pg.PgWeatherStationsSource;
 import java.io.File;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -39,17 +38,27 @@ public class WplsSetupTest {
       .createDbConnection();
   }
   
+  
+  /**
+   * 
+   */
   @Test
-  @Ignore
+//  @Ignore
   public void createPowerLineModuleFiles() {
     double minVoltage = 200.0;
     int srid = 26918;
     WplsSetupSource setUpSource = this.createPowerLineModule(minVoltage);
-    Project project = new Project(srid, new File("C:\\Data\\Test\\powerlinemodule"));
+    File file = new File("C:\\Data\\Test\\powerlinemodule");
+    Project project = new Project(srid, file);
     WplsSetup setup = new WplsSetup(project, setUpSource);
     setup.preparePowerLineModule();
   }
   
+  /**
+   * 
+   * @param minVoltage
+   * @return 
+   */
   private WplsSetupSource createPowerLineModule(double minVoltage) {
     TransmissionLines.Filter filter = new TransmissionLines.Filter.Builder()
       .filterByMinRatedVoltage(minVoltage)
