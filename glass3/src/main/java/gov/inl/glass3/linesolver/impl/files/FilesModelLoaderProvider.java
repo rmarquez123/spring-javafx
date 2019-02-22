@@ -1,11 +1,11 @@
 package gov.inl.glass3.linesolver.impl.files;
 
+import gov.inl.glass3.linesolver.ModelLoadersProvider;
 import gov.inl.glass3.linesolver.loaders.ConductorsLoader;
 import gov.inl.glass3.linesolver.loaders.LineSectionsLoader;
 import gov.inl.glass3.linesolver.loaders.LookupTablesLoader;
 import gov.inl.glass3.linesolver.loaders.ModelPointsLoader;
 import gov.inl.glass3.linesolver.loaders.WeatherStationsLoader;
-import gov.inl.glass3.linesolver.ModelLoadersProvider;
 
 /**
  *
@@ -40,11 +40,11 @@ public class FilesModelLoaderProvider implements ModelLoadersProvider {
 
   @Override
   public ModelPointsLoader getModelPointsLoader() {
-    return new FilesModelPointsLoader(file.openStream());
+    return new FilesModelPointsLoader(file.openStream(), "ModelPoint");
   }
 
   @Override
   public LookupTablesLoader getLookupTablesLoader() {
-    return new FilesLookupTablesLoader(file.openStream());
+    return new FilesLookupTablesLoader(file.openStream(), "LookUpTable");
   }
 }

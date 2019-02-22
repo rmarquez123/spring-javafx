@@ -34,19 +34,19 @@ public class FilesUtils {
    * @return
    */
   public static List<String> readSection(InputStream stream, String sectionKey) {
-    List<String> conductorsSection;
+    List<String> section;
     BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
     try {
       String line;
       boolean conductorSectionStarted = false;
-      conductorsSection = new ArrayList<>();
+      section = new ArrayList<>();
       while ((line = reader.readLine()) != null) {
         if (line.startsWith(sectionKey + ":")) {
           conductorSectionStarted = true;
         } else if (conductorSectionStarted && nextSectionStarted(line)) {
           break;
         } else if (conductorSectionStarted) {
-          conductorsSection.add(line);
+          section.add(line);
         }
       }
     } catch (Exception ex) {
@@ -59,7 +59,7 @@ public class FilesUtils {
           .log(Level.WARNING, null, ex);
       }
     }
-    return conductorsSection;
+    return section;
   }
 
   /**

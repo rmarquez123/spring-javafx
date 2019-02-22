@@ -27,10 +27,11 @@ public class DefaultLookupTables implements LookupTables {
   public DefaultLookupTables(List<LookupTable> lookUpTables) {
     lookUpTables.sort((c1, c2) -> Double.compare(c1.getSectorNum(), c2.getSectorNum()));
     for (LookupTable lookUpTable : lookUpTables) {
-      if (!this.lookUpTables.containsKey(lookUpTable.getModelPointId())) {
-        this.lookUpTables.put(lookUpTable.getModelPointId(), new ArrayList<>());
+      String modelPointId = lookUpTable.getModelPointId().trim();
+      if (!this.lookUpTables.containsKey(modelPointId)) {
+        this.lookUpTables.put(modelPointId, new ArrayList<>());
       }
-      this.lookUpTables.get(lookUpTable.getModelPointId()).add(lookUpTable);
+      this.lookUpTables.get(modelPointId).add(lookUpTable);
     }
   }
 
@@ -79,6 +80,7 @@ public class DefaultLookupTables implements LookupTables {
    */
   public Interpolator getLookupTable(String modelPointId, WeatherRecord record) {
     List<LookupTable> candidates = this.lookUpTables.get(modelPointId);
+
     LookupTable lookUpTableMin = null;
     LookupTable lookUpTableMax = null;
     for (int i = 0; i < candidates.size(); i++) {

@@ -8,28 +8,35 @@ import gov.inl.glass3.linesolver.loaders.ModelPointsLoader;
 import gov.inl.glass3.modelpoints.ModelPoint;
 import gov.inl.glass3.modelpoints.ModelPointGeometry;
 import gov.inl.glass3.modelpoints.ModelPoints;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import javax.measure.Measure;
 import javax.measure.unit.NonSI;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
  * @author Ricardo Marquez
  */
 public class FilesModelPointsLoader implements ModelPointsLoader {
-
+  
+  public static final String SECTION_NAME_NA = "SECTION_NAME_NA";
   private final InputStream file;
-
+  private final String sectionName;
+  
+  
   /**
    *
    * @param file
    */
-  public FilesModelPointsLoader(InputStream file) {
+  public FilesModelPointsLoader(InputStream file, String sectionName) {
     this.file = file;
+    this.sectionName = sectionName;
   }
-
+  
   /**
    *
    * @return
@@ -37,7 +44,16 @@ public class FilesModelPointsLoader implements ModelPointsLoader {
   @Override
   public ModelPoints loadModelPoints() {
     DefaultModelPoints result;
-    List<String> section = FilesUtils.readSection(file, "ModelPoint");
+    List<String> section; 
+    if (!this.sectionName.equals(SECTION_NAME_NA)) {
+     section = FilesUtils.readSection(this.file, this.sectionName); 
+    } else {
+      try { 
+        section = IOUtils.readLines(this.file, Charset.forName("UTF-8"));
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
     List<ModelPoint> modelPoints = this.getModelPointsFromSection(section);
     result = new DefaultModelPoints(modelPoints);
     return result;
@@ -48,9 +64,9 @@ public class FilesModelPointsLoader implements ModelPointsLoader {
    * @param section
    * @return
    */
-  private List<ModelPoint> getModelPointsFromSection(List<String> section) {
+  public List<ModelPoint> getModelPointsFromSection(List<String> section) {
     if (section.size() < 2) {
-      throw new IllegalStateException("No conductors found");
+      throw new IllegalStateException("No model points found");
     }
     List<ModelPoint> result = new ArrayList<>();
     String headerLine = section.remove(0);
