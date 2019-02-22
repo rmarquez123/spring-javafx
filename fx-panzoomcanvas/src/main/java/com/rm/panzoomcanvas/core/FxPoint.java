@@ -1,9 +1,6 @@
 package com.rm.panzoomcanvas.core;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,6 +27,17 @@ public class FxPoint {
   public FxPoint(double x, double y, SpatialRef sr) {
     this.x = x;
     this.y = y;
+    this.sr = sr;
+  }
+  
+  /**
+   *
+   * @param point
+   * @param sr
+   */
+  public FxPoint(Point point, SpatialRef sr) {
+    this.x = point.getX();
+    this.y = point.getY();
     this.sr = sr;
   }
 

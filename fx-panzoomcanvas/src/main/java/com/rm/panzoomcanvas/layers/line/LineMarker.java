@@ -1,5 +1,6 @@
 package com.rm.panzoomcanvas.layers.line;
 
+import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.SpatialUtils;
 import com.rm.panzoomcanvas.layers.Marker;
@@ -62,7 +63,18 @@ public class LineMarker<T> implements Marker<T> {
   @Override
   public Geometry getJtsGeometry() {
     return SpatialUtils.createJtsLine(this.point1, this.point2);
+  } 
+  
+  /**
+   * 
+   * @return 
+   */
+  @Override
+  public FxEnvelope getFxEnvelope() {
+    return new FxEnvelope(point1, point2);
   }
+  
+  
 
   /**
    *

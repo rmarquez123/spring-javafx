@@ -24,7 +24,7 @@ public abstract class BaseLayer implements Layer {
   private final LayerGeometry geometry;
   private Node layerCanvas = null;
   private FxCanvas canvas;
-  private MouseEventProperties mouseEvtProps = new MouseEventProperties();
+  private final MouseEventProperties mouseEvtProps = new MouseEventProperties();
   
 
   /**

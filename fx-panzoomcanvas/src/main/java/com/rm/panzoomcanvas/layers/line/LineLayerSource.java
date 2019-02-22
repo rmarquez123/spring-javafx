@@ -8,7 +8,7 @@ import com.rm.panzoomcanvas.core.SpatialRef;
  *
  * @author rmarquez
  */
-public interface LineLayerSource<T> extends LayerGeometry{
+public interface LineLayerSource<T> extends LayerGeometry {
   
   /**
    * 

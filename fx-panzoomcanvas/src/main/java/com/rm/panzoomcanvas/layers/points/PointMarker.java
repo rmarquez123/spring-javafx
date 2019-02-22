@@ -1,5 +1,6 @@
 package com.rm.panzoomcanvas.layers.points;
 
+import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.layers.Marker;
 import com.vividsolutions.jts.geom.Geometry;
@@ -43,6 +44,17 @@ public final class PointMarker<T> implements Marker<T> {
     }
     return result;
   }
+
+  /**
+   * 
+   * @return 
+   */
+  @Override
+  public FxEnvelope getFxEnvelope() {
+    return new FxEnvelope(this.point, this.point); 
+  }
+  
+  
 
   /**
    * {@inheritDoc}

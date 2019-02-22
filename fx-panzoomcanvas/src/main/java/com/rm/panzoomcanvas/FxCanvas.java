@@ -3,11 +3,12 @@ package com.rm.panzoomcanvas;
 import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
 import com.rm.panzoomcanvas.core.Level;
-import com.rm.panzoomcanvas.projections.Projector;
 import com.rm.panzoomcanvas.core.ScreenEnvelope;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.core.ScrollInvoker;
 import com.rm.panzoomcanvas.core.VirtualEnvelope;
+import com.rm.panzoomcanvas.layers.Marker;
+import com.rm.panzoomcanvas.projections.Projector;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -38,8 +39,7 @@ public class FxCanvas extends Canvas {
   private final Property<ScreenPoint> center = new SimpleObjectProperty<>(INITIAL_SCREEN_POINT);
   private final Projector projector;
   private final BooleanProperty scrolling = new SimpleBooleanProperty(false);
-  private FxEnvelope requestedEnv = null;
-
+  
   /**
    *
    * @param content
@@ -66,14 +66,16 @@ public class FxCanvas extends Canvas {
     MapBindings.bindPanning(this);
     this.content.setVirtualCanvas(this);
   }
-
+  
+  
+  
   private void onParentPropertyChanged() {
     Platform.runLater(() -> {
       this.addMouseListeners();
       this.setInitialCenter();
     });
   }
-
+  
   /**
    *
    * @return
@@ -116,6 +118,7 @@ public class FxCanvas extends Canvas {
 
   /**
    *
+   * @param envelope
    */
   public void zoomToEnvelope(FxEnvelope envelope) {
     ScreenEnvelope screenEnv = this.screenEnvelopeProperty.getValue();
@@ -271,6 +274,19 @@ public class FxCanvas extends Canvas {
     if (p != null) {
       ((StackPane) p).getChildren().remove(layerCanvas);
     }
+  }
+
+  /**
+   * 
+   * @param marker
+   * @return 
+   */
+  public boolean isInView(Marker<?> marker) {
+    FxEnvelope geometry = marker.getFxEnvelope();
+    ScreenEnvelope value = this.screenEnvelopeProperty.getValue(); 
+    ScreenEnvelope markerScreenEnv = this.projector.projectGeoToScreen(geometry, value); 
+    boolean result = value.contains(markerScreenEnv); 
+    return result; 
   }
 
 }

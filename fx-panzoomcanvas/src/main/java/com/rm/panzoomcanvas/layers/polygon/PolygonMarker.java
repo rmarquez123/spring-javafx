@@ -1,5 +1,6 @@
 package com.rm.panzoomcanvas.layers.polygon;
 
+import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.layers.Marker;
 import com.vividsolutions.jts.geom.Geometry;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class PolygonMarker<T> implements Marker<T> {
   /**
    * 
    * @param userObject 
+   * @param points 
    */
   public PolygonMarker(T userObject, PolygonPoints points) {
     this.userObject = userObject;
@@ -64,6 +66,13 @@ public class PolygonMarker<T> implements Marker<T> {
   public Geometry getJtsGeometry() {
     return this.points.asJtsPolygon();
   }
+
+  @Override
+  public FxEnvelope getFxEnvelope() {
+    return this.points.getFxEnvelope(); 
+  }
+  
+  
   
   /**
    * {@inheritDoc}

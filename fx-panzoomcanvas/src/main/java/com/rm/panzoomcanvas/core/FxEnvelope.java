@@ -14,6 +14,8 @@ public class FxEnvelope {
 
   /**
    *
+   * @param min
+   * @param max
    */
   public FxEnvelope(FxPoint min, FxPoint max) {
     if (!Objects.equals(min.getSpatialRef(), max.getSpatialRef())) {
@@ -82,6 +84,14 @@ public class FxEnvelope {
   public final Point getCenterPoint() {
     return new Point(0.5 * (this.getMax().getX() + this.getMin().getX()),
             0.5 * (this.getMax().getY() + this.getMin().getY()));
+  }
+  /**
+   *
+   * @return
+   */
+  public final FxPoint getCenterFxPoint() {
+    FxPoint result = new FxPoint(this.getCenterPoint(), sr); 
+    return result; 
   }
 
   @Override

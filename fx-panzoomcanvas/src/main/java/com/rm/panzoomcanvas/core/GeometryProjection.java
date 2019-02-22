@@ -7,5 +7,9 @@ package com.rm.panzoomcanvas.core;
 public interface GeometryProjection { 
   
   public FxPoint project(FxPoint geomPoint, SpatialRef baseSpatialRef);
+
+  public Point getMax();
+
+  public Point getMin();
   
 }

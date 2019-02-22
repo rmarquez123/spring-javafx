@@ -1,6 +1,6 @@
 package com.rm.panzoomcanvas.layers.polygon;
 
-import com.rm.panzoomcanvas.layers.polyline.*;
+import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -35,7 +35,13 @@ public class PolygonPoints {
   }
 
   Geometry asJtsPolygon() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Not supported yet."); 
+  }
+
+  FxEnvelope getFxEnvelope() {
+    //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Not supported yet."); 
   }
   
   

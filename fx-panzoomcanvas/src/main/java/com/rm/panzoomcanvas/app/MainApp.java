@@ -7,16 +7,17 @@ import com.rm.panzoomcanvas.components.CenterLayer;
 import com.rm.panzoomcanvas.components.PositionBar;
 import com.rm.panzoomcanvas.components.VirtualBoxLayer;
 import com.rm.panzoomcanvas.core.FxPoint;
-import com.rm.panzoomcanvas.core.SpatialRef;
-import com.rm.panzoomcanvas.layers.line.LineLayer;
 import com.rm.panzoomcanvas.core.GeometryProjection;
+import com.rm.panzoomcanvas.core.Point;
+import com.rm.panzoomcanvas.core.SpatialRef;
+import com.rm.panzoomcanvas.impl.line.DefaultLineSymbology;
 import com.rm.panzoomcanvas.impl.line.FixedLineLayerSource;
 import com.rm.panzoomcanvas.impl.points.ArrayPointsSource;
-import com.rm.panzoomcanvas.layers.points.PointsLayer;
-import com.rm.panzoomcanvas.layers.points.PointMarker;
-import com.rm.panzoomcanvas.layers.LayerTooltip;
-import com.rm.panzoomcanvas.impl.line.DefaultLineSymbology;
 import com.rm.panzoomcanvas.impl.points.PointShapeSymbology;
+import com.rm.panzoomcanvas.layers.LayerTooltip;
+import com.rm.panzoomcanvas.layers.line.LineLayer;
+import com.rm.panzoomcanvas.layers.points.PointMarker;
+import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import com.rm.panzoomcanvas.projections.MapCanvasSR;
 import com.rm.panzoomcanvas.projections.Projector;
 import javafx.application.Application;
@@ -27,12 +28,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 /**
- * The purpose of this main application is to test the basic and default
- * features and functions of panzoomcanvas api.
+ * The purpose of this main application is to test the basic and default features and
+ * functions of panzoomcanvas api.
  *
  * @author rmarquez
  */
@@ -67,12 +68,12 @@ public class MainApp extends Application {
     PointsLayer pointsLayer = this.getPointsLayer();
     value.add(pointsLayer);
   }
-  
+
   /**
-   * 
+   *
    * @param p1
    * @param p2
-   * @return 
+   * @return
    */
   private LineLayer getLineLayer() {
     final SpatialRef sr = new MapCanvasSR();
@@ -101,13 +102,13 @@ public class MainApp extends Application {
     PointShapeSymbology symbology = new PointShapeSymbology();
     symbology.fillColorProperty().setValue(Color.ROSYBROWN);
     symbology.strokeColorProperty().setValue(Color.BLACK);
-    symbology.getSelected().fillColorProperty().setValue(Color.ANTIQUEWHITE);
-    
+    symbology.getSelected().fillColorProperty().setValue(Color.RED);
+
     PointsLayer pointsLayer = new PointsLayer("points", symbology, singlePointSource);
     pointsLayer.hoverableProperty().setValue(Boolean.TRUE);
     pointsLayer.selectableProperty().setValue(Boolean.TRUE);
     pointsLayer.setTooltip(new LayerTooltip.Builder()
-            .setHeightOffset(54));
+      .setHeightOffset(54));
     return pointsLayer;
   }
 
@@ -119,10 +120,23 @@ public class MainApp extends Application {
   private FxCanvas createMap() {
     Content content = new Content();
     FxCanvas mapCanvas = new FxCanvas(content, new Projector(new MapCanvasSR(), new GeometryProjection() {
+      MapCanvasSR sr = new MapCanvasSR();
+
       @Override
       public FxPoint project(FxPoint geomPoint, SpatialRef baseSpatialRef) {
         return geomPoint;
       }
+
+      @Override
+      public Point getMax() {
+        return sr.getMax();
+      }
+
+      @Override
+      public Point getMin() {
+        return sr.getMax();
+      }
+
     }));
     PositionBar positionBar = new PositionBar(mapCanvas);
     StackPane.setAlignment(positionBar, Pos.BOTTOM_RIGHT);
@@ -139,10 +153,9 @@ public class MainApp extends Application {
   }
 
   /**
-   * The main() method is ignored in correctly deployed JavaFX application.
-   * main() serves only as fallback in case the application can not be launched
-   * through deployment artifacts, e.g., in IDEs with limited FX support.
-   * NetBeans ignores main().
+   * The main() method is ignored in correctly deployed JavaFX application. main() serves
+   * only as fallback in case the application can not be launched through deployment
+   * artifacts, e.g., in IDEs with limited FX support. NetBeans ignores main().
    *
    * @param args the command line arguments
    */

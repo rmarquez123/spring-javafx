@@ -1,6 +1,5 @@
 package com.rm.panzoomcanvas.layers.points;
 
-import com.rm.panzoomcanvas.layers.LayerTooltip;
 import com.rm.panzoomcanvas.FxCanvas;
 import com.rm.panzoomcanvas.LayerMouseEvent;
 import com.rm.panzoomcanvas.core.FxPoint;
@@ -13,10 +12,12 @@ import com.rm.panzoomcanvas.layers.BaseLayer;
 import com.rm.panzoomcanvas.layers.DrawArgs;
 import com.rm.panzoomcanvas.layers.HoveredMarkers;
 import com.rm.panzoomcanvas.layers.LayerHoverSelect;
+import com.rm.panzoomcanvas.layers.LayerTooltip;
 import com.rm.panzoomcanvas.projections.Projector;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.property.ReadOnlyListProperty;
+import java.util.Objects;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -53,7 +54,28 @@ public class PointsLayer<T> extends BaseLayer {
         return self.getMouseEvtList(e);
       }
     }; 
+    this.hoverSelect.selected().addListener((obs, oldVal, change)->{
+      this.repaint();
+    });
     
+  }
+  
+  
+  /**
+   * 
+   * @param userObject
+   * @return 
+   */
+  public PointMarker<T> getMarker(T userObject) {
+    PointMarker<T> result = null;
+    for (int i = 0; i < this.source.getNumPoints(); i++) {
+      PointMarker<T> p = this.source.getFxPoint(i);
+      if (Objects.equals(p.getUserObject(), userObject)) {
+        result = p;
+        break;
+      }
+    }
+    return result;
   }
 
   /**
@@ -75,7 +97,7 @@ public class PointsLayer<T> extends BaseLayer {
    *
    * @return
    */
-  public ReadOnlyListProperty<PointMarker<T>> selectedMarkersProperty() {
+  public ListProperty<PointMarker<T>> selectedMarkersProperty() {
     return this.hoverSelect.selected();
   }
 
@@ -158,5 +180,7 @@ public class PointsLayer<T> extends BaseLayer {
     }
     return result;
   }
+
+  
 
 }

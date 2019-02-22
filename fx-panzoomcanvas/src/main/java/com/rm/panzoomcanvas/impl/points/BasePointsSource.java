@@ -45,6 +45,9 @@ public abstract class BasePointsSource<T> implements PointsSource<T> {
       PointMarker marker = this.getFxPoint(i);
       FxPoint point = marker.getPoint();
       result = this.intersects(point, geomPoint);
+      if (result) {
+        break;
+      }
     }
     return result;
   }
@@ -58,7 +61,7 @@ public abstract class BasePointsSource<T> implements PointsSource<T> {
   @Override
   public boolean intersects(FxPoint point, FxPoint geomPoint) {
     boolean result;
-    result = SpatialUtils.intersects(point, geomPoint, this.buffer);
+    result = SpatialUtils.intersects(point, geomPoint, 0.001);
     return result;
   }
 }

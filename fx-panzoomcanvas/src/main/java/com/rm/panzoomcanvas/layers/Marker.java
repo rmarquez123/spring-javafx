@@ -1,5 +1,6 @@
 package com.rm.panzoomcanvas.layers;
 
+import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.vividsolutions.jts.geom.Geometry;
 import javafx.beans.property.StringProperty;
 
@@ -27,5 +28,11 @@ public interface Marker<T> {
    * @return
    */
   public Geometry getJtsGeometry();
+
+  /**
+   * 
+   * @return 
+   */
+  public FxEnvelope getFxEnvelope();
 
 }

@@ -1,15 +1,15 @@
 package com.rm.panzoomcanvas.projections;
 
-import com.rm.panzoomcanvas.core.ScreenEnvelope;
-import com.rm.panzoomcanvas.core.Level;
-import com.rm.panzoomcanvas.core.VirtualPoint;
-import com.rm.panzoomcanvas.core.VirtualEnvelope;
-import com.rm.panzoomcanvas.core.ScreenPoint;
-import com.rm.panzoomcanvas.core.GeometryProjection;
 import com.rm.panzoomcanvas.core.FxEnvelope;
 import com.rm.panzoomcanvas.core.FxPoint;
+import com.rm.panzoomcanvas.core.GeometryProjection;
+import com.rm.panzoomcanvas.core.Level;
 import com.rm.panzoomcanvas.core.Point;
+import com.rm.panzoomcanvas.core.ScreenEnvelope;
+import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.core.SpatialRef;
+import com.rm.panzoomcanvas.core.VirtualEnvelope;
+import com.rm.panzoomcanvas.core.VirtualPoint;
 
 /**
  *
@@ -17,10 +17,10 @@ import com.rm.panzoomcanvas.core.SpatialRef;
  */
 public class Projector {
 
-  private final MapCanvasSR virtualSr = new MapCanvasSR();
+  
   private final SpatialRef baseSpatialRef;
-  private final GeometryProjection geomProject;
-
+  private final MapCanvasSR virtualSr = new MapCanvasSR();
+  private final GeometryProjection geomProject; 
   /**
    *
    * @param baseSpatialRef
@@ -31,6 +31,15 @@ public class Projector {
     this.geomProject = geomProj;
   }
 
+  public SpatialRef getBaseSpatialRef() {
+    return baseSpatialRef;
+  }
+
+  public GeometryProjection getGeomProject() {
+    return geomProject;
+  }
+  
+
   /**
    *
    * @param screenEnvVal
@@ -39,8 +48,8 @@ public class Projector {
   public VirtualEnvelope projectScreenToVirtualStrict(ScreenEnvelope screenEnvVal) {
     VirtualPoint vMinCheck = this.projectScreenToVirtual(screenEnvVal.getMin(), screenEnvVal);
     VirtualPoint vMaxCheck = this.projectScreenToVirtual(screenEnvVal.getMax(), screenEnvVal);
-    double width = this.virtualSr.getWidth();
-    double height = this.virtualSr.getHeight();
+    double width = this.baseSpatialRef.getWidth();
+    double height = this.baseSpatialRef.getHeight();
     double vxMin = Math.max(0 - 0.5 * width, vMinCheck.getX());
     double vyMin = Math.max(0 - 0.5 * height, vMaxCheck.getY());
     double vxMax = Math.min(0 + 0.5 * width, vMaxCheck.getX());
@@ -192,8 +201,8 @@ public class Projector {
    * @return the geometric point.
    */
   public FxPoint projectVirtualToGeo(Point virtualPt, SpatialRef destSr) {
-    Point srcMax = destSr.getMax();
-    Point srcMin = destSr.getMin();
+    Point srcMax = this.baseSpatialRef.getMax();
+    Point srcMin = this.baseSpatialRef.getMin();
     Point virtualMax = virtualSr.getMax();
     Point virtualMin = virtualSr.getMin();
     double srcDeltaX = srcMax.getX() - srcMin.getX();
@@ -202,8 +211,9 @@ public class Projector {
     double virtualDeltaY = virtualMax.getY() - virtualMin.getY();
     double x = srcMin.getX() + (virtualPt.getX() - virtualMin.getX()) * srcDeltaX / virtualDeltaX;
     double y = srcMin.getY() + (virtualPt.getY() - virtualMin.getY()) * srcDeltaY / virtualDeltaY;
-    FxPoint result = new FxPoint(x, y, destSr);
-    return result;
+    FxPoint result = new FxPoint(x, y, this.baseSpatialRef);
+    FxPoint a = this.geomProject.project(result, destSr); 
+    return a;
   }
 
   /**
@@ -251,9 +261,10 @@ public class Projector {
    * @return
    */
   public VirtualPoint projectGeoToVirtual(FxPoint geomPoint) {
-    SpatialRef spatialRef = geomPoint.getSpatialRef();
-    Point srcMax = spatialRef.getMax();
-    Point srcMin = spatialRef.getMin();
+    
+    FxPoint projectedToBaseRef = this.getGeomProject().project(geomPoint, this.baseSpatialRef); 
+    Point srcMax = this.baseSpatialRef.getMax();
+    Point srcMin = this.baseSpatialRef.getMin();
     Point virtualMax = this.virtualSr.getMax();
     Point virtualMin = this.virtualSr.getMin();
 
@@ -262,8 +273,10 @@ public class Projector {
 
     double virtualDeltaX = virtualMax.getX() - virtualMin.getX();
     double virtualDeltaY = virtualMax.getY() - virtualMin.getY();
-    double vX = (geomPoint.getX() - srcMin.getX()) * virtualDeltaX / srcDeltaX + virtualMin.getX();
-    double vY = (geomPoint.getY() - srcMin.getY()) * virtualDeltaY / srcDeltaY + virtualMin.getY();
+    double vX = ( projectedToBaseRef.getX() - srcMin.getX()) * virtualDeltaX / srcDeltaX + virtualMin.getX();
+    double vY = ( projectedToBaseRef.getY() - srcMin.getY()) * virtualDeltaY / srcDeltaY + virtualMin.getY();
+    
+    
     return new VirtualPoint(vX, vY);
   }
 

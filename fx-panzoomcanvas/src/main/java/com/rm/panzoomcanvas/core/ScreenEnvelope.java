@@ -1,5 +1,7 @@
 package com.rm.panzoomcanvas.core;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 /**
  *
  * @author rmarquez
@@ -27,7 +29,7 @@ public class ScreenEnvelope {
     this.level = level;
     this.center = center;
   }
-  
+
   public ScreenPoint getMin() {
     return min;
   }
@@ -58,6 +60,31 @@ public class ScreenEnvelope {
    */
   public double getHeight() {
     return this.max.getY() - this.min.getY();
+  }
+
+  /**
+   *
+   * @param other
+   * @return
+   */
+  public boolean contains(ScreenEnvelope other) {
+    Envelope thisEnv = this.toJtsEnvelope();
+    Envelope otherEnv = other.toJtsEnvelope();
+    boolean result = thisEnv.contains(otherEnv);
+    return result;
+  }
+
+  /**
+   *
+   * @return
+   */
+  private Envelope toJtsEnvelope() {
+    double x1 = this.min.getX();
+    double x2 = this.max.getX();
+    double y1 = this.min.getY();
+    double y2 = this.max.getY();
+    Envelope result = new Envelope(x1, x2, y1, y2);
+    return result;
   }
 
   /**

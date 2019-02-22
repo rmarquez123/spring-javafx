@@ -1,8 +1,5 @@
 package com.rm.panzoomcanvas.core;
 
-import com.rm.panzoomcanvas.core.FxEnvelope;
-import com.rm.panzoomcanvas.core.Point;
-
 /**
  *
  * @author rmarquez

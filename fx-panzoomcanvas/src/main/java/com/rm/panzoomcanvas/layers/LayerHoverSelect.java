@@ -29,12 +29,19 @@ public abstract class LayerHoverSelect<TMarker extends Marker<TObj>, TObj> {
   public LayerHoverSelect(BaseLayer host) {
     this.host = host;
     this.cursorHelper = new LayerCursorHelper<>(this);
+    this.initMouseEvents();
+  }
+  
+  /**
+   * 
+   */
+  private void initMouseEvents() {
     MouseEventProperties.MouseEvent HOVERED = MouseEventProperties.MouseEvent.HOVERED;
     this.host.getMouseEvtProps().addListener(HOVERED, (type, event) -> {
       this.onMouseHovered(event);
     });
     MouseEventProperties.MouseEvent CLICKED = MouseEventProperties.MouseEvent.CLICKED;
-    this.host.getMouseEvtProps().addListener(HOVERED, (type, event) -> {
+    this.host.getMouseEvtProps().addListener(CLICKED, (type, event) -> {
       this.onMouseClicked(event);
     });
   }
@@ -66,6 +73,7 @@ public abstract class LayerHoverSelect<TMarker extends Marker<TObj>, TObj> {
    */
   public void onMouseClicked(LayerMouseEvent e) {
     List<TMarker> newVal = this.getMouseEvtList(e);
+    newVal.removeIf((TMarker t) -> selected.contains(t)); 
     this.selected.setValue(FXCollections.observableArrayList(newVal));
   }
 
