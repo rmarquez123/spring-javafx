@@ -3,7 +3,7 @@ package com.rm.wpls.powerline;
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 /**
  *
  * @author Ricardo Marquez
@@ -62,15 +62,17 @@ public class TransmissionLines {
 
     private final Double minRatedVoltage;
     private final String filterName;
+    private final String stateName;
 
     /**
      *
      * @param minRatedVoltage
      * @param filterName
      */
-    public Filter(Double minRatedVoltage, String filterName) {
-      this.minRatedVoltage = minRatedVoltage;
+    public Filter(Double minRatedVoltage, String filterName, String stateName) {
       this.filterName = filterName;
+      this.minRatedVoltage = minRatedVoltage;
+      this.stateName = stateName;
     }
     
     /**
@@ -79,6 +81,10 @@ public class TransmissionLines {
      */
     public String getFilterName() {
       return filterName;
+    }
+    
+    public String getStateName() {
+      return this.stateName;
     }
     
     /**
@@ -97,11 +103,21 @@ public class TransmissionLines {
 
       private Double minRatedVoltage = null;
       private String filterName = null;
+      private String stateName = null;
 
       public Builder() {
 
       }
 
+      /**
+       *
+       * @param filterName
+       * @return
+       */
+      public Builder filterByStateName(String stateName) {
+        this.stateName = stateName;
+        return this;
+      }
       /**
        *
        * @param filterName
@@ -127,7 +143,8 @@ public class TransmissionLines {
        * @return
        */
       public Filter build() {
-        return new Filter(minRatedVoltage, filterName);
+        Objects.requireNonNull(this.stateName, "State name cannot be null"); 
+        return new Filter(minRatedVoltage, filterName, stateName);
       }
     }
 

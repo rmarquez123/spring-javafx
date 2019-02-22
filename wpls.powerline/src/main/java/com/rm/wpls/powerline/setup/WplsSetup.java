@@ -1,9 +1,9 @@
 package com.rm.wpls.powerline.setup;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.rm.wpls.powerline.TerrainData;
 import com.rm.wpls.powerline.TransmissionLines;
 import com.rm.wpls.powerline.WindRecords;
+import com.vividsolutions.jts.geom.Envelope;
 import gov.inl.glass3.weather.WeatherStations;
 
 /**
@@ -42,8 +42,4 @@ public final class WplsSetup {
     TerrainData terrainData = this.setUpSource.getTerrain(srid, env, pctResolution);
     this.exporter.exportTerrain(terrainData);    
   }
-
-  
-  
-
 }
