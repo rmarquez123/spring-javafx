@@ -30,6 +30,7 @@ public class FxmlInitializer implements InitializingBean {
   private final Map<String, Object> controllers = new HashMap<>();
   private String sceneRoot;
   private boolean initialized = false;
+  private boolean initializing = false;
   private List<Consumer<FxmlInitializer>> listeners = new ArrayList<>();
 
   /**
@@ -117,31 +118,47 @@ public class FxmlInitializer implements InitializingBean {
    */
   public void initializeRoots(ApplicationContext context) {
     if (!this.isInitialized()) {
+      if (this.initializing) {
+        throw new IllegalStateException("Fxml loaders are initalizing.  Add a listener instead.");
+      }
+      this.initializing = true;
       ClassLoader classLoader = this.getClass().getClassLoader();
-      this.fxmlList.stream().forEach((fxml) -> {
-        URL resource = classLoader.getResource(fxml);
-        FXMLLoader loader = new FXMLLoader(resource);
-        loader.setControllerFactory(context::getBean);
-        Parent root;
-        try {
-          root = loader.load();
-        } catch (IOException ex) {
-          throw new RuntimeException("Error loading fxml from resource.  Check args : {"
-            + "fxml = " + fxml
-            + "}", ex);
+      for (String fxml : this.fxmlList) {
+        if (!this.rootNodes.containsKey(fxml)) {
+          URL resource = classLoader.getResource(fxml);
+          FXMLLoader loader = new FXMLLoader(resource);
+          loader.setControllerFactory(context::getBean);
+          Parent root;
+          try {
+            root = loader.load();
+          } catch (IOException ex) {
+            throw new RuntimeException("Error loading fxml from resource.  Check args : {"
+              + "fxml = " + fxml
+              + "}", ex);
+          }
+          if (!this.rootNodes.containsKey(fxml)) {
+            this.rootNodes.put(fxml, root);
+            Object controller = loader.getController();
+            this.controllers.put(fxml, controller);
+          }
         }
-        this.rootNodes.put(fxml, root);
-        Object controller = loader.getController();
-        this.controllers.put(fxml, controller);
-
-      });
-    }
-    this.initialized = true;
-    for (Consumer<FxmlInitializer> listener : this.listeners) {
-      listener.accept(this);
+      }
+      this.initializing = false;
+      this.initialized = true;
+      for (Consumer<FxmlInitializer> listener : this.listeners) {
+        listener.accept(this);
+      }
     }
   }
-
+  
+  /**
+   * 
+   * @return 
+   */
+  public Parent getMainRoot() {
+    return this.getRoot(this.sceneRoot); 
+  }
+  
   /**
    *
    * @param fxml
@@ -153,7 +170,9 @@ public class FxmlInitializer implements InitializingBean {
     }
     return this.rootNodes.get(fxml);
   }
-
+  
+  
+  
   /**
    *
    * @param fxml

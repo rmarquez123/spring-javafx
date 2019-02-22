@@ -39,6 +39,7 @@ public class TreeModelBeanDefParser extends AbstractBeanDefinitionParser {
         for (Element dsEl : dsEls) {
           BeanDefinitionBuilder dsBuilder = BeanDefinitionBuilder.rootBeanDefinition(TreeDataSource.class);
           dsBuilder.addPropertyValue("level", dsEl.getAttribute("level"));
+          dsBuilder.addPropertyValue("idField", dsEl.getAttribute("idField"));
           dsBuilder.addPropertyReference("datasource", dsEl.getAttribute("ref"));
           datasources.add(dsBuilder.getBeanDefinition()); 
         }

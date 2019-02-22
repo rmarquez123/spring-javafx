@@ -2,6 +2,7 @@ package com.rm.springjavafx;
 
 import java.lang.reflect.Field;
 import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
@@ -121,6 +122,7 @@ public final class SpringFxUtils {
 
       if (node instanceof SplitPane) {
         SplitPane splitPane = (SplitPane) node;
+
         for (Node itemNode : splitPane.getItems()) {
           nodeId = itemNode.idProperty().get();
 
@@ -166,6 +168,20 @@ public final class SpringFxUtils {
             }
           }
 
+        }
+      } else if (node instanceof ToolBar) {
+        ObservableList<Node> items = ((ToolBar) node).getItems();
+        for (Node item : items) {
+          nodeId = item.idProperty().get();
+          if (nodeId != null && nodeId.equals(id)) {
+            return (T) item;
+          }
+          if (item instanceof Parent) {
+            T child = getChildByID((Parent) item, id);
+            if (child != null) {
+              return child;
+            }
+          }
         }
 
       } else if (node instanceof Parent) {

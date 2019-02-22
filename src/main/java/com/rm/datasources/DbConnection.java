@@ -99,6 +99,19 @@ public class DbConnection {
     return result;
   }
 
+  public Exception test() {
+    Exception result;
+    try {
+      this.connection = this.getConnection();
+      this.connection.close();
+      this.connection = null;
+      result = null;
+    } catch(Exception ex) {
+      result = ex;
+    }
+    return result;
+  }
+
   /**
    *
    */

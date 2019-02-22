@@ -11,29 +11,30 @@ import org.springframework.beans.factory.annotation.Required;
  *
  * @author rmarquez
  */
-public class PopupFactory implements FactoryBean<Popup>, InitializingBean  {
-  
+public class PopupFactory implements FactoryBean<Popup>, InitializingBean {
+
   @Autowired
   private FxmlInitializer initializer;
-  
+
   private String contentFxml;
-        
+
   public PopupFactory() {
-    
+
   }
+
   /**
-   * 
-   * @param initializer 
+   *
+   * @param initializer
    */
   public void setFxmlInitializer(FxmlInitializer initializer) {
     this.initializer = initializer;
   }
-  
+
   @Required
   public void setContentFxml(String contentFxml) {
     this.contentFxml = contentFxml;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -41,12 +42,18 @@ public class PopupFactory implements FactoryBean<Popup>, InitializingBean  {
    */
   @Override
   public Popup getObject() throws Exception {
-    Node content = this.initializer.getRoot(this.contentFxml);
-    Object controller = this.initializer.getController(contentFxml);
-    Popup result = new Popup(content, (PopupContent) controller);
+
+    
+    Popup result = new Popup();
+    this.initializer.addListener((ab) -> {
+      Node content = this.initializer.getRoot(this.contentFxml);
+      Object controller = this.initializer.getController(contentFxml);
+      result.contentNodeProperty().setValue(content);
+      result.popupControllerProperty().setValue((PopupContent) controller);
+    });
     return result;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -56,7 +63,7 @@ public class PopupFactory implements FactoryBean<Popup>, InitializingBean  {
   public Class<?> getObjectType() {
     return Popup.class;
   }
-  
+
   /**
    * {@inheritDoc}
    * <p>
@@ -64,9 +71,6 @@ public class PopupFactory implements FactoryBean<Popup>, InitializingBean  {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    
   }
-  
-  
-  
+
 }

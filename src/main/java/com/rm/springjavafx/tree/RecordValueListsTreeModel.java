@@ -40,7 +40,6 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
     this.treeNodes.addListener((obs, old, change) -> {
       this.numLevelsProperty.setValue(this.treeNodes.size());
     });
-    
   }
 
   @Override
@@ -49,12 +48,12 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
   }
 
   @Override
-  public ObservableList getMultiSelectionProperty() {
+  public ObservableList<RecordValue> getMultiSelectionProperty() {
     return multiSelection;
   }
 
   @Override
-  public ObjectProperty getSingleSelectionProperty() {
+  public ObjectProperty<RecordValue> getSingleSelectionProperty() {
     return singleSelection;
   }
 
@@ -199,5 +198,20 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
     } else {
       this.treeNodes.getValue().get(level).setValue(result);
     }
+  }
+
+  Integer getLevelOf(RecordValue change) {
+    Integer result = null;
+    for (int i = 0; i < this.getNumberOfLevels(); i++) {
+      Object idValue = change.getIdValue();
+      if (idValue != null) {
+        TreeNode<RecordValue> r = this.getNode(i, idValue);
+        if (r != null) {
+          result = i;
+          break;
+        }
+      }
+    }
+    return result;
   }
 }

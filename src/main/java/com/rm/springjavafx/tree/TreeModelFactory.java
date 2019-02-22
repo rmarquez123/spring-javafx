@@ -1,12 +1,10 @@
 package com.rm.springjavafx.tree;
 
-import com.rm.datasources.RecordValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.property.ListProperty;
-import javafx.scene.control.TreeItem;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -41,7 +39,7 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
    */
   @Override
   public TreeModel getObject() throws Exception {
-    RecordValueListsTreeModel result = new RecordValueListsTreeModel();
+    final RecordValueListsTreeModel result = new RecordValueListsTreeModel();
     Map<Integer, Link> linksMap = new HashMap<>();
     for (Link link : this.links) {
       Integer level = link.getLevel();
@@ -52,21 +50,27 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
       level = treeDs.getLevel();
       ListProperty prop = treeDs.getDatasource().listProperty();
       Link link = (level == 0) ? null : linksMap.get(level);
-      result.addLevel(this.id, link, prop);
+      result.addLevel(treeDs.getIdField(), link, prop);
+      treeDs.getDatasource().getSingleSelectionProperty().addListener((obs, old, change)->{
+        result.getSingleSelectionProperty().setValue(change);
+      });
     }
     
     result.getSingleSelectionProperty().addListener((obs, old, change)->{
       List<TreeDataSource> ds = this.datasources;
-      for (TreeDataSource datasource : this.datasources) {
-        datasource.getDatasource().getSingleSelectionProperty().setValue(null);
-      }
+      TreeDataSource dataSource = null;
       if (change != null) {
-        TreeNode node = (TreeNode) ((TreeItem) change).getValue();
-        int l = node.getLevel();
-        TreeDataSource dataSource = this.datasources.get(l);
-        dataSource.getDatasource().getSingleSelectionProperty().setValue((RecordValue) node.getValueObject());
+        Integer levelOf = result.getLevelOf(change);
+        dataSource = datasources.get(levelOf);
+        dataSource.getDatasource().getSingleSelectionProperty().setValue(change);
+      }
+      for (TreeDataSource dss : this.datasources) {
+        if (dss != dataSource) {
+          dss.getDatasource().getSingleSelectionProperty().setValue(null);
+        }
       }
     });
+    
     
     return result;
   }

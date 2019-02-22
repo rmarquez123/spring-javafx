@@ -314,6 +314,7 @@
     <xsd:complexType>
       <xsd:attribute name="level" type="xsd:integer"/>
       <xsd:attribute name="ref" type="xsd:string"/>
+      <xsd:attribute name="idField" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   
@@ -436,6 +437,14 @@
     </xsd:complexType>
   </xsd:element>
   
+  <xsd:element name="childnode"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
   <xsd:element name="null_if_null"> 
     <xsd:complexType>
       <xsd:attribute name="id" type="xsd:ID"/>
@@ -443,6 +452,7 @@
       <xsd:attribute name="property" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
+  
   
   
   
