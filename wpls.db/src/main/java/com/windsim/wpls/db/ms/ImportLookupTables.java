@@ -21,7 +21,7 @@ public class ImportLookupTables {
   public static void main(String[] args) throws Exception {
     String file = "C:\\Data\\Test\\glass_noaa\\NOAAConfigurationWithCorrectWeatherStations.glass";
     InputStream inputStream = new FileInputStream(file);
-    FilesLookupTablesLoader loader = new FilesLookupTablesLoader(inputStream);
+    FilesLookupTablesLoader loader = new FilesLookupTablesLoader(inputStream, "LookUpTable");
     LookupTables lookupTables = loader.loadLookupTables();
     Map<String, String> credentials = new HashMap<>();
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("wpls_idaho_power_pu_ms", credentials);

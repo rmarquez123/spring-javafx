@@ -24,7 +24,7 @@ public class ImportModelPoints {
   public static void main(String[] args) throws Exception {
     String file = "C:\\Data\\Test\\glass_noaa\\NOAAConfigurationWithCorrectWeatherStations.glass";
     InputStream inputStream = new FileInputStream(file);
-    FilesModelPointsLoader pointsLoader = new FilesModelPointsLoader(inputStream);
+    FilesModelPointsLoader pointsLoader = new FilesModelPointsLoader(inputStream, "ModelPoint");
     ModelPoints modelPoints = pointsLoader.loadModelPoints();
     Map<String, String> credentials = new HashMap<>();
     credentials.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/idaho_power");

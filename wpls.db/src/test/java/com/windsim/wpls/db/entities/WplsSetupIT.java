@@ -21,7 +21,7 @@ import org.junit.Test;
  *
  * @author Ricardo Marquez
  */
-public class WplsSetupTest {
+public class WplsSetupIT {
 
   private DbConnection dbConnection;
   /**
@@ -38,12 +38,10 @@ public class WplsSetupTest {
       .createDbConnection();
   }
   
-  
   /**
    * 
    */
   @Test
-//  @Ignore
   public void createPowerLineModuleFiles() {
     double minVoltage = 200.0;
     int srid = 26918;
@@ -62,6 +60,7 @@ public class WplsSetupTest {
   private WplsSetupSource createPowerLineModule(double minVoltage) {
     TransmissionLines.Filter filter = new TransmissionLines.Filter.Builder()
       .filterByMinRatedVoltage(minVoltage)
+      .filterByStateName("New York")
       .build();
     TransmissionLineSource trLineSource = new PgTransmissionLineSource(dbConnection);
     WeatherStationsSource wsSource = new PgWeatherStationsSource(dbConnection);

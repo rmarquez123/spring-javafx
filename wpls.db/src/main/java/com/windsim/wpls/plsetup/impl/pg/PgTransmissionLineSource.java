@@ -1,20 +1,21 @@
 package com.windsim.wpls.plsetup.impl.pg;
 
 import com.rm.datasources.DbConnection;
+import com.rm.wpls.powerline.TransmissionLine;
+import com.rm.wpls.powerline.TransmissionLines;
+import com.rm.wpls.powerline.setup.TransmissionLineSource;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
-import com.rm.wpls.powerline.TransmissionLine;
-import com.rm.wpls.powerline.TransmissionLines;
-import com.rm.wpls.powerline.setup.TransmissionLineSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,12 +106,15 @@ public class PgTransmissionLineSource implements TransmissionLineSource {
    * @return
    */
   private String createQueryString(int srid, TransmissionLines.Filter filter) {
-    String baseSqlQuery = "with new_york as (\n"
+    Objects.requireNonNull(filter.getStateName(), "State cannot be null in filter"); 
+    String withStatement = "with state as (\n"
       + "	select \n"
       + "    	state.geom as geom\n"
       + "   	FROM cb_2016_us_state_500k state\n"
       + "    where state.NAME = 'New York'\n"
-      + ") \n"
+      + ") \n";
+    
+    String baseSqlQuery = withStatement  
       + "select\n"
       + "	line.gid\n"
       + "    , line.objectid\n"
@@ -121,8 +125,8 @@ public class PgTransmissionLineSource implements TransmissionLineSource {
       + "    , st_asbinary(st_transform(st_linemerge(line.geom), " + srid + ")) as geom \n"
       + "\n"
       + "from electric_power_transmission_lines line\n"
-      + "join new_york ny\n"
-      + "	on st_contains(ny.geom, st_transform(line.geom, st_srid(ny.geom))) \n";
+      + "join state st\n"
+      + "	on st_contains(st.geom, st_transform(line.geom, st_srid(st.geom))) \n";
     String whereClause = "where";
     if (filter.getMinRatedVoltage() != null) {
       String toAppend = " line.voltage > " + filter.getMinRatedVoltage();
