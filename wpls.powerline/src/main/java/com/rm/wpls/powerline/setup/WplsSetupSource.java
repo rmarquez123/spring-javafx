@@ -1,9 +1,9 @@
 package com.rm.wpls.powerline.setup;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.rm.wpls.powerline.TerrainData;
 import com.rm.wpls.powerline.TransmissionLines;
 import com.rm.wpls.powerline.WindRecords;
+import com.vividsolutions.jts.geom.Envelope;
 import gov.inl.glass3.weather.WeatherStations;
 
 /**
@@ -11,13 +11,13 @@ import gov.inl.glass3.weather.WeatherStations;
  * @author Ricardo Marquez
  */
 public final class WplsSetupSource {
+
   private final TransmissionLines.Filter filter;
   private final TransmissionLineSource trLineSource;
   private final WeatherStationsSource wsSource;
   private final WeatherRecordsSource recordsSource;
   private final TerrainDataSource terrainSource;
-  
-  
+
   /**
    *
    * @param filter
@@ -26,10 +26,10 @@ public final class WplsSetupSource {
    * @param recordsSource
    * @param terrainSource
    */
-  public WplsSetupSource(TransmissionLines.Filter filter, 
-    TransmissionLineSource trLineSource, 
-    WeatherStationsSource wsSource, 
-    WeatherRecordsSource recordsSource, 
+  public WplsSetupSource(TransmissionLines.Filter filter,
+    TransmissionLineSource trLineSource,
+    WeatherStationsSource wsSource,
+    WeatherRecordsSource recordsSource,
     TerrainDataSource terrainSource) {
     this.filter = filter;
     this.trLineSource = trLineSource;
@@ -44,8 +44,8 @@ public final class WplsSetupSource {
    * @return
    */
   public TransmissionLines getTransmissionLines(int srid) {
-    TransmissionLines result = this.trLineSource.getTransmissionLines(srid, this.filter); 
-    return result; 
+    TransmissionLines result = this.trLineSource.getTransmissionLines(srid, this.filter);
+    return result;
   }
 
   /**
@@ -55,8 +55,8 @@ public final class WplsSetupSource {
    * @return
    */
   public WeatherStations getWeatherStations(int srid, Envelope env) {
-    WeatherStations result = this.wsSource.getWeatherStations(srid, env); 
-    return result; 
+    WeatherStations result = this.wsSource.getWeatherStations(srid, env);
+    return result;
   }
 
   /**
@@ -70,15 +70,23 @@ public final class WplsSetupSource {
     TerrainData result = this.terrainSource.getTerrain(srid, env, pctResolution);
     return result;
   }
-  
+
   /**
-   * 
+   *
    * @param stations
-   * @return 
+   * @return
    */
   public WindRecords getWeatherRecords(WeatherStations stations) {
     WindRecords result = this.recordsSource.getWeatherRecords(stations);
     return result;
+  }
+
+  /**
+   *
+   * @return
+   */
+  Envelope getFilterEnvelope() {
+    return this.filter.getEnvelope();
   }
 
 }

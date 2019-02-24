@@ -8,32 +8,39 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Ricardo Marquez
  */
 public abstract class TerrainData {
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
-  public int getNumRows(){
+  public int getNumRows() {
     return this.size().getHeight();
-  };
+  }
+
+  ;
   
   /**
    * 
    * @return 
    */
   public int getNumCols() {
-    return this.size().getWidth(); 
-  };
+    return this.size().getWidth();
+  }
+
+  ;
   
   
   /**
    * 
    * @return 
    */
-  public Envelope getExtent(){
+  public Envelope getExtent() {
     Dimension dimension = this.size();
-    Envelope env = dimension.getExtent(); 
+    Envelope env = dimension.getExtent();
     return env;
-  };
+  }
+
+  ;
   
   
   /**
@@ -43,24 +50,40 @@ public abstract class TerrainData {
   public abstract Dimension size();
 
   /**
-   * 
+   *
    * @param row
    * @param column
    * @param count
-   * @return 
+   * @return
    */
   public abstract float[] getRowData(int row, int column, int count);
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public abstract float getMinValue();
 
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public abstract float getMaxValue();
-  
+
+  /**
+   *
+   * @return
+   */
+  public double getDeltaX() {
+    return this.getExtent().getWidth() / this.getNumCols();
+  }
+
+  /**
+   *
+   * @return
+   */
+  public double getDeltaY() {
+    return this.getExtent().getHeight() / this.getNumRows();
+  }
+
 }

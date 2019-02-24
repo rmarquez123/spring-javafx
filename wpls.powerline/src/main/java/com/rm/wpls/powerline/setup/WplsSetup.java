@@ -32,8 +32,14 @@ public final class WplsSetup {
    */
   public void preparePowerLineModule() {
     int srid = this.project.getSrid();
+    
     TransmissionLines transmissionLines = this.setUpSource.getTransmissionLines(srid);
-    Envelope env = transmissionLines.getEnvelope();
+    Envelope env; 
+    if (this.setUpSource.getFilterEnvelope() == null) {
+      env = transmissionLines.getEnvelope();
+    } else {
+      env = this.setUpSource.getFilterEnvelope(); 
+    }
     WeatherStations stations = this.setUpSource.getWeatherStations(srid, env); 
     this.exporter.exportStations(transmissionLines, stations);
     WindRecords records = this.setUpSource.getWeatherRecords(stations); 

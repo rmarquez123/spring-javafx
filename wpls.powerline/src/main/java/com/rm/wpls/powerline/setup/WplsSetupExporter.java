@@ -1,22 +1,25 @@
 package com.rm.wpls.powerline.setup;
 
 import com.rm.springjavafx.properties.DateRange;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Point;
 import com.rm.wpls.powerline.TerrainData;
 import com.rm.wpls.powerline.TransmissionLine;
 import com.rm.wpls.powerline.TransmissionLines;
 import com.rm.wpls.powerline.WindRecords;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Point;
 import gov.inl.glass3.weather.WeatherStation;
 import gov.inl.glass3.weather.WeatherStations;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -49,6 +52,9 @@ public final class WplsSetupExporter {
     FileWriter writer = null;
     try {
       File exportDir = this.project.getExportDir();
+      if (!exportDir.exists()) {
+        exportDir.mkdirs();
+      }
       File output = new File(exportDir, "powerline_conf.txt");
       boolean append = false;
 
@@ -70,7 +76,9 @@ public final class WplsSetupExporter {
       throw new RuntimeException(ex);
     } finally {
       try {
-        writer.close();
+        if (writer != null) {
+          writer.close();
+        }
       } catch (IOException ex) {
         Logger.getLogger(WplsSetupExporter.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -138,42 +146,65 @@ public final class WplsSetupExporter {
       int numRows = terrainData.getNumRows();
       int numCols = terrainData.getNumCols();
       Envelope env = terrainData.getExtent();
-      int columnsLimit = 10;
-      writer.append("WindSim version : 470")
+      final int columnsLimit = 10;
+      writer.append("WindSim version    : 470")
         .append(NEW_LINE).append(NEW_LINE);
-      writer.append("area name: power_line")
+      writer.append("area name          : power_line")
         .append(NEW_LINE).append(NEW_LINE);
-      writer.append("#nodes nxp nyp:").append("\t").append(String.valueOf(numCols))
-        .append("\t").append(String.valueOf(numRows)).append(NEW_LINE).append(NEW_LINE);
-
-      writer.append("ext xmin xmax :")
-        .append("\t").append(String.valueOf(env.getMinX()))
-        .append("\t").append(String.valueOf(env.getMinX()))
-        .append(NEW_LINE).append(NEW_LINE);
-
-      writer.append("ext ymin ymax :")
-        .append("\t").append(String.valueOf(env.getMinY()))
-        .append("\t").append(String.valueOf(env.getMaxY()))
-        .append(NEW_LINE).append(NEW_LINE);
-
+      String tab = "          ";
+      writer.append("#nodes nxp nyp     :").append(tab).append(String.valueOf(numCols))
+        .append(tab).append(String.valueOf(numRows)).append(NEW_LINE).append(NEW_LINE);
+      writer.append("co-ordinate system : 3").append(NEW_LINE); 
+      writer.append("ext. xmin xmax     :")
+        .append(tab).append(String.valueOf(env.getMinX() + terrainData.getDeltaX()/2.0))
+        .append(tab).append(String.valueOf(env.getMaxX() - terrainData.getDeltaX()/2.0))
+        .append(NEW_LINE);
+      writer.append("ext. ymin ymax     :")
+        .append(tab).append(String.valueOf(env.getMinY()  + terrainData.getDeltaY()/2.0 ))
+        .append(tab).append(String.valueOf(env.getMaxY()  - terrainData.getDeltaY()/2.0))
+        .append(NEW_LINE);
       double minValue = terrainData.getMinValue();
       double maxValue = terrainData.getMaxValue();
+      writer.append("ext. zmin zmax     :")
+        .append(tab).append(String.valueOf(minValue))
+        .append(tab).append(String.valueOf(maxValue))
+        .append(NEW_LINE);
 
-      writer.append("ext zmin zmax :")
-        .append("\t").append(String.valueOf(minValue))
-        .append("\t").append(String.valueOf(maxValue))
-        .append(NEW_LINE).append(NEW_LINE);
-
-      writer.append("HEIGHT\t:").append(NEW_LINE);
-      for (int row = 0; row < numRows; row++) {
-        int rowPlus1 = row + 1;
-        writer.append("\t").append(String.valueOf(rowPlus1)).append(NEW_LINE);
+      writer.append("HEIGHT" + tab + ":").append(NEW_LINE);
+      float no_data_value = -32768.0f;
+      NumberFormat formatter = new DecimalFormat(".00000E00");
+      
+      for (int row = numRows - 1; row >= 0 ; row--) {
+        int rowPlus1 = numRows - row;
+        writer.append(tab).append(String.valueOf(rowPlus1)).append(NEW_LINE);
         for (int column = 0; column < numCols; column = column + columnsLimit) {
           float[] rowData = terrainData.getRowData(row, column, columnsLimit);
+          
           String line = Arrays.asList(ArrayUtils.toObject(rowData)).stream()
-            .map((e) -> String.valueOf(e))
-            .collect(Collectors.joining("\t"));
-          writer.append("\t").append(line).append(NEW_LINE);
+            .map((e) -> {
+              double number = (Objects.equals(e, no_data_value) ? 0.00001 : e); 
+              String text = String.format("%16s", "0"+formatter.format(number).replace("E0", "E+0"));
+              return text;
+            }).collect(Collectors.joining());
+          writer.append(line).append(NEW_LINE);
+        }
+      }
+      
+      writer.append("ROUGHNESS" + tab + ":").append(NEW_LINE);
+      
+      for (int row = numRows - 1; row >= 0 ; row--) {
+        int rowPlus1 = numRows - row;
+        writer.append(tab).append(String.valueOf(rowPlus1)).append(NEW_LINE);
+        for (int column = 0; column < numCols; column = column + columnsLimit) {
+          float[] rowData = terrainData.getRowData(row, column, columnsLimit);
+          
+          String line = Arrays.asList(ArrayUtils.toObject(rowData)).stream()
+            .map((e) -> {
+              double number = (Objects.equals(e, no_data_value) ? 0.01 : e/10000.0*2);
+              String text = String.format("%16s", "0"+formatter.format(number).replace("E0", "E+0"));
+              return text;
+            }).collect(Collectors.joining());
+          writer.append(line).append(NEW_LINE);
         }
       }
       writer.flush();
@@ -181,7 +212,9 @@ public final class WplsSetupExporter {
       throw new RuntimeException(ex);
     } finally {
       try {
-        writer.close();
+        if (writer != null) {
+          writer.close();
+        }
       } catch (IOException ex) {
         Logger.getLogger(WplsSetupExporter.class.getName()).log(Level.SEVERE, null, ex);
       }

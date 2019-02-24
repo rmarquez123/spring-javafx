@@ -17,13 +17,13 @@ public class Project {
    * @param srid
    * @param exportDir
    */
-  public Project(int srid, File exportDir) {
+  public Project(int srid, File exportDir, double terrainPctResolution) {
     if (exportDir == null) {
       throw new NullPointerException("export directory cannot be null");
     }
     this.srid = srid;
     this.exportDir = exportDir;
-    this.terrainPctResolution = 0.10;
+    this.terrainPctResolution = terrainPctResolution;
   }
 
   public int getSrid() {

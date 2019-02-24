@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 /**
  *
  * @author Ricardo Marquez
@@ -11,18 +12,18 @@ import java.util.Objects;
 public class TransmissionLines {
 
   private final List<TransmissionLine> lines;
-    
+
   /**
-   * 
-   * @param lines 
+   *
+   * @param lines
    */
   public TransmissionLines(List<TransmissionLine> lines) {
     this.lines = new ArrayList<>(lines);
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public int size() {
     return this.lines.size();
@@ -30,30 +31,37 @@ public class TransmissionLines {
 
   public Envelope getEnvelope() {
     Envelope result;
+    
     if (!this.lines.isEmpty()) {
       result = null;
       for (TransmissionLine line : this.lines) {
         Envelope env = line.getEnvelope();
         if (result == null) {
-          result = new Envelope(env); 
+          result = new Envelope(env);
         } else {
           result.expandToInclude(env);
         }
       }
     } else {
       result = null;
-    }    
+    }
     return result;
   }
 
-  
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public List<TransmissionLine> asList() {
     return new ArrayList<>(this.lines);
   }
+
+  @Override
+  public String toString() {
+    return "TransmissionLines{" + "lines=" + lines.size() + '}';
+  }
+  
+  
 
   /**
    *
@@ -63,38 +71,51 @@ public class TransmissionLines {
     private final Double minRatedVoltage;
     private final String filterName;
     private final String stateName;
+    private final Envelope envelope;
 
     /**
      *
      * @param minRatedVoltage
      * @param filterName
      */
-    public Filter(Double minRatedVoltage, String filterName, String stateName) {
+    public Filter(Double minRatedVoltage, String filterName, String stateName, Envelope envelope) {
       this.filterName = filterName;
       this.minRatedVoltage = minRatedVoltage;
       this.stateName = stateName;
+      this.envelope = envelope;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getFilterName() {
       return filterName;
     }
-    
+
+    /**
+     *
+     * @return
+     */
     public String getStateName() {
       return this.stateName;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
+     */
+    public Envelope getEnvelope() {
+      return envelope;
+    }
+
+    /**
+     *
+     * @return
      */
     public Double getMinRatedVoltage() {
       return minRatedVoltage;
     }
-    
 
     /**
      *
@@ -104,6 +125,7 @@ public class TransmissionLines {
       private Double minRatedVoltage = null;
       private String filterName = null;
       private String stateName = null;
+      private Envelope envelope = null;
 
       public Builder() {
 
@@ -118,6 +140,7 @@ public class TransmissionLines {
         this.stateName = stateName;
         return this;
       }
+
       /**
        *
        * @param filterName
@@ -140,12 +163,23 @@ public class TransmissionLines {
 
       /**
        *
+       * @param envelope
+       * @return
+       */
+      public Builder filterByEnvelope(Envelope envelope) {
+        this.envelope = envelope;
+        return this;
+      }
+
+      /**
+       *
        * @return
        */
       public Filter build() {
-        Objects.requireNonNull(this.stateName, "State name cannot be null"); 
-        return new Filter(minRatedVoltage, filterName, stateName);
+        Objects.requireNonNull(this.stateName, "State name cannot be null");
+        return new Filter(this.minRatedVoltage, this.filterName, this.stateName, this.envelope);
       }
+
     }
 
   }
