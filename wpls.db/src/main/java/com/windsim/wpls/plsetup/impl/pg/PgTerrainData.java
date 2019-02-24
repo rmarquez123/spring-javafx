@@ -3,8 +3,8 @@ package com.windsim.wpls.plsetup.impl.pg;
 import com.rm.datasources.DbConnection;
 import com.rm.fxmap.postgres.PgUtils;
 import com.rm.panzoomcanvas.core.Dimension;
-import com.vividsolutions.jts.geom.Envelope;
 import com.rm.wpls.powerline.TerrainData;
+import com.vividsolutions.jts.geom.Envelope;
 import java.sql.SQLException;
 import java.util.Set;
 import mil.nga.tiff.FileDirectoryEntry;
@@ -105,17 +105,17 @@ public final class PgTerrainData extends TerrainData {
    *
    * @param row
    * @param column
-   * @param count
+   * @param columnsLimit
    * @return
    */
   @Override
-  public synchronized float[] getRowData(int row, int column, int count) {
+  public synchronized float[] getRowData(int row, int column, int columnsLimit) {
     if (this.image == null) {
       readImage();
     }
     int minX = column;
     int imageWidth = this.image.getFileDirectory().getImageWidth().intValue();
-    int maxX = Math.min(column + count, imageWidth);
+    int maxX = Math.min(column + columnsLimit, imageWidth);
     int minY = row;
     int maxY = row + 1;
     ImageWindow window = new ImageWindow(minX, minY, maxX, maxY);
@@ -133,27 +133,68 @@ public final class PgTerrainData extends TerrainData {
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
-    return result;
+    float[] fixedResult = new float[columnsLimit];
+    for (int i = 0; i < columnsLimit; i++) {
+      if (i < result.length) {
+        fixedResult[i] = result[i];
+      } else {
+        fixedResult[i] = 0f;
+      }
+    }
+    return fixedResult;
   }
 
   /**
-   * Queries the database for the raster dimensions based on the envelope and srid. 
+   * Queries the database for the raster dimensions based on the envelope and srid.
    *
-   * @return The raster dimension in units consistent with the srid.  
+   * @return The raster dimension in units consistent with the srid.
    */
   private Dimension queryDimension() {
     String envText = PgUtils.getMakeEnvelopeText(this.env, this.srid);
-    int sourceSrid = 4326;
-    String sql = "select\n"
-      + "	st_metadata(st_resize(st_transform(st_union(st_clip(ter.rast, st_transform(" + envText + ", " + sourceSrid + " ), true)), " + this.srid + "), "
-      + String.valueOf(this.resizePct) + ", " + String.valueOf(this.resizePct) + ")) as metadata\n"
+    double scalexy = 500;
+    String sql = "with env as (\n"
+      + "	select \n"
+      + "    	ref.*\n"
+      + "    	, st_makeenvelope(st_xmin(ref.regular) - ref.scalexy*2, \n"
+      + "                          st_ymin(ref.regular) - ref.scalexy*2,	\n"
+      + "                          st_xmax(ref.regular) + ref.scalexy*2, \n"
+      + "                          st_ymax(ref.regular) + ref.scalexy*2, \n"
+      + "                          ref.srid) as buffered\n"
+      + "    from (select\n"
+      + "     	" + envText + " as regular\n"
+      + "		, " + this.srid + " as srid\n"
+      + "    	, " + scalexy + " as scalexy\n"
+      + "     ) ref\n"
+      + ")\n"
+      + "select\n"
+      + "	st_metadata(\n"
+      + "        st_clip(\n"
+      + "            st_snaptogrid (\n"
+      + "                st_rescale(\n"
+      + "                    st_transform(\n"
+      + "                        st_union(\n"
+      + "                            st_clip(\n"
+      + "                                ter.rast\n"
+      + "                                ,  st_transform(env.buffered, st_srid(ter.rast))\n"
+      + "                                , true\n"
+      + "                            )\n"
+      + "                        )\n"
+      + "                    , env.srid),\n"
+      + "                env.scalexy)\n"
+      + "            , st_xmin(env.regular), st_ymin(env.regular)) \n"
+      + "        , env.regular, true)\n"
+      + "    )\n"
+      + "	as metadata \n"
       + "from terrain ter\n"
-      + "where st_intersects(st_envelope(ter.rast), st_transform(" + envText + ", " + sourceSrid + "))";
+      + "join env \n"
+      + "	on st_intersects(st_envelope(ter.rast), st_transform(env.regular, st_srid(ter.rast)))\n"
+      + "group by env.regular, env.buffered, env.srid, env.scalexy";
     PgUtils.logLongQuery(sql);
     MutableObject<Dimension> result = new MutableObject<>();
     this.dbConnection.executeQuery(sql, (rs) -> {
       try {
         PGobject metaDataAsPgObject = (PGobject) rs.getObject("metadata");
+        
         if (metaDataAsPgObject != null) {
           String value = metaDataAsPgObject.getValue();
           String[] parts = value.replace("(", "").replace(")", "").split(",", -1);
@@ -198,13 +239,46 @@ public final class PgTerrainData extends TerrainData {
    *
    */
   private void readImage() {
-    int sourceSrid = 4326;
     String envText = PgUtils.getMakeEnvelopeText(this.env, this.srid);
-    String sql = "select\n"
-      + "	st_astiff(st_resize(st_transform(st_union(st_clip(ter.rast, st_transform(" + envText + ", " + sourceSrid + " ), true)), " + this.srid + "), "
-      + String.valueOf(this.resizePct) + ", " + String.valueOf(this.resizePct) + ")) as rast\n"
+    double scalexy = 500;
+    String sql = "with env as (\n"
+      + "	select \n"
+      + "    	ref.*\n"
+      + "    	, st_makeenvelope(st_xmin(ref.regular) - ref.scalexy*2, \n"
+      + "                          st_ymin(ref.regular) - ref.scalexy*2,	\n"
+      + "                          st_xmax(ref.regular) + ref.scalexy*2, \n"
+      + "                          st_ymax(ref.regular) + ref.scalexy*2, \n"
+      + "                          ref.srid) as buffered\n"
+      + "    from (select\n"
+      + "     	" + envText + " as regular\n"
+      + "		, " + this.srid + " as srid\n"
+      + "    	, " + scalexy + " as scalexy\n"
+      + "     ) ref\n"
+      + ")\n"
+      + "select\n"
+      + "	st_astiff(\n"
+      + "        st_clip(\n"
+      + "            st_snaptogrid (\n"
+      + "                st_rescale(\n"
+      + "                    st_transform(\n"
+      + "                        st_union(\n"
+      + "                            st_clip(\n"
+      + "                                ter.rast\n"
+      + "                                ,  st_transform(env.buffered, st_srid(ter.rast))\n"
+      + "                                , true\n"
+      + "                            )\n"
+      + "                        )\n"
+      + "                    , env.srid),\n"
+      + "                env.scalexy)\n"
+      + "            , st_xmin(env.regular), st_ymin(env.regular)) \n"
+      + "        , env.regular, true)\n"
+      + "    )\n"
+      + "	as rast\n"
       + "from terrain ter\n"
-      + "where st_intersects(st_envelope(ter.rast), st_transform(" + envText + ", " + sourceSrid + "))";
+      + "join env \n"
+      + "	on st_intersects(st_envelope(ter.rast), st_transform(env.regular, st_srid(ter.rast)))\n"
+      + "group by env.regular, env.buffered, env.srid, env.scalexy";
+
     PgUtils.logLongQuery(sql);
     this.dbConnection.executeQuery(sql, (rs) -> {
       try {

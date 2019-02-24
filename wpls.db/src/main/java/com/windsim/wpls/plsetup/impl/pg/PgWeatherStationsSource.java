@@ -2,14 +2,15 @@ package com.windsim.wpls.plsetup.impl.pg;
 
 import com.rm.datasources.DbConnection;
 import com.rm.fxmap.postgres.PgUtils;
+import com.rm.wpls.powerline.setup.WeatherStationsSource;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKBReader;
 import gov.inl.glass3.weather.WeatherStation;
 import gov.inl.glass3.weather.WeatherStations;
-import com.rm.wpls.powerline.setup.WeatherStationsSource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -34,6 +35,7 @@ public class PgWeatherStationsSource implements WeatherStationsSource {
    */
   @Override
   public WeatherStations getWeatherStations(int srid, Envelope env) {
+    Objects.requireNonNull(env, "Envelope cannot be null"); 
     String makeEnvelopeText = PgUtils.getMakeEnvelopeText(env, srid);
     String sql = "select \n"
       + " st.station_name, \n "

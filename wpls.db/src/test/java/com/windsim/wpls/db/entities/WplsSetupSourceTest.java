@@ -28,6 +28,7 @@ public class WplsSetupSourceTest {
   private DbConnection dbConnection;
 
   public WplsSetupSourceTest() {
+    
   }
 
   /**
@@ -35,13 +36,7 @@ public class WplsSetupSourceTest {
    */
   @Before
   public void setUp() {
-    this.dbConnection = new DbConnection.Builder()
-      .setUrl("localhost")
-      .setPort(5432)
-      .setUser("postgres")
-      .setPassword("postgres")
-      .setSchema("transmission")
-      .createDbConnection();
+    
   }
 
   @Test
@@ -49,6 +44,14 @@ public class WplsSetupSourceTest {
     "300.0, 123", 
     "200.0, 195"})
   public void test_get_transmission_lines(double minVoltage, int expSize) {
+    this.dbConnection = new DbConnection.Builder()
+      .setUrl("localhost")
+      .setPort(5432)
+      .setUser("postgres")
+      .setPassword("postgres")
+      .setSchema("transmission")
+      .createDbConnection();
+    
     TransmissionLines.Filter filter = new TransmissionLines.Filter.Builder()
       .filterByMinRatedVoltage(minVoltage)
       .filterByStateName("New York")

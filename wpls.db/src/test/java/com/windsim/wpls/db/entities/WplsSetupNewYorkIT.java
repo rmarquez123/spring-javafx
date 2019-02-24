@@ -21,7 +21,7 @@ import org.junit.Test;
  *
  * @author Ricardo Marquez
  */
-public class WplsSetupIT {
+public class WplsSetupNewYorkIT {
 
   private DbConnection dbConnection;
   /**
@@ -46,8 +46,8 @@ public class WplsSetupIT {
     double minVoltage = 200.0;
     int srid = 26918;
     WplsSetupSource setUpSource = this.createPowerLineModule(minVoltage);
-    File file = new File("C:\\Data\\Test\\powerlinemodule");
-    Project project = new Project(srid, file);
+    File file = new File("C:\\Data\\Test\\powerlinemodule\\new_york");
+    Project project = new Project(srid, file, 0.10);
     WplsSetup setup = new WplsSetup(project, setUpSource);
     setup.preparePowerLineModule();
   }

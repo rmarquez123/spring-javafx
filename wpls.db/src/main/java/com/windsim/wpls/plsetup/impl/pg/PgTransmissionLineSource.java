@@ -1,6 +1,7 @@
 package com.windsim.wpls.plsetup.impl.pg;
 
 import com.rm.datasources.DbConnection;
+import com.rm.fxmap.postgres.PgUtils;
 import com.rm.wpls.powerline.TransmissionLine;
 import com.rm.wpls.powerline.TransmissionLines;
 import com.rm.wpls.powerline.setup.TransmissionLineSource;
@@ -50,7 +51,9 @@ public class PgTransmissionLineSource implements TransmissionLineSource {
       ResultSet resultSet = statement.executeQuery();
       result = this.extractResultSet(resultSet);
     } catch (SQLException | ParseException ex) {
-      throw new RuntimeException(ex);
+      throw new RuntimeException("Error on getting transmission lines from database.  Check args: {"
+        + "sqlQuery='" + sqlQuery + "'"
+        + "}", ex);
     } finally {
       try {
         connection.close();
@@ -72,7 +75,7 @@ public class PgTransmissionLineSource implements TransmissionLineSource {
    */
   private TransmissionLines extractResultSet(ResultSet resultSet)
     throws ParseException, SQLException {
-    
+
     TransmissionLines result;
     WKBReader wkbReader = this.createWkbReader();
     List<TransmissionLine> lines = new ArrayList<>();
@@ -106,15 +109,15 @@ public class PgTransmissionLineSource implements TransmissionLineSource {
    * @return
    */
   private String createQueryString(int srid, TransmissionLines.Filter filter) {
-    Objects.requireNonNull(filter.getStateName(), "State cannot be null in filter"); 
+    Objects.requireNonNull(filter.getStateName(), "State cannot be null in filter");
     String withStatement = "with state as (\n"
       + "	select \n"
       + "    	state.geom as geom\n"
       + "   	FROM cb_2016_us_state_500k state\n"
-      + "    where state.NAME = 'New York'\n"
+      + "    where state.NAME = '" + filter.getStateName() + "'\n"
       + ") \n";
-    
-    String baseSqlQuery = withStatement  
+
+    String baseSqlQuery = withStatement
       + "select\n"
       + "	line.gid\n"
       + "    , line.objectid\n"
@@ -132,7 +135,12 @@ public class PgTransmissionLineSource implements TransmissionLineSource {
       String toAppend = " line.voltage > " + filter.getMinRatedVoltage();
       whereClause = addToWhereClause(whereClause, toAppend);
     }
-    whereClause = addToWhereClause(whereClause, " st_numgeometries(line.geom) = 1");
+    if (filter.getEnvelope() != null) {
+      String envText = PgUtils.getMakeEnvelopeText(filter.getEnvelope(), srid);
+      String toAppend = "st_within(line.geom, st_transform(" + envText + ", st_srid(line.geom)))"; 
+      whereClause = addToWhereClause(whereClause, "\n" + toAppend);
+    }
+    whereClause = addToWhereClause(whereClause, "\n st_numgeometries(line.geom) = 1");
     String sqlQuery = baseSqlQuery + whereClause;
     return sqlQuery;
   }
