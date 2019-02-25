@@ -1,13 +1,13 @@
 package com.rm.panzoomcanvas.impl.points;
 
-import com.rm.panzoomcanvas.impl.points.PointShape;
 import com.rm.panzoomcanvas.core.ScreenPoint;
 import com.rm.panzoomcanvas.layers.DrawArgs;
-import com.rm.panzoomcanvas.layers.HoveredMarkers;
 import com.rm.panzoomcanvas.layers.points.PointMarker;
+import com.rm.panzoomcanvas.layers.points.PointSymbology;
 import com.rm.panzoomcanvas.layers.points.PointsLayer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,23 +15,24 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
-import com.rm.panzoomcanvas.layers.points.PointSymbology;
 
 /**
  *
  * @author rmarquez
  */
 public class PointShapeSymbology implements PointSymbology {
-  
+
   private final Property<PointShape> pointShapeProperty = new SimpleObjectProperty<>(PointShape.CIRCLE);
   private final Property<Color> fillColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<Color> strokeColorProperty = new SimpleObjectProperty<>(Color.BLUE);
   private final Property<Integer> lineWidthProperty = new SimpleObjectProperty<>(2);
-  
+  private final Property<Function<PointMarker<?>, PointShapeSymbology>> markerSymbology
+    = new SimpleObjectProperty<>();
+
   private final PointShapeSymbology selected;
   private final PointShapeSymbology hovered;
   private final Map<String, Property<?>> properties = new HashMap<>();
-  private final Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate;
+  private final Predicate<Pair<PointsLayer<?>, PointMarker<?>>> hoverableOrSelectablePredicate;
 
   /**
    *
@@ -42,10 +43,17 @@ public class PointShapeSymbology implements PointSymbology {
 
   /**
    *
-   * @param predicate
    */
-  public PointShapeSymbology(Predicate<Pair<PointsLayer<?>, PointMarker<?>>> predicate) {
-    if (predicate == null) {
+  public Property<Function<PointMarker<?>, PointShapeSymbology>> markerSymbology() {
+    return this.markerSymbology;
+  }
+
+  /**
+   *
+   * @param hoverOrSelectablePredicte
+   */
+  private PointShapeSymbology(Predicate<Pair<PointsLayer<?>, PointMarker<?>>> hoverOrSelectablePredicte) {
+    if (hoverOrSelectablePredicte == null) {
       this.hovered = new PointShapeSymbology(new HoveredPredicate());
       this.hovered.fillColorProperty.setValue(null);
       this.hovered.lineWidthProperty.setValue(4);
@@ -64,8 +72,9 @@ public class PointShapeSymbology implements PointSymbology {
     this.properties.put("fillColor", this.fillColorProperty);
     this.properties.put("strokeColor", this.strokeColorProperty);
     this.properties.put("lineWidth", this.lineWidthProperty);
-    this.predicate = predicate;
+    this.hoverableOrSelectablePredicate = hoverOrSelectablePredicte;
   }
+
   /**
    *
    * @param props
@@ -79,18 +88,18 @@ public class PointShapeSymbology implements PointSymbology {
     result.pointShapeProperty.setValue((PointShape) props.get("pointShape").getValue());
     return result;
   }
-    
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public PointShapeSymbology getSelected() {
     return selected;
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public PointShapeSymbology getHovered() {
     return hovered;
@@ -153,9 +162,16 @@ public class PointShapeSymbology implements PointSymbology {
    * @return
    */
   private PointShapeSymbology getMarkerSymbolizer(PointsLayer<?> layer, PointMarker<?> marker) {
-    PointShapeSymbology symbology = override(layer, marker, this, hovered);
-    symbology = override(layer, marker, symbology, this.selected);
-    return symbology;
+    PointShapeSymbology refSymbology; 
+    if (this.markerSymbology.getValue() != null) {
+      refSymbology = this.markerSymbology.getValue().apply(marker);
+    } else {
+      refSymbology = this;
+    }
+    PointShapeSymbology hoveredSymbology = override(layer, marker, refSymbology, this.hovered);
+    PointShapeSymbology selectedSymbology = override(layer, marker, hoveredSymbology, this.selected);
+    return selectedSymbology;
+
   }
 
   /**
@@ -166,9 +182,12 @@ public class PointShapeSymbology implements PointSymbology {
    * @param other
    * @return
    */
-  static PointShapeSymbology override(PointsLayer<?> layer, PointMarker<?> marker, PointShapeSymbology current, PointShapeSymbology other) {
+  static PointShapeSymbology override(PointsLayer<?> layer,
+    PointMarker<?> marker, PointShapeSymbology current, PointShapeSymbology other) {
     PointShapeSymbology result;
-    if (other.predicate == null || other.predicate.test(new Pair<>(layer, marker))) {
+    if (other.hoverableOrSelectablePredicate == null
+      || other.hoverableOrSelectablePredicate.test(new Pair<>(layer, marker))) {
+
       HashMap<String, Property<?>> props = new HashMap<>();
       for (String key : current.properties.keySet()) {
         Property<?> currentProp = current.properties.get(key);
@@ -185,52 +204,5 @@ public class PointShapeSymbology implements PointSymbology {
     }
     return result;
   }
-    
-  /**
-   * 
-   */
-  private static class SelectedPredicate implements Predicate<Pair<PointsLayer<?>, PointMarker<?>>> {
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * OVERRIDE: </p>
-     */
-    @Override
-    public boolean test(Pair<PointsLayer<?>, PointMarker<?>> t) {
-      PointsLayer<?> layer = t.getKey();
-      PointMarker<?> marker = t.getValue();
-      if (!layer.selectableProperty().getValue()) {
-        return false;
-      }
-      return layer.selectedMarkersProperty().getValue().contains(marker);
-    }
-  }
-  
-  /**
-   * 
-   */
-  private static class HoveredPredicate implements Predicate<Pair<PointsLayer<?>, PointMarker<?>>> {
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * OVERRIDE: </p>
-     */
-    @Override
-    public boolean test(Pair<PointsLayer<?>, PointMarker<?>> t) {
-      boolean result;
-      PointsLayer<?> layer = t.getKey();
-      PointMarker<?> marker = t.getValue();
-      if (!layer.hoverableProperty().getValue()) {
-        return false;
-      }
-      HoveredMarkers<?> hoveredMarkers = layer.hoveredMarkersProperty().getValue();
-      if (hoveredMarkers == null) {
-        return false;
-      }
-      result = hoveredMarkers.markers.contains(marker);
-      return result;
-    }
-  }
+
 }
