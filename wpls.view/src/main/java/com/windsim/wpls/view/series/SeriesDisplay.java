@@ -189,13 +189,14 @@ public class SeriesDisplay implements InitializingBean {
     this.series.dataProperty().getValue().clear();
     this.series.getNode().setStyle("chart-series-line");
     ModelPoint modelPoint = this.modelPointProperty.getValue();
-    WeatherRecords weatherRecords = this.weatherRecordsProperty.getValue();
+    
     if (modelPoint != null) {
       SeriesType seriesType = this.seriesTypeProperty.getValue();
       if ((seriesType != null)) {
         SeriesType value = seriesType;
         ModelPointAmpacities modelPointAmpacities = modelPointAmapacitiesProperty.getValue();
         ModelPointAmpacities fcstedModelPointAmpacities = frcstModelPointAmpacitiesProperty.getValue();
+        WeatherRecords weatherRecords = this.weatherRecordsProperty.getValue();
         ModelSeriesData seriesData = new ModelSeriesData(weatherRecords,
           modelPointAmpacities, fcstedModelPointAmpacities);
         value.displayRecords(seriesData, modelPoint, result);

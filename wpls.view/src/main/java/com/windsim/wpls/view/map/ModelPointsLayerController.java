@@ -44,7 +44,7 @@ public class ModelPointsLayerController implements InitializingBean {
   private Property<ModelPoint> modelPointProperty;
   
   @Autowired
-  private ModelPointSymbolizer modelPointSymbolizer;
+  private ModelPointSymbolContext modelPointSymbolizer;
 
   
   private final ObjectProperty<PointsLayer<Object>> pointsLayerProperty = new SimpleObjectProperty<>();
