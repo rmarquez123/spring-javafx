@@ -20,32 +20,36 @@ public class TransmissionLine implements Comparable<TransmissionLine> {
    * @param geom
    */
   public TransmissionLine(String lineName, LineString geom) {
-    if (lineName == null) {
-      throw new NullPointerException("linename cannot be null");
-    }
-    if (geom == null) {
-      throw new NullPointerException("geometry `cannot be null");
-    }
+    Objects.requireNonNull(lineName, "linename cannot be null");
+    Objects.requireNonNull(geom, "geometry cannot be null");
     this.lineName = lineName;
     this.geom = geom;
   }
 
+  /**
+   *
+   * @return
+   */
   public String getLineName() {
     return lineName;
   }
 
+  /**
+   *
+   * @return
+   */
   public LineString getGeom() {
     return geom;
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public Point getCenter() {
     return this.geom.getCentroid();
   }
-  
+
   /**
    *
    * @return
@@ -54,6 +58,10 @@ public class TransmissionLine implements Comparable<TransmissionLine> {
     return this.geom.getEnvelopeInternal();
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public int hashCode() {
     int hash = 3;
@@ -62,6 +70,11 @@ public class TransmissionLine implements Comparable<TransmissionLine> {
     return hash;
   }
 
+  /**
+   *
+   * @param obj
+   * @return
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -83,6 +96,11 @@ public class TransmissionLine implements Comparable<TransmissionLine> {
     return true;
   }
 
+  /**
+   *
+   * @param other
+   * @return
+   */
   @Override
   public int compareTo(TransmissionLine other) {
     int result = this.lineName.compareTo(other.lineName);

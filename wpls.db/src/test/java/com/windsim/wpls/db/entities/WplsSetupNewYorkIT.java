@@ -13,7 +13,9 @@ import com.windsim.wpls.plsetup.impl.pg.PgTerrainDataSource;
 import com.windsim.wpls.plsetup.impl.pg.PgTransmissionLineSource;
 import com.windsim.wpls.plsetup.impl.pg.PgWeatherRecords;
 import com.windsim.wpls.plsetup.impl.pg.PgWeatherStationsSource;
+import common.types.DateTimeRange;
 import java.io.File;
+import java.time.ZoneId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,12 +44,13 @@ public class WplsSetupNewYorkIT {
    * 
    */
   @Test
-  public void createPowerLineModuleFiles() {
+  public void createPowerLineModuleFiles() throws Exception {
     double minVoltage = 200.0;
-    int srid = 26918;
+    int outSrid = 26918;
     WplsSetupSource setUpSource = this.createPowerLineModule(minVoltage);
     File file = new File("C:\\Data\\Test\\powerlinemodule\\new_york");
-    Project project = new Project(srid, file, 0.10);
+    ZoneId zoneId = ZoneId.of("US/Eastern");
+    Project project = new Project(DateTimeRange.of(zoneId, "yyyy/MM", "2017/02", "2017/04"), outSrid, file, 0.06);
     WplsSetup setup = new WplsSetup(project, setUpSource);
     setup.preparePowerLineModule();
   }
@@ -65,7 +68,7 @@ public class WplsSetupNewYorkIT {
     TransmissionLineSource trLineSource = new PgTransmissionLineSource(dbConnection);
     WeatherStationsSource wsSource = new PgWeatherStationsSource(dbConnection);
     TerrainDataSource terrainSource = new PgTerrainDataSource(dbConnection);
-    WeatherRecordsSource recordsSource = (stations)->new PgWeatherRecords(dbConnection, stations);
+    WeatherRecordsSource recordsSource = (stations, dateRange)->new PgWeatherRecords(dbConnection, stations, dateRange);
     WplsSetupSource setUpSource = new WplsSetupSource(filter, trLineSource, wsSource, recordsSource, terrainSource);
     return setUpSource;
   }

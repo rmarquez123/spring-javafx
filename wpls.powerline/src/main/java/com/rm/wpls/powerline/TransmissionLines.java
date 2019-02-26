@@ -29,9 +29,13 @@ public class TransmissionLines {
     return this.lines.size();
   }
 
+  /**
+   *
+   * @return
+   */
   public Envelope getEnvelope() {
     Envelope result;
-    
+
     if (!this.lines.isEmpty()) {
       result = null;
       for (TransmissionLine line : this.lines) {
@@ -56,12 +60,14 @@ public class TransmissionLines {
     return new ArrayList<>(this.lines);
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public String toString() {
     return "TransmissionLines{" + "lines=" + lines.size() + '}';
   }
-  
-  
 
   /**
    *

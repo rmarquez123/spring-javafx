@@ -4,6 +4,7 @@ import com.rm.wpls.powerline.TerrainData;
 import com.rm.wpls.powerline.TransmissionLines;
 import com.rm.wpls.powerline.WindRecords;
 import com.vividsolutions.jts.geom.Envelope;
+import common.types.DateTimeRange;
 import gov.inl.glass3.weather.WeatherStations;
 
 /**
@@ -31,7 +32,7 @@ public final class WplsSetup {
    *
    */
   public void preparePowerLineModule() {
-    int srid = this.project.getSrid();
+    int srid = this.project.getOutputSrid();
     
     TransmissionLines transmissionLines = this.setUpSource.getTransmissionLines(srid);
     Envelope env; 
@@ -42,7 +43,8 @@ public final class WplsSetup {
     }
     WeatherStations stations = this.setUpSource.getWeatherStations(srid, env); 
     this.exporter.exportStations(transmissionLines, stations);
-    WindRecords records = this.setUpSource.getWeatherRecords(stations); 
+    DateTimeRange dateRange = this.project.getDateRange(); 
+    WindRecords records = this.setUpSource.getWeatherRecords(stations, dateRange); 
     this.exporter.exportWeatherRecords(records);
     double pctResolution = this.project.getTerrainPctResolution();
     TerrainData terrainData = this.setUpSource.getTerrain(srid, env, pctResolution);

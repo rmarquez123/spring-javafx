@@ -97,7 +97,7 @@ public final class WplsSetupExporter {
         Date startDt = dateRange.getStartDate();
         Date endDt = dateRange.getEndDate();
         SimpleDateFormat MMMYYFormat = new SimpleDateFormat("MMM YY");
-        File file = new File(this.project.getExportDir(), name + ".txt");
+        File file = new File(this.project.getExportDir(), name + ".tws");
         FileWriter writer = new FileWriter(file, false);
         writer.write("version            : 48                     ");
         writer.append(NEW_LINE);
@@ -169,8 +169,8 @@ public final class WplsSetupExporter {
         .append(tab).append(String.valueOf(minValue))
         .append(tab).append(String.valueOf(maxValue))
         .append(NEW_LINE);
-
-      writer.append("HEIGHT" + tab + ":").append(NEW_LINE);
+      
+      writer.append("HEIGHT             :").append(NEW_LINE);
       float no_data_value = -32768.0f;
       NumberFormat formatter = new DecimalFormat(".00000E00");
       
@@ -190,8 +190,7 @@ public final class WplsSetupExporter {
         }
       }
       
-      writer.append("ROUGHNESS" + tab + ":").append(NEW_LINE);
-      
+      writer.append("ROUGHNESS             :").append(NEW_LINE);
       for (int row = numRows - 1; row >= 0 ; row--) {
         int rowPlus1 = numRows - row;
         writer.append(tab).append(String.valueOf(rowPlus1)).append(NEW_LINE);

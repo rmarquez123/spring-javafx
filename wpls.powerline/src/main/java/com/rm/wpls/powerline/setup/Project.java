@@ -1,6 +1,8 @@
 package com.rm.wpls.powerline.setup;
 
+import common.types.DateTimeRange;
 import java.io.File;
+import java.util.Objects;
 
 /**
  *
@@ -8,35 +10,51 @@ import java.io.File;
  */
 public class Project {
 
-  private final int srid;
-  private final double terrainPctResolution;
   private final File exportDir;
+  private final int outputSrid;
+  private final double terrainPctResolution;
+  private final DateTimeRange dateRange;
 
   /**
    *
    * @param srid
    * @param exportDir
    */
-  public Project(int srid, File exportDir, double terrainPctResolution) {
-    if (exportDir == null) {
-      throw new NullPointerException("export directory cannot be null");
-    }
-    this.srid = srid;
+  public Project(DateTimeRange dateRange, int srid, File exportDir, double terrainPctResolution) {
+    Objects.requireNonNull(exportDir, "export directory cannot be null");
+    this.dateRange = dateRange;
+    this.outputSrid = srid;
     this.exportDir = exportDir;
     this.terrainPctResolution = terrainPctResolution;
   }
 
-  public int getSrid() {
-    return srid;
+  /**
+   *
+   * @return
+   */
+  public int getOutputSrid() {
+    return outputSrid;
   }
 
+  /**
+   *
+   * @return
+   */
   public File getExportDir() {
     return this.exportDir;
   }
-  
-    /**
-   * 
-   * @return 
+
+  /**
+   *
+   * @return
+   */
+  public DateTimeRange getDateRange() {
+    return dateRange;
+  }
+
+  /**
+   *
+   * @return
    */
   double getTerrainPctResolution() {
     return this.terrainPctResolution;
@@ -44,9 +62,7 @@ public class Project {
 
   @Override
   public String toString() {
-    return "Project{" + "srid=" + srid + ", exportDir=" + exportDir + '}';
+    return "Project{" + "srid=" + outputSrid + ", exportDir=" + exportDir + '}';
   }
-
-
 
 }

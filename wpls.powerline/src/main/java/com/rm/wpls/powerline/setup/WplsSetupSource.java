@@ -4,6 +4,7 @@ import com.rm.wpls.powerline.TerrainData;
 import com.rm.wpls.powerline.TransmissionLines;
 import com.rm.wpls.powerline.WindRecords;
 import com.vividsolutions.jts.geom.Envelope;
+import common.types.DateTimeRange;
 import gov.inl.glass3.weather.WeatherStations;
 
 /**
@@ -76,8 +77,8 @@ public final class WplsSetupSource {
    * @param stations
    * @return
    */
-  public WindRecords getWeatherRecords(WeatherStations stations) {
-    WindRecords result = this.recordsSource.getWeatherRecords(stations);
+  public WindRecords getWeatherRecords(WeatherStations stations, DateTimeRange dateRange) {
+    WindRecords result = this.recordsSource.getWeatherRecords(stations, dateRange);
     return result;
   }
 
