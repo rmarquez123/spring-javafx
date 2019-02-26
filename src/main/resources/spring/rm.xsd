@@ -1,0 +1,461 @@
+<xsd:schema xmlns="http://www.mycompany.com/schema/rm"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://www.mycompany.com/schema/rm"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            
+
+>
+  
+  <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+  
+  
+  <xsd:element name="listitem-converter"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="beans:property"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="class" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="selectionitem-converter"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="beans:property"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="class" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="num-digits"> 
+    <xsd:complexType>
+      <xsd:attribute name="value" type="xsd:integer"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <!-- Properties --> 
+  <xsd:element name="int-property"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="daterange-property"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="item"> 
+    <xsd:complexType>
+      
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="beans:property"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:integer"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+      
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="items"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="item"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="list-property"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element ref="items"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Properties --> 
+  
+  
+  <!-- Datasources --> 
+  <xsd:element name="db-user"> 
+    <xsd:complexType>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="db-password"> 
+    <xsd:complexType>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="db-port"> 
+    <xsd:complexType>
+      <xsd:attribute name="value" type="xsd:integer"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="db-url"> 
+    <xsd:complexType>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="db-schema"> 
+    <xsd:complexType>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+    
+  <xsd:element name="db-connection">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="db-user"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="db-password"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="db-port"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="db-url"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element ref="db-schema"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  
+  
+  <xsd:element name="query-file">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="query-param">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="valueRef" type="xsd:string"/>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+    
+  </xsd:element>
+  
+  <xsd:element name="query-params">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="query-param"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="invokerRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="sql-datasource">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="query-file"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element ref="query-params"/>
+        </xsd:choice>      
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="dbConnectionRef" type="xsd:string"/>
+      <xsd:attribute name="idField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- Datasources --> 
+  
+  <!-- Views --> 
+  <xsd:element name="render-type"> 
+    <xsd:complexType>
+      <xsd:attribute name="class" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="columndef">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element ref="render-type"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+      <xsd:attribute name="columnIndex" type="xsd:integer"/>
+      <xsd:attribute name="propertyName" type="xsd:string"/>
+      <xsd:attribute name="rendererType" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="columns">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="columndef"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="tableview">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element ref="columns"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="datasource-ref" type="xsd:string"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="textfield">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="datasource-ref" type="xsd:string"/>
+      <xsd:attribute name="value-ref" type="xsd:string"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="combobox">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element ref="listitem-converter"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element ref="selectionitem-converter"/>
+        </xsd:choice>  
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="datasource-ref" type="xsd:string"/>
+      <xsd:attribute name="value-ref" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="datepicker">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="value-ref" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  <!-- Views --> 
+  
+  <xsd:element name="button-bind">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="invokerRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="contentpanel">
+    <xsd:complexType>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+    
+  <xsd:element name="tab">
+    <xsd:complexType>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="selectionId" type="xsd:string"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>  
+  
+  <xsd:element name="tabs">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tab"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="tabs-binding">
+    <xsd:complexType>
+      <xsd:sequence> 
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="contentpanel"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="tabs"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="listRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  
+  <xsd:element name="datasource-ref">
+    <xsd:complexType>
+      <xsd:attribute name="level" type="xsd:integer"/>
+      <xsd:attribute name="ref" type="xsd:string"/>
+      <xsd:attribute name="idField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="datasources">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="datasource-ref"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="link">
+    <xsd:complexType>
+      <xsd:attribute name="childLevel" type="xsd:integer"/>
+      <xsd:attribute name="parentField" type="xsd:string"/>
+      <xsd:attribute name="childField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  <xsd:element name="links">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="link"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="treemodel"> 
+    <xsd:complexType>
+      <xsd:sequence> 
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="datasources"/>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="links"/>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="level-cellfactory">
+    <xsd:complexType>
+      <xsd:attribute name="level" type="xsd:integer"/>
+      <xsd:attribute name="textField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  
+  <xsd:element name="treeview"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="level-cellfactory"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="treemodelRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="level-columncellfactory">
+    <xsd:complexType>  
+      <xsd:attribute name="level" type="xsd:integer"/>
+      <xsd:attribute name="textField" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+    
+    
+  <xsd:element name="tt-column">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="level-cellfactory"/>
+      </xsd:choice>
+      <xsd:attribute name="colindex" type="xsd:integer"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="tt-columns">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tt-column"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+    
+    
+  <xsd:element name="treetable"> 
+    <xsd:complexType>
+      <xsd:choice minOccurs="1" maxOccurs="1">
+        <xsd:element ref="tt-columns"/>
+      </xsd:choice>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+      <xsd:attribute name="treemodelRef" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="content-panel"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="parentFxml" type="xsd:string"/>
+      <xsd:attribute name="parentNode" type="xsd:string"/>
+      <xsd:attribute name="childFxml" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  
+  <xsd:element name="popup"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="contentFxml" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="childnode"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="fxml" type="xsd:string"/>
+      <xsd:attribute name="fxmlId" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="null_if_null"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="referenceProperty" type="xsd:string"/>
+      <xsd:attribute name="property" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
+  
+  
+  
+  
+</xsd:schema>
