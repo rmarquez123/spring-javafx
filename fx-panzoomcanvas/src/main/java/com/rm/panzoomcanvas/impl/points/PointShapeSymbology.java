@@ -204,5 +204,6 @@ public class PointShapeSymbology implements PointSymbology {
     }
     return result;
   }
+  
 
 }
