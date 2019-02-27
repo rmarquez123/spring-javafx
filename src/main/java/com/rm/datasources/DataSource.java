@@ -12,7 +12,7 @@ import javafx.collections.ObservableList;
  * binding data to them.
  *
  * @author rmarquez
- * @param <T>
+ * @param <T>  
  * @see ComboBoxFactory
  * @see TableViewFactory
  */
