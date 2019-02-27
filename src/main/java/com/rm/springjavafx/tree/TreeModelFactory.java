@@ -1,10 +1,13 @@
 package com.rm.springjavafx.tree;
 
+import com.rm.datasources.RecordValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.property.ListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -51,12 +54,12 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
       ListProperty prop = treeDs.getDatasource().listProperty();
       Link link = (level == 0) ? null : linksMap.get(level);
       result.addLevel(treeDs.getIdField(), link, prop);
-      treeDs.getDatasource().getSingleSelectionProperty().addListener((obs, old, change)->{
-        result.getSingleSelectionProperty().setValue(change);
+      treeDs.getDatasource().getSingleSelectionProperty().addListener((obs, old, change) -> {
+        result.singleSelectionProperty().setValue(change);
       });
     }
-    
-    result.getSingleSelectionProperty().addListener((obs, old, change)->{
+
+    result.singleSelectionProperty().addListener((obs, old, change) -> {
       List<TreeDataSource> ds = this.datasources;
       TreeDataSource dataSource = null;
       if (change != null) {
@@ -70,9 +73,55 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
         }
       }
     });
-    
-    
+    result.checkedValuesProperty().addListener((obs, old, change) -> {
+      List<TreeDataSource> ds = TreeModelFactory.this.datasources;
+      if (change != null) {
+        for (TreeDataSource datasource : this.datasources) {
+          ObservableList<RecordValue> newList = this.getNewCheckedList(datasource, change);
+          datasource.getDatasource().checkedValuesProperty()
+              .setValue(newList);
+        }
+      } else {
+        for (TreeDataSource datasource : this.datasources) {
+          datasource.getDatasource().checkedValuesProperty().setValue(null);
+        }
+      }
+    });
+
     return result;
+  }
+  
+  /**
+   * 
+   * @param datasource
+   * @param change
+   * @return 
+   */
+  private ObservableList<RecordValue> getNewCheckedList(TreeDataSource datasource, ObservableList<RecordValue> change) {
+    ObservableList<RecordValue> newList;
+    ObservableList<RecordValue> currentObs = datasource.getDatasource().checkedValuesProperty().getValue();
+    if (currentObs != null) {
+      List<RecordValue> current = new ArrayList<>(currentObs);
+      current.removeIf((RecordValue t) -> !change.contains(t));
+      for (RecordValue recordValue : change) {
+        if (datasource.getDatasource().listProperty().getValue().contains(recordValue)
+          &&  !current.contains(recordValue)) {
+          current.add(recordValue);
+        }
+      }
+      newList = FXCollections.observableList(current);
+      datasource.getDatasource().checkedValuesProperty()
+        .setValue(newList);
+    } else {
+      List<RecordValue> current = new ArrayList<>();
+      for (RecordValue recordValue : change) {
+        if (datasource.getDatasource().listProperty().getValue().contains(recordValue)) {
+          current.add(recordValue);
+        }
+      }
+      newList = FXCollections.observableList(current);
+    }
+    return newList;
   }
 
   /**

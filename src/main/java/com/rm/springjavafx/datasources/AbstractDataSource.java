@@ -26,10 +26,14 @@ import javafx.scene.control.SelectionMode;
  */
 public abstract class AbstractDataSource<T> implements DataSource<T> {
 
-  protected ListProperty<T> records = new SimpleListProperty<>();
+  private final ListProperty<T> records = new SimpleListProperty<>();
   private final ObjectProperty<T> singleSelection = new SimpleObjectProperty<>();
   private final ObservableList<T> multiSelection = FXCollections.observableArrayList();
   private final SelectionMode selectionMode;
+  private final ListProperty<T> checkedNodesProperty = new SimpleListProperty<>();
+  
+
+    
 
   /**
    *
@@ -97,7 +101,19 @@ public abstract class AbstractDataSource<T> implements DataSource<T> {
     });
   }
 
+  
   /**
+   * 
+   * @return 
+   */
+  @Override
+  public ListProperty<T> checkedValuesProperty() {
+    return this.checkedNodesProperty;
+  }
+  
+  
+  
+   /**
    *
    * @return
    */

@@ -31,6 +31,7 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
   private final ObjectProperty singleSelection = new SimpleObjectProperty<>();
   private final ObservableList multiSelection = FXCollections.observableArrayList();
   private final SelectionMode selectionMode;
+  private final ListProperty<RecordValue> checkedValuesProperty = new SimpleListProperty<>();
 
   /**
    *
@@ -48,13 +49,22 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
   }
 
   @Override
-  public ObservableList<RecordValue> getMultiSelectionProperty() {
+  public ObservableList<RecordValue> multiSelectionProperty() {
     return multiSelection;
   }
 
   @Override
-  public ObjectProperty<RecordValue> getSingleSelectionProperty() {
+  public ObjectProperty<RecordValue> singleSelectionProperty() {
     return singleSelection;
+  }
+
+  /**
+   *
+   * @return
+   */
+  @Override
+  public ListProperty<RecordValue> checkedValuesProperty() {
+    return checkedValuesProperty;
   }
 
   /**
@@ -89,7 +99,7 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
   }
 
   @Override
-  public ReadOnlyIntegerProperty getNumberOfLevelsProperty() {
+  public ReadOnlyIntegerProperty numberOfLevelsProperty() {
     return this.numLevelsProperty;
   }
 

@@ -23,13 +23,19 @@ public interface TreeModel<T> {
    *
    * @return
    */
-  public ObservableList<T> getMultiSelectionProperty();
+  public ObservableList<T> multiSelectionProperty();
+  
+  /**
+   *
+   * @return
+   */
+  public ListProperty<T> checkedValuesProperty();
 
   /**
    *
    * @return
    */
-  public ObjectProperty<T> getSingleSelectionProperty();
+  public ObjectProperty<T> singleSelectionProperty();
 
   /**
    *
@@ -41,7 +47,7 @@ public interface TreeModel<T> {
    *
    * @return
    */
-  public ReadOnlyIntegerProperty getNumberOfLevelsProperty();
+  public ReadOnlyIntegerProperty numberOfLevelsProperty();
 
   /**
    *

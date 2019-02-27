@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javafx.beans.property.ListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -39,26 +42,46 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
 
   private ApplicationContext context;
 
+  /**
+   *
+   * @param id
+   */
   @Required
   public void setId(String id) {
     this.id = id;
   }
 
+  /**
+   *
+   * @param fxml
+   */
   @Required
   public void setFxml(String fxml) {
     this.fxml = fxml;
   }
 
+  /**
+   *
+   * @param fxmlId
+   */
   @Required
   public void setFxmlId(String fxmlId) {
     this.fxmlId = fxmlId;
   }
 
+  /**
+   *
+   * @param treeModel
+   */
   @Required
   public void setTreeModel(TreeModel treeModel) {
     this.treeModel = treeModel;
   }
 
+  /**
+   *
+   * @param cellFactories
+   */
   public void setCellFactories(List<LevelCellFactory> cellFactories) {
     this.cellFactories = cellFactories;
   }
@@ -75,39 +98,21 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     result.showRootProperty().setValue(false);
     result.setRoot(rootItem);
     Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>();
+
     for (LevelCellFactory cellFactory : cellFactories) {
       cellFactoriesMap.put(cellFactory.getLevel(), cellFactory);
     }
-    result.setCellFactory((param) -> new TreeCell<Object>() {
-      @Override
-      protected void updateItem(Object item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty) {
-          super.setGraphic(null);
-          super.setText(null);
-        } else {
-          if (item instanceof TreeNode) {
-            TreeNode<RecordValue> treeNode = (TreeNode<RecordValue>) item;
-            int level = treeNode.getLevel();
-            String textField = cellFactoriesMap.get(level).getTextField();
-            String textVal = String.valueOf(treeNode.getValueObject().get(textField));
-            super.setText(textVal);
-          } else {
-            super.setText(String.valueOf(item));
-          }
-        }
-      }
-    });
+    result.setCellFactory((param) -> cellFactory(cellFactoriesMap));
+
     for (int level = 0; level < this.treeModel.getNumberOfLevels(); level++) {
       ListProperty listProperty = this.treeModel.getNodes(level);
       listProperty.addListener((obs, old, change) -> {
         result.getRoot().getChildren().clear();
         this.addTreeItems(rootItem);
       });
-
     }
 
-    this.treeModel.getSingleSelectionProperty().addListener((obs, old, change) -> {
+    this.treeModel.singleSelectionProperty().addListener((obs, old, change) -> {
       if (change != null) {
         TreeItem<Object> selection = findNode(rootItem, change);
         if (!Objects.equals(result.getSelectionModel().getSelectedItem(), selection)) {
@@ -134,15 +139,76 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
           if (c.wasAdded()) {
             for (TreeItem<Object> treeItem : c.getAddedSubList()) {
               TreeNode<?> value = (TreeNode<?>) treeItem.getValue();
-              treeModel.getSingleSelectionProperty().setValue(value.getValueObject());
+              this.treeModel.singleSelectionProperty().setValue(value.getValueObject());
             }
           } else if (c.wasRemoved()) {
-            treeModel.getSingleSelectionProperty().setValue(null);
+            this.treeModel.singleSelectionProperty().setValue(null);
           }
         }
       });
     }
 
+    return result;
+  }
+
+  /**
+   *
+   * @return
+   */
+  private TreeCell<Object> cellFactory(Map<Integer, LevelCellFactory> cellFactoriesMap) {
+    TreeCell<Object> result = new TreeCell<Object>() {
+      @Override
+      protected void updateItem(Object item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty) {
+          super.setGraphic(null);
+
+          super.setText(null);
+        } else {
+          if (item instanceof TreeNode) {
+            TreeNode<RecordValue> treeNode = (TreeNode<RecordValue>) item;
+            int level = treeNode.getLevel();
+            String textField = cellFactoriesMap.get(level).getTextField();
+            String textVal = String.valueOf(treeNode.getValueObject().get(textField));
+            super.setText(textVal);
+            if (cellFactoriesMap.get(level).isCheckBox()) {
+              CheckBox checkBox = new CheckBox();
+              checkBox.selectedProperty().addListener((obs, old, change) -> {
+                ObservableList currentObs = treeModel.checkedValuesProperty().getValue();
+                if (currentObs != null) {
+                  if (change) {
+                    List current = new ArrayList<>(currentObs);
+                    if (!current.contains(treeNode.getValueObject())) {
+                      current.add(treeNode.getValueObject());
+                      treeModel.checkedValuesProperty()
+                        .setValue(FXCollections.observableList(current));
+                    }
+                  } else {
+                    List current = new ArrayList<>(currentObs);
+                    if (current.contains(treeNode.getValueObject())) {
+                      current.remove(treeNode.getValueObject());
+                      treeModel.checkedValuesProperty()
+                        .setValue(FXCollections.observableList(current));
+                    }
+                  }
+                } else {
+                  if (change) {
+                    treeModel.checkedValuesProperty()
+                      .setValue(FXCollections.observableArrayList(treeNode.getValueObject()));
+                  }
+                }
+
+              });
+              super.setGraphic(checkBox);
+            } else {
+              super.setGraphic(null);
+            }
+          } else {
+            super.setText(String.valueOf(item));
+          }
+        }
+      }
+    };
     return result;
   }
 

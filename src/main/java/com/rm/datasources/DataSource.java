@@ -17,7 +17,12 @@ import javafx.collections.ObservableList;
  * @see TableViewFactory
  */
 public interface DataSource<T> {
-
+  
+  /**
+   * 
+   * @return 
+   */
+  public ListProperty<T> checkedValuesProperty();
 
   /**
    * Implementers should bind the passed items to their records using the provided
@@ -46,8 +51,6 @@ public interface DataSource<T> {
    * @return
    */
   public ListProperty<T> listProperty();
-
-  
 
   /**
    *
