@@ -1,16 +1,30 @@
 package com.rm.springjavafx.table;
 
+import org.springframework.beans.factory.InitializingBean;
+
 /**
  *
  * @author rmarquez
  */
 
-public class TableViewColumn {
+public class TableViewColumn implements InitializingBean{
   private String label;
   private int columnIndex;
   private String propertyName;
   private String rendererType;
+  private RenderType renderType;
 
+  public RenderType getRenderType() {
+    return renderType;
+  }
+  
+  public void setRenderType(RenderType renderType) {
+    
+    this.renderType = renderType;
+  }
+  
+  
+  
   public String getLabel() {
     return label;
   }
@@ -46,6 +60,11 @@ public class TableViewColumn {
   @Override
   public String toString() {
     return "TableViewRenderer{" + "name=" + label + ", column=" + columnIndex + ", rendererType=" + rendererType + '}';
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    System.out.println(this);
   }
   
  

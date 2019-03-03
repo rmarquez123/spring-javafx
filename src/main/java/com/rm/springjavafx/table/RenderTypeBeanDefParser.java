@@ -1,0 +1,25 @@
+package com.rm.springjavafx.table;
+
+import com.rm.springjavafx.table.renderers.RenderTypeFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
+import org.w3c.dom.Element;
+
+/**
+ *
+ * @author Ricardo Marquez
+ */
+public class RenderTypeBeanDefParser extends AbstractSingleBeanDefinitionParser {
+
+  @Override
+  protected void doParse(Element element, BeanDefinitionBuilder builder) {
+    builder.addPropertyValue("clazz", element.getAttribute("class"));
+    builder.addPropertyReference("action", element.getAttribute("action"));
+    builder.addPropertyValue("label", element.getAttribute("label"));
+  }
+
+  @Override
+  protected Class<?> getBeanClass(Element element) {
+    return RenderTypeFactory.class;
+  }
+}

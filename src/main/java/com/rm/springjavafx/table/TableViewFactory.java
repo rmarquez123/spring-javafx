@@ -1,9 +1,9 @@
 package com.rm.springjavafx.table;
 
-import com.rm.springjavafx.converters.Converter;
 import com.rm.datasources.DataSource;
 import com.rm.datasources.RecordValue;
 import com.rm.springjavafx.FxmlInitializer;
+import com.rm.springjavafx.converters.Converter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -94,9 +94,9 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
       result = (TableView<?>) this.fxmlInitializer.getNode(this.fxml, this.fxmlId);
       if (result == null) {
         throw new IllegalStateException("table view does not exists.  Check args: {"
-                + "fxml = " + fxml
-                + ", fxmlId = " + this.fxmlId
-                + "}"); 
+          + "fxml = " + fxml
+          + ", fxmlId = " + this.fxmlId
+          + "}");
       }
     } else {
       result = new TableView<>();
@@ -107,14 +107,23 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
     List<TableColumn<? extends Object, ?>> tvColumns = new ArrayList<>();
     for (TableViewColumn columnDef : columns) {
       TableColumn<Object, ?> column = new TableColumn<>(columnDef.getLabel());
+
       PropertyValueFactory propValFactory = new PropertyValueFactory(columnDef.getPropertyName()) {
         private final Property resultProperty = new SimpleObjectProperty();
 
         @Override
         public ObservableValue<?> call(TableColumn.CellDataFeatures param) {
-          Object value = param.getValue();
-          if (value instanceof RecordValue) {
-            this.resultProperty.setValue(((RecordValue) value).get(columnDef.getPropertyName()));
+
+          Object entity = param.getValue();
+          if (entity instanceof RecordValue) {
+            Object value = ((RecordValue) entity).get(columnDef.getPropertyName());
+
+            if (value instanceof ObservableValue) {
+              this.resultProperty.bind((ObservableValue) value);
+            } else {
+              this.resultProperty.setValue(value);
+            }
+
           } else {
             throw new UnsupportedOperationException("not supported");
           }
@@ -122,6 +131,12 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
         }
       };
       column.setCellValueFactory(propValFactory);
+      RenderType renderer = columnDef.getRenderType();
+      if (renderer != null) {
+        column.setUserData(columnDef);
+        renderer.createCellFactory(result, column);
+      }
+
       tvColumns.add(column);
     }
     result.getColumns().clear();
@@ -135,9 +150,10 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
    * @throws BeansException
    */
   private void initSelectionBinding(TableView result) throws BeansException {
+
     if (this.selectedRef != null) {
       Property selected = (Property<?>) this.appContext.getBean(this.selectedRef);
-      if (selected != null) {
+      if (selected == null) {
         throw new NullPointerException("bean does not exists : '" + this.selectedRef + "'");
       }
       result.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change c) -> {
@@ -173,6 +189,25 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
       throw new IllegalStateException("Bean does not exists for bean name: '" + this.datasourceRef + "'");
     }
     dataSource.bind(tableView.getItems(), this.converter);
+    dataSource.getSingleSelectionProperty().addListener((obs, old, change) -> {
+      tableView.getSelectionModel().select(change);
+    });
+    tableView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change c) -> {
+      while (c.next()) {
+        if (c.wasAdded()) {
+          for (Object object : c.getAddedSubList()) {
+            dataSource.getSingleSelectionProperty().setValue(object);
+          }
+
+        } else if (c.wasRemoved()) {
+          for (Object object : c.getRemoved()) {
+            if (Objects.equals(dataSource.getSingleSelectionProperty().getValue(), object)) {
+              dataSource.getSingleSelectionProperty().setValue(null);
+            }
+          }
+        }
+      }
+    });
   }
 
   /**

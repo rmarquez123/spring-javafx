@@ -185,6 +185,8 @@
   <xsd:element name="render-type"> 
     <xsd:complexType>
       <xsd:attribute name="class" type="xsd:string"/>
+      <xsd:attribute name="action" type="xsd:string"/>
+      <xsd:attribute name="label" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   
@@ -198,6 +200,7 @@
       <xsd:attribute name="columnIndex" type="xsd:integer"/>
       <xsd:attribute name="propertyName" type="xsd:string"/>
       <xsd:attribute name="rendererType" type="xsd:string"/>
+      
     </xsd:complexType>
   </xsd:element>
   

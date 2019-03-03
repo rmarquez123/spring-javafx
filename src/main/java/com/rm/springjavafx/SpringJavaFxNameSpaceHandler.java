@@ -16,6 +16,7 @@ import com.rm.springjavafx.properties.DateRangeBeanDefParser;
 import com.rm.springjavafx.properties.IntegerPropertyBeanDefParser;
 import com.rm.springjavafx.properties.ListPropertyBeanDefParser;
 import com.rm.springjavafx.properties.NullIfNullPropertyBeanDefParser;
+import com.rm.springjavafx.table.RenderTypeBeanDefParser;
 import com.rm.springjavafx.table.TableViewBeanDefParser;
 import com.rm.springjavafx.tree.TreeBeanDefParser;
 import com.rm.springjavafx.tree.TreeModelBeanDefParser;
@@ -55,6 +56,7 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     this.registerBeanDefinitionParser("popup", new PopupBeanDefParser());
     this.registerBeanDefinitionParser("null_if_null", new NullIfNullPropertyBeanDefParser());
     this.registerBeanDefinitionParser("childnode", new ChildNodeBeanDefParser());
+    this.registerBeanDefinitionParser("render-type", new RenderTypeBeanDefParser());
     
   }
 }

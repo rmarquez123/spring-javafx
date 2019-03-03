@@ -38,7 +38,4 @@ public class ListPropertyFactory implements FactoryBean<ElementSelectableListPro
   public Class<?> getObjectType() {
     return ElementSelectableListProperty.class;
   }
-  
-  
-  
 }

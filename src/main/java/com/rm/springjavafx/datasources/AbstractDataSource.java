@@ -81,7 +81,7 @@ public abstract class AbstractDataSource<T> implements DataSource<T> {
     this.records.addListener((obs, old, change) -> {
       this.setValues(items, change, converter);
     });
-    this.setValues(items, records.getValue(), converter);
+    this.setValues(items, this.records.getValue(), converter);
   }
 
   /**

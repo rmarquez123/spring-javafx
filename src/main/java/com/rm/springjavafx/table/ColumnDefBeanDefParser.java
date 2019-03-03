@@ -1,8 +1,9 @@
-
 package com.rm.springjavafx.table;
 
+import com.rm.springjavafx.table.renderers.RenderTypeFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -20,6 +21,13 @@ public class ColumnDefBeanDefParser extends AbstractSingleBeanDefinitionParser {
     builder.addPropertyValue("label", element.getAttribute("label"));
     builder.addPropertyValue("propertyName", element.getAttribute("propertyName"));
     builder.addPropertyValue("rendererType", element.getAttribute("rendererType"));
+
+    Element renderTypeEl = DomUtils.getChildElementByTagName(element, "rm:render-type");
+    if (renderTypeEl != null) {
+      BeanDefinitionBuilder renderTypeBeanDef = BeanDefinitionBuilder.rootBeanDefinition(RenderTypeFactory.class);
+      new RenderTypeBeanDefParser().doParse(renderTypeEl, renderTypeBeanDef);
+      builder.addPropertyValue("renderType", renderTypeBeanDef.getBeanDefinition());
+    }
   }
 
   @Override

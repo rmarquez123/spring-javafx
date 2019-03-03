@@ -43,10 +43,12 @@ public class PopupFactory implements FactoryBean<Popup>, InitializingBean {
   @Override
   public Popup getObject() throws Exception {
 
-    
     Popup result = new Popup();
     this.initializer.addListener((ab) -> {
       Node content = this.initializer.getRoot(this.contentFxml);
+      if (content == null) {
+        throw new NullPointerException("content is null. Make sure content fxml, ' " + this.contentFxml + "' , has been added to fxmlInitializer");
+      }
       Object controller = this.initializer.getController(contentFxml);
       result.contentNodeProperty().setValue(content);
       result.popupControllerProperty().setValue((PopupContent) controller);
