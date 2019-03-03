@@ -10,10 +10,20 @@ import javafx.util.Callback;
 public class ActionToggleButtonTableCell<S> extends TableCell<S, Object> {
 
   private final ToggleButton actionButton;
-
-  public ActionToggleButtonTableCell(String label, Handler<S> function) {
+  private final String label;
+  private final String secondaryLabel;
+  
+  /**
+   * 
+   * @param label
+   * @param secondaryLabel
+   * @param function 
+   */
+  public ActionToggleButtonTableCell(String label, String secondaryLabel, Handler<S> function) {
     this.getStyleClass().add("action-toggle-button-table-cell");
     this.actionButton = new ToggleButton(label);
+    this.label = label;
+    this.secondaryLabel = secondaryLabel;
     this.actionButton.setOnAction((ActionEvent e) -> {
       S currentItem = getCurrentItem();
       function.handle(this.actionButton.isSelected(), currentItem);
@@ -46,10 +56,11 @@ public class ActionToggleButtonTableCell<S> extends TableCell<S, Object> {
    * @return
    */
   public static <S> Callback<TableColumn<S, Object>, TableCell<S, Object>>
-    forTableColumn(String label, Handler<S> function) {
+    forTableColumn(String label, String secondaryLabel, Handler<S> function) {
     Callback<TableColumn<S, Object>, TableCell<S, Object>> callBack = param -> {
 
-      ActionToggleButtonTableCell<S> tableCell = new ActionToggleButtonTableCell<>(label, function);
+      ActionToggleButtonTableCell<S> tableCell 
+        = new ActionToggleButtonTableCell<>(label, secondaryLabel, function);
       return tableCell;
     };
     return callBack;
@@ -67,7 +78,12 @@ public class ActionToggleButtonTableCell<S> extends TableCell<S, Object> {
       setGraphic(null);
     } else {
       if (item instanceof Boolean) {
-//        actionButton.setSelected((Boolean) item);
+        actionButton.setSelected((Boolean) item);
+        if (this.secondaryLabel != null && (Boolean) item == false) {
+          actionButton.setText(this.secondaryLabel);
+        } else {
+          actionButton.setText(this.label);
+        }
       }
       setGraphic(actionButton);
     }

@@ -1,6 +1,5 @@
 package com.rm.springjavafx.table;
 
-import com.rm.springjavafx.table.renderers.RenderTypeFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.w3c.dom.Element;
@@ -16,6 +15,7 @@ public class RenderTypeBeanDefParser extends AbstractSingleBeanDefinitionParser 
     builder.addPropertyValue("clazz", element.getAttribute("class"));
     builder.addPropertyReference("action", element.getAttribute("action"));
     builder.addPropertyValue("label", element.getAttribute("label"));
+    builder.addPropertyValue("secondaryLabel", element.getAttribute("secondaryLabel"));
   }
 
   @Override

@@ -12,6 +12,7 @@ public class TableViewColumn implements InitializingBean{
   private int columnIndex;
   private String propertyName;
   private String rendererType;
+  private Double width;
   private RenderType renderType;
 
   public RenderType getRenderType() {
@@ -21,6 +22,14 @@ public class TableViewColumn implements InitializingBean{
   public void setRenderType(RenderType renderType) {
     
     this.renderType = renderType;
+  }
+
+  public Double getWidth() {
+    return width;
+  }
+
+  public void setWidth(Double width) {
+    this.width = width;
   }
   
   

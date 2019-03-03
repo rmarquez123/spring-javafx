@@ -1,7 +1,10 @@
 
-package com.rm.springjavafx.table.renderers;
+package com.rm.springjavafx.table;
 
 import com.rm.springjavafx.table.RenderType;
+import com.rm.springjavafx.table.renderers.Action;
+import com.rm.springjavafx.table.renderers.ButtonTypeRenderer;
+import com.rm.springjavafx.table.renderers.ToggleButtonTypeRenderer;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -14,6 +17,7 @@ public class RenderTypeFactory implements FactoryBean<RenderType> {
   private String clazz; 
   private Action action;
   private String label;
+  private String secondaryLabel;
 
   @Required
   public void setClazz(String clazz) {
@@ -30,6 +34,11 @@ public class RenderTypeFactory implements FactoryBean<RenderType> {
     this.label = label;
   }
   
+  @Required
+  public void setSecondaryLabel(String secondaryLabel) {
+    this.secondaryLabel = secondaryLabel;
+  }
+  
   
   /**
    * 
@@ -44,7 +53,7 @@ public class RenderTypeFactory implements FactoryBean<RenderType> {
         result = new ButtonTypeRenderer(this.action, this.label);
         break;
       case "togglebutton":
-        result = new ToggleButtonTypeRenderer(this.action, this.label);
+        result = new ToggleButtonTypeRenderer(this.action, this.label, this.secondaryLabel);
         break;
       default:
         throw new RuntimeException("Invalid render type class : '" + this.clazz + "'");

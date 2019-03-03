@@ -131,6 +131,11 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
         }
       };
       column.setCellValueFactory(propValFactory);
+      if (columnDef.getWidth() != null) {
+        column.setPrefWidth(columnDef.getWidth());
+        column.setMaxWidth(columnDef.getWidth());
+        column.setMinWidth(columnDef.getWidth());
+      }
       RenderType renderer = columnDef.getRenderType();
       if (renderer != null) {
         column.setUserData(columnDef);
