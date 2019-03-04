@@ -195,15 +195,24 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
     }
     dataSource.bind(tableView.getItems(), this.converter);
     dataSource.getSingleSelectionProperty().addListener((obs, old, change) -> {
-      tableView.getSelectionModel().select(change);
+      try {
+        if (!tableView.getSelectionModel().getSelectedItems().contains(change)) {
+          tableView.getSelectionModel().select(change);
+        }
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
     });
     tableView.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change c) -> {
       while (c.next()) {
         if (c.wasAdded()) {
-          for (Object object : c.getAddedSubList()) {
-            dataSource.getSingleSelectionProperty().setValue(object);
+          try {
+            for (Object object : c.getAddedSubList()) {
+              dataSource.getSingleSelectionProperty().setValue(object);
+            }
+          } catch (Exception ex) {
+            throw new RuntimeException(ex);
           }
-
         } else if (c.wasRemoved()) {
           for (Object object : c.getRemoved()) {
             if (Objects.equals(dataSource.getSingleSelectionProperty().getValue(), object)) {

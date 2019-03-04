@@ -66,7 +66,7 @@ public class DbConnectionFactory implements FactoryBean<DbConnection>, Initializ
             .setPassword(dbPassword)
             .setUrl(dbUrl)
             .setPort(dbPort)
-            .setSchema(dbSchema)
+            .setDatabaseName(dbSchema)
             .createDbConnection();
     
     return result;
