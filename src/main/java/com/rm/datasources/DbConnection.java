@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.postgresql.util.PGTimestamp;
 
 /**
  *
@@ -261,7 +261,7 @@ public class DbConnection {
         ZonedDateTime withZoneSameInstant = ((ZonedDateTime) objectValue);
         long epochMilli = withZoneSameInstant.toInstant()
           .toEpochMilli();
-        PGTimestamp p = new PGTimestamp(epochMilli, cal);
+        Timestamp p = new Timestamp(epochMilli);
         statement.setTimestamp(columnIndex, p, cal);
 
       } else {
