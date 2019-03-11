@@ -101,6 +101,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
 
     for (LevelCellFactory cellFactory : cellFactories) {
       cellFactoriesMap.put(cellFactory.getLevel(), cellFactory);
+      
     }
     result.setCellFactory((param) -> cellFactory(cellFactoriesMap));
 
@@ -168,10 +169,13 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
           if (item instanceof TreeNode) {
             TreeNode<RecordValue> treeNode = (TreeNode<RecordValue>) item;
             int level = treeNode.getLevel();
-            String textField = cellFactoriesMap.get(level).getTextField();
+            LevelCellFactory cellFactory = cellFactoriesMap.get(level);
+            String textField = cellFactory.getTextField();
             String textVal = String.valueOf(treeNode.getValueObject().get(textField));
             super.setText(textVal);
-            if (cellFactoriesMap.get(level).isCheckBox()) {
+            super.setContextMenu(cellFactory.getContextMenu(treeNode.getObject()));
+            if (cellFactory.isCheckBox()) {
+              
               CheckBox checkBox = new CheckBox();
               checkBox.selectedProperty().addListener((obs, old, change) -> {
                 ObservableList currentObs = treeModel.checkedValuesProperty().getValue();
@@ -206,6 +210,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
           } else {
             super.setText(String.valueOf(item));
           }
+          
         }
       }
     };
@@ -221,6 +226,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     List<TreeNode> childNodes = this.getChildNodes(parentTreeItem);
     for (TreeNode node : childNodes) {
       TreeItem<Object> treeItem = new TreeItem<>();
+      
       treeItem.setValue(node);
       parentTreeItem.getChildren().add(treeItem);
       this.addTreeItems(treeItem);

@@ -16,25 +16,26 @@ import org.w3c.dom.Element;
  * @author rmarquez
  */
 public class TreeBeanDefParser extends AbstractBeanDefinitionParser {
-  
+
   @Override
   protected AbstractBeanDefinition parseInternal(Element elmnt, ParserContext pc) {
     BeanDefinitionBuilder result = BeanDefinitionBuilder.rootBeanDefinition(TreeFactory.class);
     result.addPropertyValue("id", elmnt.getAttribute(ID_ATTRIBUTE));
     result.addPropertyValue("fxml", elmnt.getAttribute("fxml"));
     result.addPropertyValue("fxmlId", elmnt.getAttribute("fxmlId"));
-    result.addPropertyReference("treeModel", elmnt.getAttribute("treemodelRef")); 
+    result.addPropertyReference("treeModel", elmnt.getAttribute("treemodelRef"));
     List<Element> els = DomUtils.getChildElements(elmnt);
     ManagedList<BeanDefinition> cellFactories = new ManagedList<>();
     for (Element el : els) {
       if (el.getTagName().endsWith("level-cellfactory")) {
         BeanDefinitionBuilder bd = BeanDefinitionBuilder.rootBeanDefinition(LevelCellFactory.class);
-        bd.addPropertyValue("level", el.getAttribute("level")); 
-        bd.addPropertyValue("textField", el.getAttribute("textField")); 
+        bd.addPropertyValue("level", el.getAttribute("level"));
+        bd.addPropertyValue("textField", el.getAttribute("textField"));
+        bd.addPropertyReference("contextMenuProvider", el.getAttribute("contextMenuRef"));
         cellFactories.add(bd.getBeanDefinition());
-      } 
+      }
     }
-    result.addPropertyValue("cellFactories", cellFactories); 
+    result.addPropertyValue("cellFactories", cellFactories);
     return result.getBeanDefinition();
   }
 

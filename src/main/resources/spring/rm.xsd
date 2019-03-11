@@ -367,6 +367,7 @@
     <xsd:complexType>
       <xsd:attribute name="level" type="xsd:integer"/>
       <xsd:attribute name="textField" type="xsd:string"/>
+      <xsd:attribute name="contextMenuRef" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   
@@ -388,6 +389,7 @@
     <xsd:complexType>  
       <xsd:attribute name="level" type="xsd:integer"/>
       <xsd:attribute name="textField" type="xsd:string"/>
+      <xsd:attribute name="contextMenuRef" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
     

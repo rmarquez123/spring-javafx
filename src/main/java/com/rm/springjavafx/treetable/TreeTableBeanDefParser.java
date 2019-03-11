@@ -7,7 +7,6 @@ package com.rm.springjavafx.treetable;
 
 import com.rm.springjavafx.tree.LevelCellFactory;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -45,6 +44,7 @@ public class TreeTableBeanDefParser extends AbstractBeanDefinitionParser {
                             BeanDefinitionBuilder bd = BeanDefinitionBuilder.rootBeanDefinition(LevelCellFactory.class);
                             bd.addPropertyValue("level", m.getAttribute("level"));
                             bd.addPropertyValue("textField", m.getAttribute("textField"));
+                            bd.addPropertyReference("contextMenuProvider", m.getAttribute("contextMenuRef"));
                             return bd.getBeanDefinition();
                           }).collect(Collectors.toList());
                   BeanDefinitionBuilder bd = BeanDefinitionBuilder.rootBeanDefinition(TreeTableColumnDef.class);

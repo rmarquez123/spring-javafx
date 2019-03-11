@@ -1,5 +1,7 @@
 package com.rm.springjavafx.tree;
 
+import com.rm.datasources.RecordValue;
+import javafx.scene.control.ContextMenu;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -12,7 +14,8 @@ public class LevelCellFactory implements InitializingBean {
   private Integer level;
   private String textField;
   private boolean checkbox = true;
-
+  private ContextMenuProvider contextMenuProvider;
+  
   /**
    *
    * @param level
@@ -31,14 +34,12 @@ public class LevelCellFactory implements InitializingBean {
     this.textField = textField;
   }
 
-  /**
-   *
-   * @param checkbox
-   */
-//  @Required
-//  public void checkbox(boolean checkbox) {
-//    this.checkbox = checkbox;
-//  }
+  @Required
+  public void setContextMenuProvider(ContextMenuProvider contextMenuProvider) {
+    this.contextMenuProvider = contextMenuProvider;
+  }
+  
+  
 
   /**
    *
@@ -68,5 +69,10 @@ public class LevelCellFactory implements InitializingBean {
   boolean isCheckBox() {
     return this.checkbox;
   }
+
+  ContextMenu getContextMenu(RecordValue object) {
+    return this.contextMenuProvider.getContextMenu(object); 
+  }
+  
 
 }
