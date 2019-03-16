@@ -39,7 +39,9 @@ public class LevelCellFactory implements InitializingBean {
     this.contextMenuProvider = contextMenuProvider;
   }
   
-  
+  public void setCheckbox(boolean checkbox) {
+    this.checkbox = checkbox;
+  }
 
   /**
    *
@@ -66,11 +68,11 @@ public class LevelCellFactory implements InitializingBean {
 
   }
 
-  boolean isCheckBox() {
+  public boolean isCheckBox() {
     return this.checkbox;
   }
 
-  ContextMenu getContextMenu(RecordValue object) {
+  public ContextMenu getContextMenu(RecordValue object) {
     return this.contextMenuProvider.getContextMenu(object); 
   }
   

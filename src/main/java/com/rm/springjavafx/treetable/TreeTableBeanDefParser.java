@@ -44,6 +44,7 @@ public class TreeTableBeanDefParser extends AbstractBeanDefinitionParser {
                             BeanDefinitionBuilder bd = BeanDefinitionBuilder.rootBeanDefinition(LevelCellFactory.class);
                             bd.addPropertyValue("level", m.getAttribute("level"));
                             bd.addPropertyValue("textField", m.getAttribute("textField"));
+                            bd.addPropertyValue("checkbox", Boolean.valueOf(m.getAttribute("checkbox")));
                             if (m.getAttribute("contextMenuRef") != null && !m.getAttribute("contextMenuRef").isEmpty()) {
                               bd.addPropertyReference("contextMenuProvider", m.getAttribute("contextMenuRef"));
                             } else {

@@ -39,7 +39,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
   private String fxmlId;
   private TreeModel treeModel;
   private List<LevelCellFactory> cellFactories = new ArrayList<>();
-
+  
   private ApplicationContext context;
 
   /**

@@ -10,13 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import org.springframework.beans.BeansException;
@@ -31,7 +34,8 @@ import org.springframework.context.ApplicationContextAware;
  *
  * @author rmarquez
  */
-public class TreeTableFactory implements FactoryBean<TreeTableView>, InitializingBean, ApplicationContextAware {
+public class TreeTableFactory implements FactoryBean<TreeTableView>, 
+                                              InitializingBean, ApplicationContextAware {
 
   @Autowired
   FxmlInitializer fxmlInitializer;
@@ -150,7 +154,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
    *
    * @param result
    */
-  private <T> void setColumns(TreeTableView<T> result) {
+  private void setColumns(TreeTableView result) {
     TreeTableColumnDef[] cellFactoriesMap = new TreeTableColumnDef[cellFactories.size()];
     for (TreeTableColumnDef cellFactory : cellFactories) {
       cellFactoriesMap[cellFactory.getColIndex()] = cellFactory;
@@ -160,7 +164,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
     for (TreeTableColumnDef ttCol : cellFactoriesMap) {
       try {
         String label = ttCol.getLabel();
-        TreeTableColumn<T, Object> col = new TreeTableColumn<>(label);
+        TreeTableColumn<Object, Object> col = new TreeTableColumn<>(label);
         col.setCellValueFactory((param) -> {
           Property<Object> resultProp = new SimpleObjectProperty<>();
           TreeItem treeItem = param.getValue();
@@ -172,10 +176,18 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
               String textField = cellFactory.getTextField();
               RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
               resultProp.setValue(recordVal.get(textField));
+              if (cellFactory.isCheckBox()) {
+                col.setCellFactory((p) -> {
+                  TreeTableCell<Object, Object> res 
+                    = (TreeTableCell<Object, Object>) this.createCheckBoxCellFactory();
+                  return res;
+                });
+              }
             }
           }
           return resultProp;
         });
+
         cols.add(col);
       } catch (Exception ex) {
         throw new RuntimeException("Error creating Tree table column for 'ttCol'.  Check args: {"
@@ -189,6 +201,30 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
     for (TreeTableColumn colsOb : colsObs) {
       result.getColumns().add(colsOb);
     }
+  }
+
+  /**
+   *
+   * @return
+   */
+  private TreeTableCell<Object, Object> createCheckBoxCellFactory() {
+    TreeTableCell<Object, Object> result 
+      = new TreeTableCell<Object, Object>() {
+      @Override
+      protected void updateItem(Object item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty) {
+          super.setGraphic(null);
+          super.setText(null);
+        } else {
+          CheckBox checkBox = new CheckBox();
+          ObjectProperty<Boolean> property = (ObjectProperty<Boolean>) item;
+          checkBox.selectedProperty().bindBidirectional(property);
+          super.setGraphic(checkBox);
+        }
+      }
+    };
+    return result;
   }
 
   /**
