@@ -129,7 +129,16 @@ public abstract class AbstractDataSource<T> implements DataSource<T> {
   protected void setRecords(List<T> records) {
     this.records.setValue(FXCollections.observableArrayList(records));
   }
-
+  
+  /**
+   * 
+   * @return 
+   */
+  public ListProperty<T> getRecords() {
+    return records;
+  }
+  
+  
   /**
    *
    * @param <E>
