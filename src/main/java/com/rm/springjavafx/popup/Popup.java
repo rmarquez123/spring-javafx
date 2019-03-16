@@ -7,6 +7,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -131,6 +132,8 @@ public class Popup {
             this.alert.setAlwaysOnTop(true);
             alert.getScene().getWindow().setX(xPos);
             alert.getScene().getWindow().setY(yPos);
+            ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets(); 
+            alert.getScene().getStylesheets().addAll(styleSheets); 
           }
         }
         this.showProperty.setValue(this.alert.showingProperty().getValue());

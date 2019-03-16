@@ -86,25 +86,37 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     this.cellFactories = cellFactories;
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public Class<?> getObjectType() {
     return TreeView.class;
   }
 
+  /**
+   *
+   * @return @throws Exception
+   */
   @Override
   public TreeView getObject() throws Exception {
     TreeView<Object> result = (TreeView) this.fxmlInitializer.getNode(fxml, fxmlId);
     TreeItem<Object> rootItem = new TreeItem<>("Root");
     result.showRootProperty().setValue(false);
     result.setRoot(rootItem);
-    Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>();
+    this.setCellFactories(result);
+    this.bindDataModels(result, rootItem);
+    this.bindSelections(rootItem, result);
+    return result;
+  }
 
-    for (LevelCellFactory cellFactory : cellFactories) {
-      cellFactoriesMap.put(cellFactory.getLevel(), cellFactory);
-      
-    }
-    result.setCellFactory((param) -> cellFactory(cellFactoriesMap));
-
+  /**
+   *
+   * @param result
+   * @param rootItem
+   */
+  private void bindDataModels(TreeView<Object> result, TreeItem<Object> rootItem) {
     for (int level = 0; level < this.treeModel.getNumberOfLevels(); level++) {
       ListProperty listProperty = this.treeModel.getNodes(level);
       listProperty.addListener((obs, old, change) -> {
@@ -112,7 +124,27 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
         this.addTreeItems(rootItem);
       });
     }
+    this.addTreeItems(rootItem);
+  }
 
+  /**
+   *
+   * @param result
+   */
+  private void setCellFactories(TreeView<Object> result) {
+    Map<Integer, LevelCellFactory> cellFactoriesMap = new HashMap<>();
+    for (LevelCellFactory cellFactory : this.cellFactories) {
+      cellFactoriesMap.put(cellFactory.getLevel(), cellFactory);
+    }
+    result.setCellFactory((param) -> this.createCellFactory(cellFactoriesMap));
+  }
+
+  /**
+   *
+   * @param rootItem
+   * @param result
+   */
+  private void bindSelections(TreeItem<Object> rootItem, TreeView<Object> result) {
     this.treeModel.singleSelectionProperty().addListener((obs, old, change) -> {
       if (change != null) {
         TreeItem<Object> selection = findNode(rootItem, change);
@@ -133,7 +165,6 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
       }
     });
 
-    this.addTreeItems(rootItem);
     if (this.treeModel.getSelectionMode() == SelectionMode.SINGLE) {
       result.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<Object>> c) -> {
         while (c.next()) {
@@ -148,15 +179,13 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
         }
       });
     }
-
-    return result;
   }
 
   /**
    *
    * @return
    */
-  private TreeCell<Object> cellFactory(Map<Integer, LevelCellFactory> cellFactoriesMap) {
+  private TreeCell<Object> createCellFactory(Map<Integer, LevelCellFactory> cellFactoriesMap) {
     TreeCell<Object> result = new TreeCell<Object>() {
       @Override
       protected void updateItem(Object item, boolean empty) {
@@ -175,7 +204,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
             super.setText(textVal);
             super.setContextMenu(cellFactory.getContextMenu(treeNode.getObject()));
             if (cellFactory.isCheckBox()) {
-              
+
               CheckBox checkBox = new CheckBox();
               checkBox.selectedProperty().addListener((obs, old, change) -> {
                 ObservableList currentObs = treeModel.checkedValuesProperty().getValue();
@@ -210,7 +239,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
           } else {
             super.setText(String.valueOf(item));
           }
-          
+
         }
       }
     };
@@ -226,7 +255,7 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
     List<TreeNode> childNodes = this.getChildNodes(parentTreeItem);
     for (TreeNode node : childNodes) {
       TreeItem<Object> treeItem = new TreeItem<>();
-      
+
       treeItem.setValue(node);
       parentTreeItem.getChildren().add(treeItem);
       this.addTreeItems(treeItem);

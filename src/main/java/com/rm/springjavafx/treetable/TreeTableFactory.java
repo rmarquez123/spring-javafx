@@ -1,23 +1,24 @@
 package com.rm.springjavafx.treetable;
 
 import com.rm.datasources.RecordValue;
+import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.tree.LevelCellFactory;
 import com.rm.springjavafx.tree.TreeModel;
 import com.rm.springjavafx.tree.TreeNode;
-import com.rm.springjavafx.FxmlInitializer;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -63,23 +64,91 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
     this.treeModel = treeModel;
   }
 
+  /**
+   *
+   * @param cellFactories
+   */
   public void setCellFactories(List<TreeTableColumnDef> cellFactories) {
     this.cellFactories = cellFactories;
   }
 
+  /**
+   *
+   * @return @throws Exception
+   */
   @Override
   public TreeTableView getObject() throws Exception {
     TreeTableView result = (TreeTableView) this.fxmlInitializer.getNode(fxml, fxmlId);
-    TreeItem rootItem = new TreeItem<>("Inbox");
-    this.addTreeItems(rootItem);
+    TreeItem rootItem = new TreeItem<>("Root");
+    result.showRootProperty().setValue(false);
     result.setRoot(rootItem);
-    this.setColumns(result);
+    bindDataModels(result, rootItem);
+    this.bindSelections(rootItem, result);
     return result;
   }
-  
+
   /**
-   * 
-   * @param result 
+   *
+   * @param result
+   * @param rootItem
+   */
+  private void bindDataModels(TreeTableView result, TreeItem rootItem) {
+    this.setColumns(result);
+    for (int level = 0; level < this.treeModel.getNumberOfLevels(); level++) {
+      ListProperty listProperty = this.treeModel.getNodes(level);
+      listProperty.addListener((obs, old, change) -> {
+        result.getRoot().getChildren().clear();
+        this.addTreeItems(rootItem);
+      });
+    }
+    this.addTreeItems(rootItem);
+  }
+
+  /**
+   *
+   * @param rootItem
+   * @param result
+   */
+  private void bindSelections(TreeItem<Object> rootItem, TreeTableView<Object> result) {
+    this.treeModel.singleSelectionProperty().addListener((obs, old, change) -> {
+      if (change != null) {
+        TreeItem<Object> selection = findNode(rootItem, change);
+        if (!Objects.equals(result.getSelectionModel().getSelectedItem(), selection)) {
+          result.getSelectionModel().select(selection);
+          int row = result.getRow(selection);
+          VirtualFlow virtualFlow = (VirtualFlow) result.getChildrenUnmodifiable().get(0);
+          int first = virtualFlow.getFirstVisibleCell().getIndex();
+          int last = virtualFlow.getLastVisibleCell().getIndex();
+          if (!(first <= row && row <= last)) {
+            result.scrollTo(row);
+          }
+        }
+      } else {
+        if (!result.getSelectionModel().getSelectedIndices().isEmpty()) {
+          //result.getSelectionModel().select(null);
+        }
+      }
+    });
+
+    if (this.treeModel.getSelectionMode() == SelectionMode.SINGLE) {
+      result.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<Object>> c) -> {
+        while (c.next()) {
+          if (c.wasAdded()) {
+            for (TreeItem<Object> treeItem : c.getAddedSubList()) {
+              TreeNode<?> value = (TreeNode<?>) treeItem.getValue();
+              this.treeModel.singleSelectionProperty().setValue(value.getValueObject());
+            }
+          } else if (c.wasRemoved()) {
+            this.treeModel.singleSelectionProperty().setValue(null);
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   *
+   * @param result
    */
   private <T> void setColumns(TreeTableView<T> result) {
     TreeTableColumnDef[] cellFactoriesMap = new TreeTableColumnDef[cellFactories.size()];
@@ -89,24 +158,32 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
     result.getColumns().clear();
     List<TreeTableColumn<?, ?>> cols = new ArrayList<>();
     for (TreeTableColumnDef ttCol : cellFactoriesMap) {
-      String label = ttCol.getLabel();
-      TreeTableColumn<T, Object> col = new TreeTableColumn<>(label);
-      col.setCellValueFactory((param) -> {
-        Property<Object> resultProp = new SimpleObjectProperty<>();
-        TreeItem treeItem = param.getValue();
-        Object value = treeItem.getValue();
-        if (value instanceof TreeNode) {
-          int level = ((TreeNode) value).getLevel();
-          LevelCellFactory cellFactory = ttCol.getCellFactory(level);
-          if (cellFactory != null) {
-            String textField = cellFactory.getTextField();
-            RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
-            resultProp.setValue(recordVal.get(textField));
-          } 
-        } 
-        return resultProp;
-      });
-      cols.add(col);
+      try {
+        String label = ttCol.getLabel();
+        TreeTableColumn<T, Object> col = new TreeTableColumn<>(label);
+        col.setCellValueFactory((param) -> {
+          Property<Object> resultProp = new SimpleObjectProperty<>();
+          TreeItem treeItem = param.getValue();
+          Object value = treeItem.getValue();
+          if (value instanceof TreeNode) {
+            int level = ((TreeNode) value).getLevel();
+            LevelCellFactory cellFactory = ttCol.getCellFactory(level);
+            if (cellFactory != null) {
+              String textField = cellFactory.getTextField();
+              RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
+              resultProp.setValue(recordVal.get(textField));
+            }
+          }
+          return resultProp;
+        });
+        cols.add(col);
+      } catch (Exception ex) {
+        throw new RuntimeException("Error creating Tree table column for 'ttCol'.  Check args: {"
+          + "ttCol = " + ttCol
+          + "}", ex);
+
+      }
+
     }
     ObservableList<TreeTableColumn<? extends Object, ?>> colsObs = FXCollections.observableArrayList(cols);
     for (TreeTableColumn colsOb : colsObs) {
@@ -142,6 +219,10 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
     return nodes;
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public Class<?> getObjectType() {
     return TreeTableView.class;
@@ -159,9 +240,37 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>, Initializin
     this.context.getBean(this.id);
   }
 
+  /**
+   *
+   * @param ac
+   * @throws BeansException
+   */
   @Override
   public void setApplicationContext(ApplicationContext ac) throws BeansException {
     this.context = ac;
   }
 
+  /**
+   *
+   * @param root
+   * @param value
+   * @return
+   */
+  private static TreeItem<Object> findNode(TreeItem<Object> root, Object value) {
+    TreeItem<Object> result = null;
+    for (TreeItem<Object> child : root.getChildren()) {
+      if (((TreeNode) child.getValue()).getValueObject().equals(value)) {
+        result = child;
+        break;
+      } else {
+        if (!child.getChildren().isEmpty()) {
+          result = findNode(child, value);
+          if (result != null) {
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  }
 }

@@ -125,7 +125,7 @@ public class DbConnection {
    */
   @Override
   public String toString() {
-    return "DbConnection{" + "user=" + user + ", password=" + password + ", schema=" + databaseName + ", url=" + url + ", port=" + port + '}';
+    return this.getConnectionUrl();
   }
 
   /**
@@ -136,9 +136,7 @@ public class DbConnection {
   public Connection getConnection() {
     Connection result;
     try {
-      String _url = "jdbc:postgresql://" + this.getUrl()
-        + ":" + this.port
-        + "/" + this.databaseName;
+      String _url = this.getConnectionUrl();
       String _username = this.user;
       String _password = this.password;
       result = DriverManager.getConnection(_url, _username, _password);
@@ -146,6 +144,13 @@ public class DbConnection {
       throw new RuntimeException(ex);
     }
     return result;
+  }
+
+  private String getConnectionUrl() {
+    String _url = "jdbc:postgresql://" + this.getUrl()
+      + ":" + this.port
+      + "/" + this.databaseName;
+    return _url;
   }
 
   public Exception test() {
