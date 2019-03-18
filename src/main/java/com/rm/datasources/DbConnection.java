@@ -146,7 +146,11 @@ public class DbConnection {
     return result;
   }
 
-  private String getConnectionUrl() {
+  /**
+   *
+   * @return
+   */
+  public String getConnectionUrl() {
     String _url = "jdbc:postgresql://" + this.getUrl()
       + ":" + this.port
       + "/" + this.databaseName;
@@ -233,9 +237,9 @@ public class DbConnection {
     int effectedRows;
     try {
       PreparedStatement statement = conn.prepareStatement(sql);
-      List<Object> allValues = new ArrayList<>(); 
-      allValues.addAll(values); 
-      allValues.addAll(values_no_pk); 
+      List<Object> allValues = new ArrayList<>();
+      allValues.addAll(values);
+      allValues.addAll(values_no_pk);
       this.setParamValues(allValues, statement);
       effectedRows = statement.executeUpdate();
     } catch (Exception ex) {
@@ -258,7 +262,7 @@ public class DbConnection {
    * @throws SQLException
    */
   private void setParamValues(List<Object> values, PreparedStatement statement) throws SQLException {
-    
+
     for (int columnIndex = 1; columnIndex <= values.size(); columnIndex++) {
       Object objectValue = values.get(columnIndex - 1);
       if (objectValue instanceof ZonedDateTime) {
