@@ -1,6 +1,5 @@
 package com.rm.springjavafx;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +30,7 @@ public class FxmlInitializer implements InitializingBean {
   private String sceneRoot;
   private boolean initialized = false;
   private boolean initializing = false;
-  private List<Consumer<FxmlInitializer>> listeners = new ArrayList<>();
+  private final List<Consumer<FxmlInitializer>> listeners = new ArrayList<>();
 
   /**
    * Public constructor. Set properties using setters.
@@ -131,7 +130,7 @@ public class FxmlInitializer implements InitializingBean {
           Parent root;
           try {
             root = loader.load();
-          } catch (IOException ex) {
+          } catch (Exception ex) {
             throw new RuntimeException("Error loading fxml from resource.  Check args : {"
               + "fxml = " + fxml
               + "}", ex);
