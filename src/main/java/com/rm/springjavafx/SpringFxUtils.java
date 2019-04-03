@@ -157,17 +157,21 @@ public final class SpringFxUtils {
         TabPane accordion = (TabPane) node;
         for (Tab tab : accordion.getTabs()) {
           Node tabContent = tab.getContent();
-          nodeId = tabContent.idProperty().get();
-          if (nodeId != null && nodeId.equals(id)) {
-            return (T) tabContent;
-          }
-          if (tabContent instanceof Parent) {
-            T child = getChildByID((Parent) tabContent, id);
-            if (child != null) {
-              return child;
+          if (tabContent != null) {
+            nodeId = tabContent.idProperty().get();
+            if (nodeId != null && nodeId.equals(id)) {
+              return (T) tabContent;
             }
+            if (tabContent instanceof Parent) {
+              T child = getChildByID((Parent) tabContent, id);
+              if (child != null) {
+                return child;
+              }
+            }
+          } else {
+            throw new IllegalStateException("A tab with no content was detected.  "
+              + "Make sure tabs have a pane content (i.e. Anchor Pane).");
           }
-
         }
       } else if (node instanceof ToolBar) {
         ObservableList<Node> items = ((ToolBar) node).getItems();

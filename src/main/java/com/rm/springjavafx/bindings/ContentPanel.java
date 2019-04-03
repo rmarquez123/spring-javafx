@@ -43,12 +43,15 @@ public class ContentPanel implements InitializingBean {
     this.fxmlInitializer.addListener((a) -> {
       Platform.runLater(() -> {
         try {
-
           Pane parent = (Pane) this.fxmlInitializer.getNode(parentFxml, parentNode);
           Parent child = this.fxmlInitializer.getRoot(childFxml);
           SpringFxUtils.setNodeOnRefPane(parent, child);
         } catch (Exception ex) {
-          throw new RuntimeException(ex);
+          throw new RuntimeException("An exception occurred on initializing child pane.  Check args: {"
+            + "childFxml = " + childFxml
+            + ",parentFxml = " + parentFxml
+            + ",parentNode = " + parentNode
+            + "}", ex);
         }
       });
     });
