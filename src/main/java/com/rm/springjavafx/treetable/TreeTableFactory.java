@@ -16,6 +16,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
@@ -34,8 +35,8 @@ import org.springframework.context.ApplicationContextAware;
  *
  * @author rmarquez
  */
-public class TreeTableFactory implements FactoryBean<TreeTableView>, 
-                                              InitializingBean, ApplicationContextAware {
+public class TreeTableFactory implements FactoryBean<TreeTableView>,
+  InitializingBean, ApplicationContextAware {
 
   @Autowired
   FxmlInitializer fxmlInitializer;
@@ -120,12 +121,19 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
         if (!Objects.equals(result.getSelectionModel().getSelectedItem(), selection)) {
           result.getSelectionModel().select(selection);
           int row = result.getRow(selection);
-          VirtualFlow virtualFlow = (VirtualFlow) result.getChildrenUnmodifiable().get(0);
-          int first = virtualFlow.getFirstVisibleCell().getIndex();
-          int last = virtualFlow.getLastVisibleCell().getIndex();
-          if (!(first <= row && row <= last)) {
-            result.scrollTo(row);
+          ObservableList<Node> childrenUnmodifiable = result.getChildrenUnmodifiable();
+          for (Node node : childrenUnmodifiable) {
+            if (node instanceof VirtualFlow) {
+              VirtualFlow virtualFlow = (VirtualFlow) node;
+              int first = virtualFlow.getFirstVisibleCell().getIndex();
+              int last = virtualFlow.getLastVisibleCell().getIndex();
+              if (!(first <= row && row <= last)) {
+                result.scrollTo(row);
+              }
+              break;
+            }
           }
+
         }
       } else {
         if (!result.getSelectionModel().getSelectedIndices().isEmpty()) {
@@ -178,7 +186,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
               resultProp.setValue(recordVal.get(textField));
               if (cellFactory.isCheckBox()) {
                 col.setCellFactory((p) -> {
-                  TreeTableCell<Object, Object> res 
+                  TreeTableCell<Object, Object> res
                     = (TreeTableCell<Object, Object>) this.createCheckBoxCellFactory();
                   return res;
                 });
@@ -208,7 +216,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
    * @return
    */
   private TreeTableCell<Object, Object> createCheckBoxCellFactory() {
-    TreeTableCell<Object, Object> result 
+    TreeTableCell<Object, Object> result
       = new TreeTableCell<Object, Object>() {
       @Override
       protected void updateItem(Object item, boolean empty) {
