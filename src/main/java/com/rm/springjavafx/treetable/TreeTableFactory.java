@@ -18,6 +18,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.IndexedCell;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
@@ -125,10 +126,13 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
           for (Node node : childrenUnmodifiable) {
             if (node instanceof VirtualFlow) {
               VirtualFlow virtualFlow = (VirtualFlow) node;
-              int first = virtualFlow.getFirstVisibleCell().getIndex();
-              int last = virtualFlow.getLastVisibleCell().getIndex();
-              if (!(first <= row && row <= last)) {
-                result.scrollTo(row);
+              IndexedCell firstVisibleCell = virtualFlow.getFirstVisibleCell();
+              if (firstVisibleCell != null) {
+                int first = firstVisibleCell.getIndex();
+                int last = virtualFlow.getLastVisibleCell().getIndex();
+                if (!(first <= row && row <= last)) {
+                  result.scrollTo(row);
+                }
               }
               break;
             }
