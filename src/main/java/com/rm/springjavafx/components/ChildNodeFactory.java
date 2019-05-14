@@ -17,11 +17,20 @@ public class ChildNodeFactory implements FactoryBean<ChildNodeWrapper>, Initiali
 
   private String fxml;
   private String fxmlId;
-
+  
+  /**
+   * 
+   * @param fxml 
+   */
   public void setFxml(String fxml) {
     this.fxml = fxml;
+    this.fxmlInitializer.addFxml(fxml);
   }
-
+  
+  /**
+   * 
+   * @param fxmlId 
+   */
   public void setFxmlId(String fxmlId) {
     this.fxmlId = fxmlId;
   }

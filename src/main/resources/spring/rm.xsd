@@ -462,6 +462,25 @@
   </xsd:element>
   
   
+  <xsd:element name="button-popup"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="button" type="xsd:string"/>
+      <xsd:attribute name="popup" type="xsd:string"/>
+      <xsd:attribute name="readyProperty" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="bind-label"> 
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:ID"/>
+      <xsd:attribute name="label" type="xsd:string"/>
+      <xsd:attribute name="converter" type="xsd:string"/>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  
   
   
   

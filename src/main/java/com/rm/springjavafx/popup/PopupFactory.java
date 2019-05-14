@@ -33,6 +33,7 @@ public class PopupFactory implements FactoryBean<Popup>, InitializingBean {
   @Required
   public void setContentFxml(String contentFxml) {
     this.contentFxml = contentFxml;
+    this.initializer.addFxml(contentFxml);
   }
 
   /**

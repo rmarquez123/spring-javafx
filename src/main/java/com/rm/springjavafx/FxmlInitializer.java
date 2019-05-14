@@ -31,6 +31,7 @@ public class FxmlInitializer implements InitializingBean {
   private boolean initialized = false;
   private boolean initializing = false;
   private final List<Consumer<FxmlInitializer>> listeners = new ArrayList<>();
+  private final List<AnnotationHandler> annotationHandlers = new ArrayList<>();
 
   /**
    * Public constructor. Set properties using setters.
@@ -38,6 +39,23 @@ public class FxmlInitializer implements InitializingBean {
   public FxmlInitializer() {
   }
 
+  /**
+   *
+   * @param handler
+   */
+  public void addAnnotationHandler(AnnotationHandler handler) {
+    if (this.isInitialized()) {
+      throw new IllegalStateException("Should add annotation handler before initialization");
+    }
+    if (!this.annotationHandlers.contains(handler)) {
+      this.annotationHandlers.add(handler);
+    }
+  }
+
+  /**
+   *
+   * @param listener
+   */
   public void addListener(Consumer<FxmlInitializer> listener) {
     if (this.isInitialized()) {
       listener.accept(this);
@@ -120,6 +138,9 @@ public class FxmlInitializer implements InitializingBean {
       if (this.initializing) {
         throw new IllegalStateException("Fxml loaders are initalizing.  Add a listener instead.");
       }
+      for (AnnotationHandler handler : this.annotationHandlers) {
+        handler.readyFxmls();
+      }
       this.initializing = true;
       ClassLoader classLoader = this.getClass().getClassLoader();
       for (String fxml : this.fxmlList) {
@@ -142,22 +163,26 @@ public class FxmlInitializer implements InitializingBean {
           }
         }
       }
+
       this.initializing = false;
       this.initialized = true;
+      for (AnnotationHandler handler : this.annotationHandlers) {
+        handler.setNodes();
+      }
       for (Consumer<FxmlInitializer> listener : this.listeners) {
         listener.accept(this);
       }
     }
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public Parent getMainRoot() {
-    return this.getRoot(this.sceneRoot); 
+    return this.getRoot(this.sceneRoot);
   }
-  
+
   /**
    *
    * @param fxml
@@ -169,9 +194,7 @@ public class FxmlInitializer implements InitializingBean {
     }
     return this.rootNodes.get(fxml);
   }
-  
-  
-  
+
   /**
    *
    * @param fxml
@@ -207,5 +230,18 @@ public class FxmlInitializer implements InitializingBean {
         + "}");
     }
     return (Node) result;
+  }
+
+  public void addFxml(String parentFxml) {
+    if (this.initializing || this.isInitialized()) {
+      throw new RuntimeException("Cannnot add parent fxml after initializing");
+    }
+    if (this.getClass().getClassLoader().getResource(parentFxml) == null) {
+      throw new IllegalArgumentException("Invalid fxml : " + parentFxml);
+    }
+    if (!this.fxmlList.contains(parentFxml)) {
+      this.fxmlList.add(parentFxml);
+    }
+
   }
 }

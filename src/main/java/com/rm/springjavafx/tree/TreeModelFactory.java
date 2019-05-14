@@ -60,17 +60,24 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
     }
 
     result.singleSelectionProperty().addListener((obs, old, change) -> {
-      List<TreeDataSource> ds = this.datasources;
-      TreeDataSource dataSource = null;
       if (change != null) {
+        List<TreeDataSource> ds = this.datasources;
+        TreeDataSource dataSource = null;
         Integer levelOf = result.getLevelOf(change);
-        dataSource = datasources.get(levelOf);
-        dataSource.getDatasource().getSingleSelectionProperty().setValue(change);
-      }
-      for (TreeDataSource dss : this.datasources) {
-        if (dss != dataSource) {
-          dss.getDatasource().getSingleSelectionProperty().setValue(null);
+        if (levelOf != null) {
+          dataSource = datasources.get(levelOf);
+          dataSource.getDatasource().getSingleSelectionProperty().setValue(change);
         }
+        if (dataSource == null) {
+          throw new IllegalStateException("No data source is associated with record : " + change);
+        }
+        for (TreeDataSource dss : this.datasources) {
+          if (dss != dataSource) {
+            dss.getDatasource().getSingleSelectionProperty().setValue(null);
+          }
+        }
+      } else {
+        
       }
     });
     result.checkedValuesProperty().addListener((obs, old, change) -> {
@@ -79,7 +86,7 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
         for (TreeDataSource datasource : this.datasources) {
           ObservableList<RecordValue> newList = this.getNewCheckedList(datasource, change);
           datasource.getDatasource().checkedValuesProperty()
-              .setValue(newList);
+            .setValue(newList);
         }
       } else {
         for (TreeDataSource datasource : this.datasources) {
@@ -90,12 +97,12 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
 
     return result;
   }
-  
+
   /**
-   * 
+   *
    * @param datasource
    * @param change
-   * @return 
+   * @return
    */
   private ObservableList<RecordValue> getNewCheckedList(TreeDataSource datasource, ObservableList<RecordValue> change) {
     ObservableList<RecordValue> newList;
@@ -105,7 +112,7 @@ public class TreeModelFactory implements FactoryBean<TreeModel> {
       current.removeIf((RecordValue t) -> !change.contains(t));
       for (RecordValue recordValue : change) {
         if (datasource.getDatasource().listProperty().getValue().contains(recordValue)
-          &&  !current.contains(recordValue)) {
+          && !current.contains(recordValue)) {
           current.add(recordValue);
         }
       }

@@ -1,6 +1,10 @@
 package com.rm.springjavafx;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -94,9 +98,8 @@ public final class SpringFxUtils {
    */
   @SuppressWarnings("unchecked")
   public static <T> T getChildByID(Parent parent, String id) {
-
-    String nodeId = null;
-
+  
+    String nodeId;
     if (parent instanceof TitledPane) {
       TitledPane titledPane = (TitledPane) parent;
       Node content = titledPane.getContent();
@@ -112,8 +115,20 @@ public final class SpringFxUtils {
         }
       }
     }
-
-    for (Node node : parent.getChildrenUnmodifiable()) {
+    
+    Set<Node> children = new HashSet<>(parent.getChildrenUnmodifiable());
+    if (parent instanceof Pane) {
+      children.addAll(((Pane) parent).getChildren()); 
+    }
+    if (parent instanceof SplitPane) {
+      children.addAll(((SplitPane) parent).getItems());
+    }
+    if (parent instanceof TabPane) {
+      ObservableList<Tab> tabs = ((TabPane) parent).getTabs();
+      List<Node> n = tabs.stream().map((t)->t.getContent()).collect(Collectors.toList()); 
+      children.addAll(n);
+    }
+    for (Node node : children) {
       nodeId = node.idProperty().get();
       node.getProperties();
       if (nodeId != null && nodeId.equals(id)) {

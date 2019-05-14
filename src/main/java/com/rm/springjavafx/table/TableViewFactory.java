@@ -86,6 +86,7 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
    */
   @Override
   public TableView getObject() throws Exception {
+    
     TableView<?> result;
     if (this.fxml != null) {
       if (!this.fxmlInitializer.isInitialized()) {

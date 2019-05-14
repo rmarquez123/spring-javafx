@@ -1,6 +1,8 @@
 package com.rm.springjavafx;
 
+import com.rm.springjavafx.bindings.BindLabelBeanDefParser;
 import com.rm.springjavafx.bindings.ButtonBindBeanDefParser;
+import com.rm.springjavafx.bindings.ButtonPopupBeanDefParser;
 import com.rm.springjavafx.bindings.ContentPanelBeanDefParser;
 import com.rm.springjavafx.bindings.TabsBindingBeanDefParser;
 import com.rm.springjavafx.components.ChildNodeBeanDefParser;
@@ -57,6 +59,8 @@ public class SpringJavaFxNameSpaceHandler extends NamespaceHandlerSupport{
     this.registerBeanDefinitionParser("null_if_null", new NullIfNullPropertyBeanDefParser());
     this.registerBeanDefinitionParser("childnode", new ChildNodeBeanDefParser());
     this.registerBeanDefinitionParser("render-type", new RenderTypeBeanDefParser());
+    this.registerBeanDefinitionParser("button-popup", new ButtonPopupBeanDefParser());
+    this.registerBeanDefinitionParser("bind-label", new BindLabelBeanDefParser());
     
   }
 }

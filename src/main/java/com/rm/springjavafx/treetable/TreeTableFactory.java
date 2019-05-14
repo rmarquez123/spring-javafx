@@ -137,7 +137,6 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
               break;
             }
           }
-
         }
       } else {
         if (!result.getSelectionModel().getSelectedIndices().isEmpty()) {
@@ -147,7 +146,8 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
     });
 
     if (this.treeModel.getSelectionMode() == SelectionMode.SINGLE) {
-      result.getSelectionModel().getSelectedItems().addListener((ListChangeListener.Change<? extends TreeItem<Object>> c) -> {
+      result.getSelectionModel().getSelectedItems()
+        .addListener((ListChangeListener.Change<? extends TreeItem<Object>> c) -> {
         while (c.next()) {
           if (c.wasAdded()) {
             for (TreeItem<Object> treeItem : c.getAddedSubList()) {
@@ -246,17 +246,18 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
    */
   private void addTreeItems(TreeItem<Object> parentTreeItem) {
     List<TreeNode> childNodes = this.getChildNodes(parentTreeItem);
-
     for (TreeNode node : childNodes) {
       TreeItem<Object> treeItem = new TreeItem<>();
       treeItem.setValue(node);
       parentTreeItem.getChildren().add(treeItem);
       this.addTreeItems(treeItem);
     }
+    parentTreeItem.setExpanded(true);
   }
 
   private List<TreeNode> getChildNodes(TreeItem<Object> rootItem) {
     Object val = rootItem.getValue();
+    
     List<TreeNode> nodes;
     if (val instanceof TreeNode) {
       nodes = this.treeModel.getNodes((TreeNode) val);
