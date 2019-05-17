@@ -13,11 +13,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  *
  * @author rmarquez
  */
+@Configurable
 public class Popup {
 
   private final BooleanProperty showProperty = new SimpleBooleanProperty(false);
@@ -40,6 +42,19 @@ public class Popup {
       }
     });
   }
+  
+  public void setNode(Node node) {
+    this.contentNodeProperty.setValue(node);
+  }
+  
+  /**
+   * 
+   * @param controller 
+   */
+  public void setController(PopupContent controller) {
+    this.popupControllerProperty.setValue(controller);
+  }
+  
 
   /**
    *

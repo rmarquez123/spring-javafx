@@ -97,7 +97,7 @@
   </xsd:element>
   <xsd:element name="db-port"> 
     <xsd:complexType>
-      <xsd:attribute name="value" type="xsd:integer"/>
+      <xsd:attribute name="value" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="db-url"> 

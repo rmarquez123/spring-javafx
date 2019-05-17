@@ -49,21 +49,34 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
   private void onReadyFxmls() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
     for (Object bean : beans.values()) {
+      FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
+      String parentFxml = fxController.fxml();
+      if (!parentFxml.isEmpty()) {
+        addFxml(parentFxml);
+      }
       Field[] fields = bean.getClass().getDeclaredFields();
       for (Field field : fields) {
         ChildNode childNode = field.getDeclaredAnnotation(ChildNode.class);
         if (childNode != null) {
           String fxml = childNode.fxml();
-          if (this.getClass().getClassLoader().getResource(fxml) == null) {
-            throw new IllegalStateException("Fxml does not exist: '" + fxml + "'");
+          if (parentFxml.isEmpty() && !fxml.isEmpty()) {
+            addFxml(fxml);
+          } else if (parentFxml.isEmpty()){
+            throw new RuntimeException("No fxml file specified for node: '" + field + "'");
           }
-          if (!FilenameUtils.getExtension(fxml).endsWith("fxml")) {
-            throw new RuntimeException("File does not have .fxml extension: '" + fxml + "'");
-          }
-          this.fxmlInitializer.addFxml(fxml);
         }
       }
     }
+  }
+
+  private void addFxml(String fxml) throws RuntimeException, IllegalStateException {
+    if (this.getClass().getClassLoader().getResource(fxml) == null) {
+      throw new IllegalStateException("Fxml does not exist: '" + fxml + "'");
+    }
+    if (!FilenameUtils.getExtension(fxml).endsWith("fxml")) {
+      throw new RuntimeException("File does not have .fxml extension: '" + fxml + "'");
+    }
+    this.fxmlInitializer.addFxml(fxml);
   }
 
   /**
@@ -75,10 +88,14 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
     for (Object bean : beans.values()) {
       Field[] fields = bean.getClass().getDeclaredFields();
+      FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
       for (Field field : fields) {
         ChildNode childNode = field.getDeclaredAnnotation(ChildNode.class);
         if (childNode != null) {
           String fxml = childNode.fxml();
+          if (fxml.isEmpty()) {
+            fxml = fxController.fxml();
+          }
           String id = childNode.id();
           Parent parent = this.fxmlInitializer.getRoot(fxml);
           Object child = SpringFxUtils.getChildByID(parent, id);
@@ -86,7 +103,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
             throw new IllegalStateException("Child node is null.  Check args: {"
               + "fxml = " + fxml
               + ", id = " + id
-              + "}"); 
+              + "}");
           }
           try {
             field.setAccessible(true);

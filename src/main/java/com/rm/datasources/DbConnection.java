@@ -1,5 +1,6 @@
 package com.rm.datasources;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,11 +14,15 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -25,7 +30,11 @@ import org.apache.commons.lang3.mutable.MutableObject;
  *
  * @author rmarquez
  */
-public class DbConnection {
+@XmlRootElement(name = "histdlr")
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class DbConnection implements Serializable {
+
+  
 
   private final String user;
   private final String password;
@@ -278,7 +287,36 @@ public class DbConnection {
       }
     }
   }
+  
+  /***
+   * 
+   * @return 
+   */
+  public Properties properties() {
+    Properties result = new Properties();
+    result.put("url", this.url); 
+    result.put("databaseName", this.databaseName); 
+    result.put("password", this.password); 
+    result.put("port", this.port); 
+    result.put("user", this.user); 
+    return result;
+  }
 
+  /**
+   * 
+   * @param p
+   * @return 
+   */
+  public static DbConnection fromProperties(Properties p) {
+    return new DbConnection.Builder()
+      .setUrl(p.getProperty("url"))
+      .setDatabaseName(p.getProperty("databaseName"))
+      .setPassword(p.getProperty("password"))
+      .setPort((Integer)p.get("port"))
+      .setUser(p.getProperty("user"))
+      .createDbConnection(); 
+  }
+  
   /**
    *
    */

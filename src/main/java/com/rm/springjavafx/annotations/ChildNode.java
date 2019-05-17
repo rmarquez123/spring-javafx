@@ -16,7 +16,7 @@ public @interface ChildNode {
    *
    * @return
    */
-  public String fxml();
+  public String fxml() default "";
 
   /**
    *

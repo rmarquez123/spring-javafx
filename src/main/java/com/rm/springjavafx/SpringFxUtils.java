@@ -3,6 +3,7 @@ package com.rm.springjavafx;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.property.Property;
@@ -17,12 +18,25 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import org.springframework.context.ApplicationContext;
 
 public final class SpringFxUtils {
 
   private SpringFxUtils() {
   }
+  /**
+   * 
+   * @param alert
+   * @param window 
+   */
+  public static void setReferenceWind(Alert alert, Window window) {
+    double xPos = window.getX() + window.getWidth() * 0.4;
+    double yPos = window.getY() + window.getHeight() * 0.2;
+    alert.setX(xPos);
+    alert.setY(yPos);
+  }
+  
 
   /**
    *
@@ -98,7 +112,7 @@ public final class SpringFxUtils {
    */
   @SuppressWarnings("unchecked")
   public static <T> T getChildByID(Parent parent, String id) {
-  
+
     String nodeId;
     if (parent instanceof TitledPane) {
       TitledPane titledPane = (TitledPane) parent;
@@ -115,17 +129,39 @@ public final class SpringFxUtils {
         }
       }
     }
-    
+    if (parent instanceof MenuBar) {
+      if (Objects.equals(((MenuBar) parent).getId(), id)) {
+        return (T) parent;
+      }
+      List<Menu> menus = ((MenuBar) parent).getMenus();
+      for (Menu menu : menus) {
+        if (Objects.equals(menu.getId(), id)) {
+          return (T) menu;
+        }
+        if (menu.getGraphic() != null && Objects.equals(menu.getGraphic().getId(), id)) {
+          return (T) menu.getGraphic();
+        }
+        List<MenuItem> menuItems = menu.getItems();
+        for (MenuItem item : menuItems) {
+          if (Objects.equals(item.getId(), id)) {
+            return (T) item;
+          }
+        }
+      }
+    }
+
     Set<Node> children = new HashSet<>(parent.getChildrenUnmodifiable());
     if (parent instanceof Pane) {
-      children.addAll(((Pane) parent).getChildren()); 
+      children.addAll(((Pane) parent).getChildren());
     }
+
     if (parent instanceof SplitPane) {
       children.addAll(((SplitPane) parent).getItems());
     }
+
     if (parent instanceof TabPane) {
       ObservableList<Tab> tabs = ((TabPane) parent).getTabs();
-      List<Node> n = tabs.stream().map((t)->t.getContent()).collect(Collectors.toList()); 
+      List<Node> n = tabs.stream().map((t) -> t.getContent()).collect(Collectors.toList());
       children.addAll(n);
     }
     for (Node node : children) {
@@ -171,6 +207,9 @@ public final class SpringFxUtils {
       } else if (node instanceof TabPane) {
         TabPane accordion = (TabPane) node;
         for (Tab tab : accordion.getTabs()) {
+          if (Objects.equals(tab.getId(), id)) {
+            return (T) tab;
+          }
           Node tabContent = tab.getContent();
           if (tabContent != null) {
             nodeId = tabContent.idProperty().get();

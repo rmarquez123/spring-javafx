@@ -38,7 +38,8 @@ public class DbConnectionBeanDefParser extends AbstractBeanDefinitionParser {
         case "db-schema":
           String value = element.getAttribute("value");
           String propName = toCamelCase(tagName);
-          beanDef.addPropertyValue(propName, value);
+          System.out.println("value " + value);
+          beanDef.addPropertyValue(propName, value);          
           break;
         default:
           throw new IllegalStateException("Invalid tag name : '" + tagName + "'");

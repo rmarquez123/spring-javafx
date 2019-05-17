@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface FxController {
+public @interface PopupComponent {
 
-  public String fxml() default "";
+  public String id();
 }

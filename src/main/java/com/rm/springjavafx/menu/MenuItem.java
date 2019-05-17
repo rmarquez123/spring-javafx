@@ -1,4 +1,4 @@
-package com.rm.springjavafx.annotations;
+package com.rm.springjavafx.menu;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,8 +10,11 @@ import java.lang.annotation.Target;
  * @author Ricardo Marquez
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface FxController {
-
-  public String fxml() default "";
+@Target(ElementType.FIELD)
+public @interface MenuItem {
+  
+  String menu(); 
+  String label(); 
+  String order(); 
+  
 }
