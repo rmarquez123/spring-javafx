@@ -68,8 +68,12 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
       }
     }
   }
-
-  private void addFxml(String fxml) throws RuntimeException, IllegalStateException {
+  
+  /**
+   * 
+   * @param fxml 
+   */
+  private void addFxml(String fxml) {
     if (this.getClass().getClassLoader().getResource(fxml) == null) {
       throw new IllegalStateException("Fxml does not exist: '" + fxml + "'");
     }
@@ -84,7 +88,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    * @throws BeansException
    * @throws RuntimeException
    */
-  private void setChildNodeToBean() throws BeansException, RuntimeException {
+  private void setChildNodeToBean() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
     for (Object bean : beans.values()) {
       Field[] fields = bean.getClass().getDeclaredFields();
