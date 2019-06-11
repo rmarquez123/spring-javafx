@@ -55,6 +55,8 @@ public class TreeTableBeanDefParser extends AbstractBeanDefinitionParser {
                   BeanDefinitionBuilder bd = BeanDefinitionBuilder.rootBeanDefinition(TreeTableColumnDef.class);
                   bd.addPropertyValue("colIndex", e.getAttribute("colindex"));
                   bd.addPropertyValue("label", e.getAttribute("label"));
+                  bd.addPropertyValue("class", e.getAttribute("class"));
+                  bd.addPropertyValue("width", e.getAttribute("width"));
                   ManagedList<BeanDefinition> list = new ManagedList<>();
                   list.addAll(levelCellFactories); 
                   bd.addPropertyValue("cellFactories",list);

@@ -5,6 +5,7 @@ import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.popup.Popup;
 import com.rm.springjavafx.popup.PopupContent;
 import java.util.Map;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -53,7 +54,11 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
       if (!FilenameUtils.getExtension(fxml).endsWith("fxml")) {
         throw new RuntimeException("File does not have .fxml extension: '" + fxml + "'");
       }
+      if (bean instanceof Initializable) {
+        this.fxmlInitializer.addFxml(fxml);
+      } 
       this.fxmlInitializer.addFxml(fxml);
+      
     }
   }
 

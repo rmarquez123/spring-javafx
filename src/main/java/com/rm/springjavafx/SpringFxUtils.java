@@ -25,10 +25,11 @@ public final class SpringFxUtils {
 
   private SpringFxUtils() {
   }
+
   /**
-   * 
+   *
    * @param alert
-   * @param window 
+   * @param window
    */
   public static void setReferenceWind(Alert alert, Window window) {
     double xPos = window.getX() + window.getWidth() * 0.4;
@@ -36,7 +37,6 @@ public final class SpringFxUtils {
     alert.setX(xPos);
     alert.setY(yPos);
   }
-  
 
   /**
    *
@@ -147,6 +147,13 @@ public final class SpringFxUtils {
             return (T) item;
           }
         }
+      }
+    }
+    if (parent instanceof ScrollPane) {
+      Node content = ((ScrollPane) parent).getContent();
+      Object result = getChildByID((Parent) content, id);
+      if (result != null) {
+        return (T) result;
       }
     }
 

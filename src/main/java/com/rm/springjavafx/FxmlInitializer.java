@@ -1,5 +1,6 @@
 package com.rm.springjavafx;
 
+import com.rm.springjavafx.annotations.FxController;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,11 +144,28 @@ public class FxmlInitializer implements InitializingBean {
       }
       this.initializing = true;
       ClassLoader classLoader = this.getClass().getClassLoader();
+      Map<String, Object> beans = this.context.getBeansWithAnnotation(FxController.class);
+      Map<String, Object> fxControllers = new HashMap<>();
+      for (Object value : beans.values()) {
+        FxController fxController = value.getClass().getDeclaredAnnotation(FxController.class); 
+        if (!fxController.fxml().isEmpty()) {
+          fxControllers.put(fxController.fxml(), value); 
+        }
+      }
+//      Map<String, Object> fxControllers = beans.values().stream()
+//        .filter((v) -> !v.getClass().getDeclaredAnnotation(FxController.class).fxml().isEmpty())
+//        .collect(Collectors.toMap((v) -> v.getClass().getDeclaredAnnotation(FxController.class).fxml(), (v) -> v));
+
       for (String fxml : this.fxmlList) {
         if (!this.rootNodes.containsKey(fxml)) {
           URL resource = classLoader.getResource(fxml);
           FXMLLoader loader = new FXMLLoader(resource);
-          loader.setControllerFactory(context::getBean);
+          if (fxControllers.containsKey(fxml)) {
+            Object controller = fxControllers.get(fxml);
+            loader.setController(controller);
+          } else {
+            loader.setControllerFactory(context::getBean);
+          }
           Parent root;
           try {
             root = loader.load();

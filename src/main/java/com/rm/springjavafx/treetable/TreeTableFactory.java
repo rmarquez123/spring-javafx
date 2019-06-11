@@ -148,17 +148,17 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
     if (this.treeModel.getSelectionMode() == SelectionMode.SINGLE) {
       result.getSelectionModel().getSelectedItems()
         .addListener((ListChangeListener.Change<? extends TreeItem<Object>> c) -> {
-        while (c.next()) {
-          if (c.wasAdded()) {
-            for (TreeItem<Object> treeItem : c.getAddedSubList()) {
-              TreeNode<?> value = (TreeNode<?>) treeItem.getValue();
-              this.treeModel.singleSelectionProperty().setValue(value.getValueObject());
+          while (c.next()) {
+            if (c.wasAdded()) {
+              for (TreeItem<Object> treeItem : c.getAddedSubList()) {
+                TreeNode<?> value = (TreeNode<?>) treeItem.getValue();
+                this.treeModel.singleSelectionProperty().setValue(value.getValueObject());
+              }
+            } else if (c.wasRemoved()) {
+              this.treeModel.singleSelectionProperty().setValue(null);
             }
-          } else if (c.wasRemoved()) {
-            this.treeModel.singleSelectionProperty().setValue(null);
           }
-        }
-      });
+        });
     }
   }
 
@@ -177,6 +177,12 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
       try {
         String label = ttCol.getLabel();
         TreeTableColumn<Object, Object> col = new TreeTableColumn<>(label);
+        if (ttCol.getWidth() != null) {
+          col.setPrefWidth(ttCol.getWidth());
+          col.setMaxWidth(ttCol.getWidth());
+          col.setMinWidth(ttCol.getWidth());
+        }
+
         col.setCellValueFactory((param) -> {
           Property<Object> resultProp = new SimpleObjectProperty<>();
           TreeItem treeItem = param.getValue();
@@ -257,7 +263,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
 
   private List<TreeNode> getChildNodes(TreeItem<Object> rootItem) {
     Object val = rootItem.getValue();
-    
+
     List<TreeNode> nodes;
     if (val instanceof TreeNode) {
       nodes = this.treeModel.getNodes((TreeNode) val);

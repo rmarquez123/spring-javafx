@@ -402,6 +402,8 @@
       </xsd:choice>
       <xsd:attribute name="colindex" type="xsd:integer"/>
       <xsd:attribute name="label" type="xsd:string"/>
+      <xsd:attribute name="class" type="xsd:string"/>
+      <xsd:attribute name="width" type="xsd:integer"/>
     </xsd:complexType>
   </xsd:element>
   

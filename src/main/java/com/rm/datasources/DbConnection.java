@@ -357,6 +357,11 @@ public class DbConnection implements Serializable {
     }
 
     public DbConnection createDbConnection() {
+      Objects.requireNonNull(user, "user cannot be null");
+      Objects.requireNonNull(password, "password cannot be null");
+      Objects.requireNonNull(databaseName, "database cannot be null");
+      Objects.requireNonNull(url, "url cannot be null");
+      Objects.requireNonNull(port, "port cannot be null");
       return new DbConnection(user, password, databaseName, url, port);
     }
 
