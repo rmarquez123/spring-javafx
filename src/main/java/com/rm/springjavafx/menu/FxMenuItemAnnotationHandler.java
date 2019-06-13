@@ -1,0 +1,92 @@
+package com.rm.springjavafx.menu;
+
+import com.rm.springjavafx.AnnotationHandler;
+import com.rm.springjavafx.FxmlInitializer;
+import com.rm.springjavafx.SpringFxUtils;
+import java.util.Map;
+import javafx.scene.Parent;
+import javafx.scene.control.MenuItem;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
+/**
+ *
+ * @author Ricardo Marquez
+ */
+@Component
+@Lazy(false)
+public class FxMenuItemAnnotationHandler implements InitializingBean, AnnotationHandler {
+  
+  @Autowired
+  private FxmlInitializer fxmlInitializer;
+  @Autowired
+  private ApplicationContext appContext;
+
+  /**
+   *
+   * @throws Exception
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    this.fxmlInitializer.addAnnotationHandler(this);
+  }
+
+  /**
+   *
+   */
+  @Override
+  public void readyFxmls() {
+    Map<String, Object> tabItemBeans = appContext.getBeansWithAnnotation(FxMenuItem.class);
+    for (Object value : tabItemBeans.values()) {
+      if (value instanceof AbstractFxMenuItem) {
+        Class<? extends Object> clazz = value.getClass();
+        FxMenuItem fxMenuItem = clazz.getDeclaredAnnotation(FxMenuItem.class);
+        String fxml = fxMenuItem.fxml();
+        this.addFxml(fxml);
+      } else {
+        throw new IllegalArgumentException("Bean with FxMenuItem should also extend '" 
+          + AbstractFxMenuItem.class + "'");
+      }
+    }
+  }
+
+  /**
+   *
+   * @throws BeansException
+   * @throws RuntimeException
+   */
+  @Override
+  public void setNodes() {
+    Map<String, Object> tabItemBeans = this.appContext.getBeansWithAnnotation(FxMenuItem.class);
+    for (Object value : tabItemBeans.values()) {
+      Class<? extends Object> clazz = value.getClass();
+      FxMenuItem fxMenuItem = clazz.getDeclaredAnnotation(FxMenuItem.class);
+      String fxml = fxMenuItem.fxml();
+      String id = fxMenuItem.id();
+      Parent node = this.fxmlInitializer.getRoot(fxml);
+      MenuItem menuItem = SpringFxUtils.getChildByID(node, id);
+      ((AbstractFxMenuItem) value).init(fxmlInitializer, menuItem);
+    }
+  }
+
+  /**
+   *
+   * @param fxml
+   * @throws RuntimeException
+   * @throws IllegalStateException
+   */
+  private void addFxml(String fxml) {
+    if (this.getClass().getClassLoader().getResource(fxml) == null) {
+      throw new IllegalStateException("Fxml does not exist: '" + fxml + "'");
+    }
+    if (!FilenameUtils.getExtension(fxml).endsWith("fxml")) {
+      throw new RuntimeException("File does not have .fxml extension: '" + fxml + "'");
+    }
+    this.fxmlInitializer.addFxml(fxml);
+  }
+}
