@@ -1,6 +1,7 @@
 package com.rm.springjavafx.project;
 
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @param <V>
  */
 @XmlRootElement(name = "root")
-@XmlSeeAlso({ChronoUnit.class, java.util.Properties.class})
+@XmlSeeAlso({ChronoUnit.class, java.util.Properties.class, ZoneId.class})
 public class SerializableHashMap<K, V> implements Serializable {
 
   private Map<K, V> mapProperty;

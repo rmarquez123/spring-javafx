@@ -70,6 +70,18 @@
       <version>3.8.1</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.5.0</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart-fx</artifactId>
+      <version>1.0.1</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

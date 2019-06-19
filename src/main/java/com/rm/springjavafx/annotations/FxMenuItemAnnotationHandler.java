@@ -1,8 +1,10 @@
-package com.rm.springjavafx.menu;
+package com.rm.springjavafx.annotations;
 
 import com.rm.springjavafx.AnnotationHandler;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
+import com.rm.springjavafx.menu.AbstractFxMenuItem;
+import com.rm.springjavafx.menu.FxMenuItem;
 import java.util.Map;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
@@ -21,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 public class FxMenuItemAnnotationHandler implements InitializingBean, AnnotationHandler {
-  
+
   @Autowired
   private FxmlInitializer fxmlInitializer;
   @Autowired
@@ -49,7 +51,7 @@ public class FxMenuItemAnnotationHandler implements InitializingBean, Annotation
         String fxml = fxMenuItem.fxml();
         this.addFxml(fxml);
       } else {
-        throw new IllegalArgumentException("Bean with FxMenuItem should also extend '" 
+        throw new IllegalArgumentException("Bean with FxMenuItem should also extend '"
           + AbstractFxMenuItem.class + "'");
       }
     }

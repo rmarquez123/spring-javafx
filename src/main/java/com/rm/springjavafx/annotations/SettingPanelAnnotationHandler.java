@@ -1,7 +1,8 @@
-package com.rm.wizard;
+package com.rm.springjavafx.annotations;
 
 import com.rm.springjavafx.AnnotationHandler;
 import com.rm.springjavafx.FxmlInitializer;
+import com.rm.wizard.SettingPanel;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeansException;
@@ -37,7 +38,7 @@ public class SettingPanelAnnotationHandler implements InitializingBean, Annotati
   public void readyFxmls() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(SettingPanel.class);
     for (Object value : beans.values()) {
-      String fxml = value.getClass().getDeclaredAnnotation(SettingPanel.class).fxml(); 
+      String fxml = value.getClass().getDeclaredAnnotation(SettingPanel.class).fxml();
       this.addFxml(fxml);
     }
   }
@@ -56,6 +57,7 @@ public class SettingPanelAnnotationHandler implements InitializingBean, Annotati
       throw new RuntimeException("File does not have .fxml extension: '" + fxml + "'");
     }
     this.fxmlInitializer.addFxml(fxml);
+    System.out.println("added fxml: " + fxml);
   }
 
   /**
@@ -64,7 +66,7 @@ public class SettingPanelAnnotationHandler implements InitializingBean, Annotati
    * @throws RuntimeException
    */
   @Override
-  public void setNodes() { 
+  public void setNodes() {
   }
     
 }
