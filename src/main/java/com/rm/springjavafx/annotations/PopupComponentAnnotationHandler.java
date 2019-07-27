@@ -78,7 +78,13 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
         .rootBeanDefinition(Popup.class)
         .getBeanDefinition();
       dynamicBean.getPropertyValues().add("node", node); 
-      dynamicBean.getPropertyValues().add("controller", (PopupContent) bean); 
+      dynamicBean.getPropertyValues().add("controller", (PopupContent) bean);
+      if (p.id().trim().isEmpty()) {
+        throw new IllegalStateException("Bean name cannot be empty. Check args: {"
+          + "bean = " + bean
+          + ", popupComponent = " + p
+          + "}"); 
+      }
       registry.registerBeanDefinition(p.id(), dynamicBean);
     }
   }

@@ -41,11 +41,19 @@ public class RecordValue {
 
   /**
    *
-   * @param valueField
+   * @param key
    * @return
    */
-  public Object get(String valueField) {
-    return this.values.get(valueField);
+  public Object get(String key) {
+    Object result;
+    if (this.values.containsKey(key)) {
+      result = this.values.get(key);
+    }else if (this.getIdValue() instanceof Map) {
+      result = ((Map<String, Object>) this.getIdValue()).get(key); 
+    } else {
+      result = null;
+    }
+    return result;
   }
 
   @Override
@@ -83,7 +91,18 @@ public class RecordValue {
    * @return
    */
   public Set<String> keySet() {
-    return this.values.keySet();
+    Set<String> result;
+    if (this.get(this.idField) instanceof Map) {
+      Map<String, Object> composite = (Map<String, Object>) this.get(this.idField);
+      result = new HashSet<>();
+      for (String string : composite.keySet()) {
+       result.add(string);
+      }
+      result.addAll(this.keySetNoPk());
+    } else {
+      result = new HashSet<>(this.values.keySet());
+    }
+    return result;
   }
 
   /**
@@ -95,7 +114,7 @@ public class RecordValue {
   }
 
   public Set<String> keySetNoPk() {
-    Set<String> keySet = this.values.keySet();
+    Set<String> keySet = new HashSet<>(this.values.keySet());
     keySet.removeIf((e)->e.endsWith("pk"));
     return keySet;
   }

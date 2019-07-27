@@ -20,6 +20,7 @@ import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,14 +35,13 @@ import org.apache.commons.lang3.mutable.MutableObject;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class DbConnection implements Serializable {
 
-  
-
   private final String user;
   private final String password;
   private final String databaseName;
   private final String url;
   private final Integer port;
   private Connection connection;
+  private final Converters converters;
 
   public DbConnection(String user, String password, String databaseName, String url, Integer port) {
     this.user = user;
@@ -49,6 +49,7 @@ public class DbConnection implements Serializable {
     this.databaseName = databaseName;
     this.url = url;
     this.port = port;
+    this.converters = new Converters();
   }
 
   public String getUser() {
@@ -91,7 +92,7 @@ public class DbConnection implements Serializable {
       PreparedStatement statement = conn.prepareStatement(sql);
       this.setParamValues(values, statement);
       effectedRows = statement.executeUpdate();
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       throw new RuntimeException(ex);
     } finally {
       try {
@@ -117,7 +118,7 @@ public class DbConnection implements Serializable {
       while (resultSet.next()) {
         consumer.accept(resultSet);
       }
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       throw new RuntimeException(ex);
     } finally {
       try {
@@ -149,7 +150,7 @@ public class DbConnection implements Serializable {
       String _username = this.user;
       String _password = this.password;
       result = DriverManager.getConnection(_url, _username, _password);
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       throw new RuntimeException(ex);
     }
     return result;
@@ -166,6 +167,10 @@ public class DbConnection implements Serializable {
     return _url;
   }
 
+  /**
+   *
+   * @return
+   */
   public Exception test() {
     Exception result;
     try {
@@ -173,6 +178,8 @@ public class DbConnection implements Serializable {
       this.connection.close();
       this.connection = null;
       result = null;
+    } catch (SQLException ex) {
+      result = ex;
     } catch (Exception ex) {
       result = ex;
     }
@@ -224,10 +231,14 @@ public class DbConnection implements Serializable {
    */
   public int executeUpsert(String table, RecordValue record, String... pk) {
     Objects.requireNonNull(pk, "Primary key field name cannot be null");
+    Objects.requireNonNull(record, "Record cannot be null");
+    Objects.requireNonNull(table, "table cannot be null");
     if (pk.length == 0) {
       throw new IllegalArgumentException("No primary key field names specified cannot be empty");
     }
-
+    if (table.trim().isEmpty()) {
+      throw new IllegalArgumentException("table string cannot be empty");
+    }
     Set<String> keySet = record.keySetNoPk();
     List<Object> values = new ArrayList<>(record.valueSetNoPk());
     String separator = ", ";
@@ -241,7 +252,14 @@ public class DbConnection implements Serializable {
     String sql = String.format("insert into %s \n(%s) \n values (%s) \n"
       + " on conflict (%s) do update\n "
       + " set (%s) = (%s) ",
-      new Object[]{table, columns, valuePlaceHolders, String.join(",", pk), columns_no_pk, valuePlaceHoldersNoPk});
+      new Object[]{table, 
+        columns, 
+        valuePlaceHolders, 
+        String.join(",", pk), 
+        columns_no_pk, 
+        valuePlaceHoldersNoPk
+      }
+    );
     Connection conn = this.getConnection();
     int effectedRows;
     try {
@@ -251,7 +269,7 @@ public class DbConnection implements Serializable {
       allValues.addAll(values_no_pk);
       this.setParamValues(allValues, statement);
       effectedRows = statement.executeUpdate();
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       throw new RuntimeException(ex);
     } finally {
       try {
@@ -266,12 +284,78 @@ public class DbConnection implements Serializable {
 
   /**
    *
+   * @param table
+   * @param records
+   * @param pk
+   * @return
+   */
+  public int executeUpsert(String table, List<RecordValue> records, String... pk) {
+    Objects.requireNonNull(pk, "Primary key field name cannot be null");
+    Objects.requireNonNull(records, "Records cannot be null");
+    Objects.requireNonNull(table, "table cannot be null");
+    if (pk.length == 0) {
+      throw new IllegalArgumentException("No primary key field names specified cannot be empty");
+    }
+    if (table.trim().isEmpty()) {
+      throw new IllegalArgumentException("table string cannot be empty");
+    }
+    int effectedRows;
+    if (!records.isEmpty()) {
+      Set<String> keySet = records.get(0).keySet();
+      String separator = ", ";
+      String columns = String.join(separator, keySet);
+      String valuePlaceHolders = records.stream()
+        .map(
+          (r) -> keySet
+            .stream()
+            .map((k) -> this.converters.convert(r.get(k)))
+            .collect(Collectors.joining(","))
+        ).collect(Collectors.joining(")\n" + separator + "("));
+      Set<String> keySetNoPk = records.get(0).keySetNoPk()
+        .stream()
+        .map((e) -> "excluded." + e)
+        .collect(Collectors.toSet());
+      
+      
+      String columns_no_pk = String.join(separator, keySetNoPk);
+      String sql = String.format("insert into %s \n(%s) \n values (%s) \n"
+        + " on conflict (%s) do update\n "
+        + " set %s = %s ",
+        new Object[]{
+          table,
+          columns,
+          valuePlaceHolders,
+          String.join(",", pk),
+          String.join(",", records.get(0).keySetNoPk()),
+          columns_no_pk
+        });
+      Connection conn = this.getConnection();
+      try {
+        PreparedStatement statement = conn.prepareStatement(sql);
+        effectedRows = statement.executeUpdate();
+      } catch (SQLException ex) {
+        throw new RuntimeException(ex);
+      } finally {
+        try {
+          conn.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(DbConnection.class.getName())
+            .log(Level.SEVERE, "An error occurred while closing the connection. ", ex);
+        }
+      }
+    } else {
+      effectedRows = 0;
+    }
+    return effectedRows;
+  }
+
+  /**
+   *
    * @param values
    * @param statement
    * @throws SQLException
    */
   private void setParamValues(List<Object> values, PreparedStatement statement) throws SQLException {
-
     for (int columnIndex = 1; columnIndex <= values.size(); columnIndex++) {
       Object objectValue = values.get(columnIndex - 1);
       if (objectValue instanceof ZonedDateTime) {
@@ -287,36 +371,37 @@ public class DbConnection implements Serializable {
       }
     }
   }
-  
-  /***
-   * 
-   * @return 
+
+  /**
+   * *
+   *
+   * @return
    */
   public Properties properties() {
     Properties result = new Properties();
-    result.put("url", this.url); 
-    result.put("databaseName", this.databaseName); 
-    result.put("password", this.password); 
-    result.put("port", this.port); 
-    result.put("user", this.user); 
+    result.put("url", this.url);
+    result.put("databaseName", this.databaseName);
+    result.put("password", this.password);
+    result.put("port", this.port);
+    result.put("user", this.user);
     return result;
   }
 
   /**
-   * 
+   *
    * @param p
-   * @return 
+   * @return
    */
   public static DbConnection fromProperties(Properties p) {
     return new DbConnection.Builder()
       .setUrl(p.getProperty("url"))
       .setDatabaseName(p.getProperty("databaseName"))
       .setPassword(p.getProperty("password"))
-      .setPort((Integer)p.get("port"))
+      .setPort((Integer) p.get("port"))
       .setUser(p.getProperty("user"))
-      .createDbConnection(); 
+      .createDbConnection();
   }
-  
+
   /**
    *
    */
@@ -357,12 +442,12 @@ public class DbConnection implements Serializable {
     }
 
     public DbConnection createDbConnection() {
-      Objects.requireNonNull(user, "user cannot be null");
-      Objects.requireNonNull(password, "password cannot be null");
-      Objects.requireNonNull(databaseName, "database cannot be null");
-      Objects.requireNonNull(url, "url cannot be null");
-      Objects.requireNonNull(port, "port cannot be null");
-      return new DbConnection(user, password, databaseName, url, port);
+      Objects.requireNonNull(this.user, "user cannot be null");
+      Objects.requireNonNull(this.password, "password cannot be null");
+      Objects.requireNonNull(this.databaseName, "database cannot be null");
+      Objects.requireNonNull(this.url, "url cannot be null");
+      Objects.requireNonNull(this.port, "port cannot be null");
+      return new DbConnection(this.user, this.password, this.databaseName, this.url, this.port);
     }
 
   }
