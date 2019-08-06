@@ -66,12 +66,30 @@ public class FxMenuItemAnnotationHandler implements InitializingBean, Annotation
   public void setNodes() {
     Map<String, Object> tabItemBeans = this.appContext.getBeansWithAnnotation(FxMenuItem.class);
     for (Object value : tabItemBeans.values()) {
+      
+      if (value == null) {
+        throw new NullPointerException("tableItemBean cannot be null.");
+      }
+      
+      if (!(value instanceof AbstractFxMenuItem)) {
+        throw new IllegalStateException(
+          String.format("Class '%s' must extend %s", 
+            value.getClass().getSimpleName(), 
+            AbstractFxMenuItem.class.getSimpleName()));
+      }
+      
       Class<? extends Object> clazz = value.getClass();
       FxMenuItem fxMenuItem = clazz.getDeclaredAnnotation(FxMenuItem.class);
       String fxml = fxMenuItem.fxml();
       String id = fxMenuItem.id();
       Parent node = this.fxmlInitializer.getRoot(fxml);
       MenuItem menuItem = SpringFxUtils.getChildByID(node, id);
+      if (menuItem == null) {
+        throw new IllegalStateException("Menu item not found in node.  Check args: {"
+          + "fxml = "  + fxml
+          + ", id = "  + id
+          + "}"); 
+      }
       ((AbstractFxMenuItem) value).init(fxmlInitializer, menuItem);
     }
   }

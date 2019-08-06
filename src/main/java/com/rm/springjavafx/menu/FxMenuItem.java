@@ -30,11 +30,11 @@ public @interface FxMenuItem {
    *
    * @return
    */
-  KeyCode code();
-
+  KeyCode code() default KeyCode.F1;
+  
   /**
    *
    * @return
    */
-  KeyModifier modifier();
+  KeyModifier modifier() default KeyModifier.NONE;
 }

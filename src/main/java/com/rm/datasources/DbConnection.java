@@ -52,6 +52,17 @@ public class DbConnection implements Serializable {
     this.converters = new Converters();
   }
 
+  /**
+   *
+   * @param user
+   * @param password
+   * @param url
+   * @param port
+   */
+  public DbConnection(String user, String password, String url, Integer port) {
+    this(user, password, "postgres", url, port);
+  }
+
   public String getUser() {
     return user;
   }
@@ -252,11 +263,11 @@ public class DbConnection implements Serializable {
     String sql = String.format("insert into %s \n(%s) \n values (%s) \n"
       + " on conflict (%s) do update\n "
       + " set (%s) = (%s) ",
-      new Object[]{table, 
-        columns, 
-        valuePlaceHolders, 
-        String.join(",", pk), 
-        columns_no_pk, 
+      new Object[]{table,
+        columns,
+        valuePlaceHolders,
+        String.join(",", pk),
+        columns_no_pk,
         valuePlaceHoldersNoPk
       }
     );
@@ -315,8 +326,7 @@ public class DbConnection implements Serializable {
         .stream()
         .map((e) -> "excluded." + e)
         .collect(Collectors.toSet());
-      
-      
+
       String columns_no_pk = String.join(separator, keySetNoPk);
       String sql = String.format("insert into %s \n(%s) \n values (%s) \n"
         + " on conflict (%s) do update\n "
@@ -393,13 +403,44 @@ public class DbConnection implements Serializable {
    * @return
    */
   public static DbConnection fromProperties(Properties p) {
-    return new DbConnection.Builder()
+    String portKey = "port";
+    Object portVal = p.get(portKey);
+    if (portVal == null) {
+      throw new NullPointerException("port is not defined");
+    }
+    int port = (portVal instanceof String)
+      ? Integer.parseInt((String) portVal)
+      : (Integer) portVal;
+    DbConnection createDbConnection = new DbConnection.Builder()
       .setUrl(p.getProperty("url"))
       .setDatabaseName(p.getProperty("databaseName"))
       .setPassword(p.getProperty("password"))
-      .setPort((Integer) p.get("port"))
+      .setPort(port)
       .setUser(p.getProperty("user"))
       .createDbConnection();
+    return createDbConnection;
+  }
+
+  /**
+   *
+   * @param query
+   * @return
+   */
+  public int executeStatement(String query) {
+    Connection conn = this.getConnection();
+    PreparedStatement statement;
+    try {
+      statement = conn.prepareStatement(query);
+    } catch (SQLException ex) {
+      throw new RuntimeException(ex);
+    }
+    int result;
+    try {
+      result = statement.executeUpdate();
+    } catch (SQLException ex) {
+      throw new RuntimeException(ex);
+    }
+    return result;
   }
 
   /**

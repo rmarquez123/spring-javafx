@@ -1,6 +1,7 @@
 package com.rm.springjavafx.menu;
 
 import com.rm.springjavafx.FxmlInitializer;
+import java.util.Objects;
 import javafx.event.Event;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
@@ -22,7 +23,9 @@ public abstract class AbstractFxMenuItem {
    * @param menuItem
    */
   public final void init(FxmlInitializer fxmlInitializer, MenuItem menuItem) {
+    Objects.requireNonNull(menuItem, "Menu Item cannot be null");
     this.fxmlInitializer = fxmlInitializer;
+    
     this.menuItem = menuItem;
     
     this.fxmlInitializer.addListener((i) -> {

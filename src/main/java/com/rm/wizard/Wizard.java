@@ -11,6 +11,7 @@ import com.rm.springjavafx.popup.PopupContent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -77,13 +78,11 @@ public abstract class Wizard implements Initializable, PopupContent {
    */
   @Override
   public final void initialize(URL url, ResourceBundle rb) {
-    this.fxmlInitializer.addListener((i) -> {
-      this.initPanels();
-      this.currentPanel.addListener((obs, old, change) -> {
-        this.updateContent();
-      });
-      this.updateContent();
-    });
+    Objects.requireNonNull(this.nextBtn, "'nextBtn' should be included in fxml: " + url); 
+    Objects.requireNonNull(this.previousBtn, "'previousBtn' should be included in fxml: " + url); 
+    Objects.requireNonNull(this.labelsPanel, "'labelsPanel' should be included in fxml: " + url); 
+    Objects.requireNonNull(this.contentPane, "'contentPane' should be included in fxml: " + url); 
+    
     this.nextBtn.setOnAction((evt) -> {
       AbstractSettingPanel current = this.currentPanel.getValue();
       if (current != null) {
@@ -108,6 +107,13 @@ public abstract class Wizard implements Initializable, PopupContent {
           }
         }
       }
+    });
+    this.fxmlInitializer.addListener((i) -> {
+      this.initPanels();
+      this.currentPanel.addListener((obs, old, change) -> {
+        this.updateContent();
+      });
+      this.updateContent();
     });
   }
 
@@ -194,7 +200,7 @@ public abstract class Wizard implements Initializable, PopupContent {
   }
 
   /**
-   * 
+   *
    */
   protected abstract void onSubmit();
 

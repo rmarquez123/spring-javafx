@@ -1,9 +1,9 @@
 
 package com.rm.springjavafx.table;
 
-import com.rm.springjavafx.table.RenderType;
 import com.rm.springjavafx.table.renderers.Action;
 import com.rm.springjavafx.table.renderers.ButtonTypeRenderer;
+import com.rm.springjavafx.table.renderers.CheckBoxTypeRenderer;
 import com.rm.springjavafx.table.renderers.ToggleButtonTypeRenderer;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -24,7 +24,6 @@ public class RenderTypeFactory implements FactoryBean<RenderType> {
     this.clazz = clazz;
   }
   
-  @Required
   public void setAction(Action action) {
     this.action = action;
   }
@@ -34,7 +33,6 @@ public class RenderTypeFactory implements FactoryBean<RenderType> {
     this.label = label;
   }
   
-  @Required
   public void setSecondaryLabel(String secondaryLabel) {
     this.secondaryLabel = secondaryLabel;
   }
@@ -54,6 +52,9 @@ public class RenderTypeFactory implements FactoryBean<RenderType> {
         break;
       case "togglebutton":
         result = new ToggleButtonTypeRenderer(this.action, this.label, this.secondaryLabel);
+        break;
+      case "checkbox": 
+        result = new CheckBoxTypeRenderer(this.label);
         break;
       default:
         throw new RuntimeException("Invalid render type class : '" + this.clazz + "'");

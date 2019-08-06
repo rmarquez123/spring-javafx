@@ -114,17 +114,15 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
 
         @Override
         public ObservableValue<?> call(TableColumn.CellDataFeatures param) {
-
+          
           Object entity = param.getValue();
           if (entity instanceof RecordValue) {
             Object value = ((RecordValue) entity).get(columnDef.getPropertyName());
-
             if (value instanceof ObservableValue) {
-              this.resultProperty.bind((ObservableValue) value);
+              return (ObservableValue<Object>) value;
             } else {
               this.resultProperty.setValue(value);
             }
-
           } else {
             throw new UnsupportedOperationException("not supported");
           }
@@ -132,6 +130,7 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
         }
       };
       column.setCellValueFactory(propValFactory);
+      
       if (columnDef.getWidth() != null) {
         column.setPrefWidth(columnDef.getWidth());
         column.setMaxWidth(columnDef.getWidth());
@@ -142,11 +141,11 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
         column.setUserData(columnDef);
         renderer.createCellFactory(result, column);
       }
-
       tvColumns.add(column);
     }
     result.getColumns().clear();
     result.getColumns().addAll(tvColumns.toArray(new TableColumn[]{}));
+    result.setEditable(true);
     return result;
   }
 

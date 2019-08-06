@@ -19,7 +19,7 @@ public class ColumnDefBeanDefParser extends AbstractSingleBeanDefinitionParser {
     builder.addPropertyValue("columnIndex", element.getAttribute("columnIndex"));
     builder.addPropertyValue("label", element.getAttribute("label"));
     builder.addPropertyValue("propertyName", element.getAttribute("propertyName"));
-    builder.addPropertyValue("rendererType", element.getAttribute("rendererType"));
+    builder.addPropertyValue("rendererType", element.getAttribute("renderType"));
     builder.addPropertyValue("width", element.getAttribute("width"));
 
     Element renderTypeEl = DomUtils.getChildElementByTagName(element, "rm:render-type");
