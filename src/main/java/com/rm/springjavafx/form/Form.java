@@ -2,7 +2,9 @@ package com.rm.springjavafx.form;
 
 import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import com.sun.javafx.scene.control.skin.TableViewSkinBase;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -12,20 +14,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
 
 /**
  *
@@ -36,6 +42,7 @@ public class Form extends VBox {
   private final TableView<FormItem> tableView;
   private final StringProperty labelProperty = new SimpleStringProperty("");
   private final ObservableList<FormGroup> formGroups = FXCollections.observableArrayList();
+  private final Map<Object, ListChangeListenerImpl> itemsListener = new HashMap<>();
 
   /**
    *
@@ -52,7 +59,7 @@ public class Form extends VBox {
       header.setMaxHeight(0);
       header.setVisible(false);
     });
-    Callback<TableView<FormItem>, TableRow<FormItem>> rowFactory = tableView.rowFactoryProperty().getValue();
+
     tableView.rowFactoryProperty().setValue((param) -> {
       TableRow<FormItem> original = new TableRow<FormItem>() {
         @Override
@@ -88,7 +95,10 @@ public class Form extends VBox {
 
     this.tableView.getColumns().clear();
     TableColumn<FormItem, String> fieldNameCol = new TableColumn<>();
-    fieldNameCol.setCellValueFactory((param) -> param.getValue().labelProperty());
+    fieldNameCol.setCellValueFactory((param) -> {
+      StringProperty cellLabelProperty = param.getValue().labelProperty();
+      return cellLabelProperty;
+    });
     this.tableView.getColumns().add(fieldNameCol);
 
     TableColumn<FormItem, String> valueCol = new TableColumn<>();
@@ -97,7 +107,17 @@ public class Form extends VBox {
       StringConverter stringConverter = formItem.stringConverter();
       SimpleStringProperty wrapper;
       if (stringConverter != null) {
-        wrapper = new SimpleStringProperty(stringConverter.toString(formItem.valueProperty().getValue()));
+        Object formValue = formItem.valueProperty().getValue();
+
+        String stringValue;
+        try {
+          stringValue = stringConverter.toString(formValue);
+        } catch (Exception ex) {
+          throw new RuntimeException(
+            String.format("Could not convert '%s' value to string",
+              formItem.labelProperty().get()));
+        }
+        wrapper = new SimpleStringProperty(stringValue);
         wrapper.bindBidirectional(formItem.valueProperty(), stringConverter);
       } else {
         wrapper = new SimpleStringProperty();
@@ -124,9 +144,9 @@ public class Form extends VBox {
     this.formGroups.addListener(this::onFormGroupsChanged);
     this.tableView.getItems().addListener((Change<? extends FormItem> c) -> {
       c.next();
-      removeScrollBar();
+      this.removeScrollBar();
     });
-    
+
     this.tableView.getChildrenUnmodifiable().addListener((Change<? extends Node> c) -> {
       Platform.runLater(this::removeScrollBar);
     });
@@ -146,29 +166,10 @@ public class Form extends VBox {
    *
    * @return
    */
-  private TextFieldTableCell<FormItem, String> cell() {
+  private TableCell<FormItem, String> cell() {
     ObservableList<FormItem> is = tableView.getItems();
     TableView<FormItem> t = tableView;
-    TextFieldTableCell<FormItem, String> result = new TextFieldTableCell<FormItem, String>() {
-      @Override
-      public void updateSelected(boolean selected) {
-      }
-
-      @Override
-      public void startEdit() {
-        FormItem formItem = is.get(this.getIndex());
-        if (formItem.editableProperty().getValue()) {
-          super.startEdit();
-        }
-      }
-
-      @Override
-      public void commitEdit(String newValue) {
-        super.commitEdit(newValue);
-        Platform.runLater(() -> t.requestFocus());
-      }
-    };
-    result.setConverter(new DefaultStringConverter());
+    TableCell<FormItem, String> result = new CustomTableCell(is, t);
     return result;
   }
 
@@ -197,17 +198,21 @@ public class Form extends VBox {
           FormItem gitem = new FormItem(formGroup.textProperty(), null, null);
           gitem.editableProperty().set(false);
           this.tableView.getItems().add(gitem);
-          for (FormItem item : items) {
-            this.tableView.getItems().add(item);
+          int parentIndex = this.tableView.getItems().size();
+          if (!this.itemsListener.containsKey(gitem)) {
+            ListChangeListenerImpl listener = new ListChangeListenerImpl(this.tableView, parentIndex);
+            this.itemsListener.put(gitem, listener);
           }
+          ListChangeListenerImpl listener = this.itemsListener.get(gitem);
+          listener.addAll(items);
+          formGroup.getItems().addListener(listener);
         }
       } else if (c.wasRemoved()) {
         List<? extends FormGroup> rem = c.getRemoved();
         for (FormGroup formGroup : rem) {
-
-          for (FormItem item : formGroup.getItems()) {
-            this.tableView.getItems().remove(item);
-          }
+          ListChangeListenerImpl listener = this.itemsListener.get(formGroup);
+          formGroup.getItems().removeListener(listener);
+          listener.removeAll(formGroup.getItems());
         }
       }
     }
@@ -229,7 +234,8 @@ public class Form extends VBox {
    */
   private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
 
-    // this would be the preferred solution, but it doesn't work. it always gives back the vertical scrollbar
+    // this would be the preferred solution, but it doesn't work. 
+    // it always gives back the vertical scrollbar
     //      return (ScrollBar) table.lookup(".scroll-bar:horizontal");
     //      
     // => we have to search all scrollbars and return the one with the proper orientation
@@ -240,8 +246,161 @@ public class Form extends VBox {
         return bar;
       }
     }
-
     return null;
+  }
 
+  private static class CustomTableCell extends TableCell<FormItem, String> {
+
+    private final ObservableList<FormItem> is;
+
+    private final TableView<FormItem> tableView;
+    private final TextField textField;
+
+    public CustomTableCell(ObservableList<FormItem> formItems, TableView<FormItem> t) {
+      this.is = formItems;
+      this.tableView = t;
+      this.textField = new TextField();
+      this.textField.setManaged(false);
+      this.textField.setVisible(false);
+
+      this.textField.setOnKeyPressed((evt) -> {
+        if (evt.getCode() == KeyCode.ENTER || evt.getCode() == KeyCode.TAB) {
+          Platform.runLater(() -> {
+            this.commitEdit(this.textField.getText());
+          });
+        }
+      });
+      this.textField.focusedProperty().addListener((obs, old, change) -> {
+        if (change == null) {
+          this.cancelEdit();
+        }
+      });
+    }
+
+    @Override
+    public void updateItem(String item, boolean empty) {
+      super.updateItem(item, empty);
+      if (item != null) {
+        int index = this.getIndex();
+        FormItem formItem = is.get(index);
+        if (!this.isEditing()) {
+          this.textField.setText(item);
+        } else {
+          this.textField.setText("");
+        }
+        super.setText(item);
+        Button button = (Button) formItem.buttonProperty().getValue();
+        if (button != null) {
+          Pane pane = new Pane();
+          pane.setPrefWidth(100);
+          pane.setMinWidth(100);
+          HBox hbox = new HBox();
+          Label label = new Label();
+          hbox.getChildren().addAll(label, pane, button);
+          HBox.setHgrow(pane, Priority.ALWAYS);
+          super.setGraphic(hbox);
+          super.textProperty().addListener((obs, old, change) -> {
+            label.setText(change);
+          });
+          label.setPadding(new Insets(0, 0, 0, 4));
+          super.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+          label.setText(this.getText());
+        } else {
+
+          HBox hbox = new HBox();
+          hbox.getChildren().addAll(textField);
+          HBox.setHgrow(this.textField, Priority.ALWAYS);
+          super.setGraphic(hbox);
+        }
+      }
+    }
+
+    @Override
+    public void startEdit() {
+      FormItem formItem = is.get(this.getIndex());
+      if (formItem.editableProperty().getValue()) {
+        super.startEdit();
+
+        super.setText("");
+        this.textField.setManaged(true);
+        this.textField.setVisible(true);
+        this.textField.requestFocus();
+        Platform.runLater(() -> {
+          String text = this.textField.getText();
+          if (text != null) {
+            int length = text.length();
+            this.textField.positionCaret(length);
+          }
+        });
+
+      }
+    }
+
+    @Override
+    public void commitEdit(String newValue) {
+      this.setText(newValue);
+      this.textField.setManaged(false);
+      this.textField.setVisible(false);
+      super.commitEdit(newValue);
+      Platform.runLater(() -> {
+        this.tableView.requestFocus();
+      });
+    }
+
+    @Override
+    public void cancelEdit() {
+      this.textField.setManaged(false);
+      this.textField.setVisible(false);
+      super.cancelEdit();
+      FormItem formItem = is.get(this.getIndex());
+      String text = formItem.stringConverter().toString(formItem.valueProperty().get());
+      this.setText(text);
+      Platform.runLater(() -> {
+        tableView.requestFocus();
+      });
+    }
+
+  }
+
+  private static class ListChangeListenerImpl implements ListChangeListener<FormItem> {
+
+    private final TableView tableView;
+
+    private final int parentIndex;
+
+    /**
+     *
+     * @param tableView
+     * @param parentIndex
+     */
+    public ListChangeListenerImpl(TableView tableView, int parentIndex) {
+      this.tableView = tableView;
+      this.parentIndex = parentIndex;
+    }
+
+    /**
+     *
+     * @param c
+     */
+    @Override
+    public void onChanged(Change<? extends FormItem> c) {
+      if (c.next()) {
+        if (c.wasAdded()) {
+          List<? extends FormItem> items = c.getAddedSubList();
+          this.addAll(items);
+        } else if (c.wasRemoved()) {
+          List<? extends FormItem> items = c.getRemoved();
+          this.removeAll(items);
+        }
+      }
+    }
+
+    void removeAll(List<? extends FormItem> items) {
+      this.tableView.getItems().removeAll(items);
+    }
+
+    void addAll(List<? extends FormItem> items) {
+      this.tableView.getItems().addAll(parentIndex, items);
+    }
   }
 }

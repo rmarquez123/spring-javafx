@@ -76,6 +76,5 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
           + SpringFxTimeSeries.class + "'. Check args: " + value);
       }
     }
-    System.out.println("blah blah");
   }
 }

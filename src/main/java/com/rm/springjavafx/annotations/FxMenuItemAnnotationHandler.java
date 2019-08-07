@@ -5,7 +5,10 @@ import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.menu.AbstractFxMenuItem;
 import com.rm.springjavafx.menu.FxMenuItem;
+import com.rm.springjavafx.menu.FxMenuItemImpl;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import org.apache.commons.io.FilenameUtils;
@@ -43,8 +46,24 @@ public class FxMenuItemAnnotationHandler implements InitializingBean, Annotation
    */
   @Override
   public void readyFxmls() {
-    Map<String, Object> tabItemBeans = appContext.getBeansWithAnnotation(FxMenuItem.class);
-    for (Object value : tabItemBeans.values()) {
+    Map<String, Object> items = appContext.getBeansWithAnnotation(FxMenuItem.class);
+    Set<FxMenuItem> menuItems = new HashSet<>();
+    
+    for (Object value : items.values()) {
+      if (value instanceof AbstractFxMenuItem) {
+        FxMenuItem fxMenuItem = FxMenuItemImpl.wrap(value.getClass().getDeclaredAnnotation(FxMenuItem.class));
+        if (!menuItems.add(fxMenuItem)) {
+          throw new IllegalStateException("Duplicate menu item configuration is not allowed: '{"
+            + "fxml = "  + fxMenuItem.fxml()
+            + "id = "  + fxMenuItem.id()
+            + "}'"); 
+        }
+      }
+      
+    }
+    
+    
+    for (Object value : items.values()) {
       if (value instanceof AbstractFxMenuItem) {
         Class<? extends Object> clazz = value.getClass();
         FxMenuItem fxMenuItem = clazz.getDeclaredAnnotation(FxMenuItem.class);

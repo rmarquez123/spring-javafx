@@ -1,10 +1,9 @@
-package com.rm.springjavafx.menu;
+package com.rm.springjavafx.form;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javafx.scene.input.KeyCode;
 
 /**
  *
@@ -12,31 +11,30 @@ import javafx.scene.input.KeyCode;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface FxMenuItem  {
+public @interface FxForm {
 
   /**
-   *
-   * @return
+   * 
+   * @return 
    */
   String fxml();
 
   /**
-   *
-   * @return
+   * 
+   * @return 
    */
-  String id();
+  String componentId();
 
   /**
-   *
-   * @return
+   * 
+   * @return 
    */
-  KeyCode code() default KeyCode.F1;
-  
+  String formId();
+
   /**
-   *
-   * @return
+   * 
+   * @return 
    */
-  KeyModifier modifier() default KeyModifier.NONE;
-  
-  
+  FxFormGroupId[] group();
+
 }

@@ -10,23 +10,24 @@ import javafx.collections.ObservableList;
  * @author Ricardo Marquez
  */
 public class FormGroup {
-  
+
   private final ObservableList<FormItem> formItems = FXCollections.observableArrayList();
   private final StringProperty textProperty = new SimpleStringProperty();
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public ObservableList<FormItem> getItems() {
     return this.formItems;
-  } 
+  }
 
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public StringProperty textProperty() {
     return textProperty;
   }
-  
+
 }
