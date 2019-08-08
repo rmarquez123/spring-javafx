@@ -1,8 +1,15 @@
-package com.rm.springjavafx.form;
+package com.rm.springjavafx.annotations;
 
 import com.rm.springjavafx.AnnotationHandler;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
+import com.rm.springjavafx.form.AbstractForm;
+import com.rm.springjavafx.form.AbstractFormGroup;
+import com.rm.springjavafx.form.Form;
+import com.rm.springjavafx.form.FormGroup;
+import com.rm.springjavafx.form.FxForm;
+import com.rm.springjavafx.form.FxFormGroup;
+import com.rm.springjavafx.form.FxFormGroupId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

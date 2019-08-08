@@ -23,7 +23,7 @@ public class AbstractForm {
    * 
    * @param formGroups 
    */
-  void setFormGroups(List<AbstractFormGroup> formGroups) {
+  public void setFormGroups(List<AbstractFormGroup> formGroups) {
     this.formGroups = formGroups;
     String idField = null;
     for (AbstractFormGroup formGroup : this.formGroups) {

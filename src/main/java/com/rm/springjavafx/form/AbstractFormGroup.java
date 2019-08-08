@@ -48,6 +48,22 @@ public abstract class AbstractFormGroup {
       this.updateFormItems();
     });
   }
+  
+  /**
+   * 
+   * @param idValue
+   * @return 
+   */
+  public boolean containsKey(Object idValue) {
+    List<RecordValue> records = this.recordsProperty.getValue();
+    boolean result;
+    if (records != null) {
+      result = records.stream().anyMatch((r)->Objects.equals(r.getIdValue(), idValue));
+    } else {
+      result = false;
+    }
+    return result;
+  }
 
   /**
    *
@@ -61,7 +77,7 @@ public abstract class AbstractFormGroup {
    *
    * @param aFormGroup
    */
-  void bind(FormGroup aFormGroup) {
+  public void bind(FormGroup aFormGroup) {
     this.formGroup.getItems().addListener((ListChangeListener.Change<? extends FormItem> c) -> {
       aFormGroup.getItems().clear();
       if (c.next()) {
@@ -199,16 +215,17 @@ public abstract class AbstractFormGroup {
       if (fxFormItem != null) {
         String id = fxFormItem.id();
         ObjectProperty valueProperty = new SimpleObjectProperty();
-        
+
         Object value = r.get(id);
         valueProperty.set(value);
         StringConverter converter;
         try {
           converter = fxFormItem.converter().newInstance();
         } catch (Exception ex) {
-          throw new RuntimeException(ex); 
+          throw new RuntimeException(ex);
         }
-        FormItem formItem = new FormItem(id, valueProperty, converter);
+        String label = fxFormItem.label();
+        FormItem formItem = new FormItem(label, valueProperty, converter);
         items.add(formItem);
       }
     }
