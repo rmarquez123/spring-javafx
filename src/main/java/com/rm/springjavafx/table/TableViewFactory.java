@@ -77,7 +77,9 @@ public class TableViewFactory implements FactoryBean<TableView>, ApplicationCont
     if (this.datasourceRef == null) {
       throw new NullPointerException("Data source cannot be null");
     }
-    this.appContext.getBean(this.id);
+    this.fxmlInitializer.addListener((i)->{
+      this.appContext.getBean(this.id); 
+    });
   }
 
   /**

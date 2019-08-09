@@ -147,7 +147,8 @@ public class FxmlInitializer implements InitializingBean {
       Map<String, Object> beans = this.context.getBeansWithAnnotation(FxController.class);
       Map<String, Object> fxControllers = new HashMap<>();
       for (Object value : beans.values()) {
-        FxController fxController = value.getClass().getDeclaredAnnotation(FxController.class); 
+        FxController fxController = SpringFxUtils.getAnnotation(value, FxController.
+          class); 
         if (!fxController.fxml().isEmpty()) {
           fxControllers.put(fxController.fxml(), value); 
         }

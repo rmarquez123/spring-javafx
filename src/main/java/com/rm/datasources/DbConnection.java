@@ -51,6 +51,15 @@ public class DbConnection implements Serializable {
     this.port = port;
     this.converters = new Converters();
   }
+  
+  /**
+   * The parent database. 
+   * <code> new DbConnection(user, password, url, port); </code>  
+   * @return 
+   */
+  public DbConnection parentDb() {
+    return new DbConnection(user, password, url, port); 
+  }
 
   /**
    *

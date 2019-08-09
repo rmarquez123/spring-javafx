@@ -68,7 +68,9 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
   @Override
   public void setNodes() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(PopupComponent.class);
-    for (Object bean : beans.values()) {
+    for (Map.Entry<String, Object> entry : beans.entrySet()) {
+      Object bean = entry.getValue();
+      
       FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
       PopupComponent p = bean.getClass().getDeclaredAnnotation(PopupComponent.class);
       String fxml = fxController.fxml();
@@ -85,6 +87,7 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
           + ", popupComponent = " + p
           + "}"); 
       }
+      System.out.println("popup = " + p.id());
       registry.registerBeanDefinition(p.id(), dynamicBean);
     }
   }

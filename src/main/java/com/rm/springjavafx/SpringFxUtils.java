@@ -1,5 +1,6 @@
 package com.rm.springjavafx;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.context.ApplicationContext;
 
 public final class SpringFxUtils {
@@ -260,4 +262,31 @@ public final class SpringFxUtils {
     return null;
   }
 
+  /**
+   *
+   * @param <T>
+   * @param bean
+   * @param annotationClass
+   * @return
+   */
+  public static <T extends Annotation> T getAnnotation(Object bean, Class<T> annotationClass) {
+    Objects.requireNonNull(bean, "Bean cannot be null");
+    T r = bean.getClass().getAnnotation(annotationClass);
+    if (r == null) {
+      r = bean.getClass().getDeclaredAnnotation(annotationClass);
+    }
+    return r;
+  }
+  
+  /**
+   * 
+   * @param bean
+   * @return 
+   */
+  public static Field[] getFields(Object bean) {
+    Field[] fields = bean.getClass().getFields();
+    Field[] declared = bean.getClass().getDeclaredFields();
+    Field[] a = ArrayUtils.addAll(fields, declared);
+    return a;
+  }
 }
