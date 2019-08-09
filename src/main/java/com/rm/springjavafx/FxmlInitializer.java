@@ -241,6 +241,7 @@ public class FxmlInitializer implements InitializingBean {
     if (root == null) {
       throw new IllegalArgumentException("Invalid fmxl file : '" + fxml + "'");
     }
+    root.getChildrenUnmodifiable().get(0).getId();
     Object result = SpringFxUtils.getChildByID(root, fxmlId);
     if (result == null) {
       throw new IllegalArgumentException("Component not found. Check args : {"

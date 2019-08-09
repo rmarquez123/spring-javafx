@@ -2,6 +2,7 @@ package com.rm.springjavafx;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -114,7 +115,7 @@ public final class SpringFxUtils {
    */
   @SuppressWarnings("unchecked")
   public static <T> T getChildByID(Parent parent, String id) {
-
+    Objects.requireNonNull(parent, "Parent cannot be null");
     String nodeId;
     if (parent instanceof TitledPane) {
       TitledPane titledPane = (TitledPane) parent;
@@ -159,7 +160,7 @@ public final class SpringFxUtils {
       }
     }
 
-    Set<Node> children = new HashSet<>(parent.getChildrenUnmodifiable());
+    Set<Node> children = new HashSet<>(parent == null ? Collections.EMPTY_SET : parent.getChildrenUnmodifiable());
     if (parent instanceof Pane) {
       children.addAll(((Pane) parent).getChildren());
     }
@@ -174,8 +175,7 @@ public final class SpringFxUtils {
       children.addAll(n);
     }
     for (Node node : children) {
-      nodeId = node.idProperty().get();
-      node.getProperties();
+      nodeId = node.getId();
       if (nodeId != null && nodeId.equals(id)) {
         return (T) node;
       }
@@ -277,11 +277,11 @@ public final class SpringFxUtils {
     }
     return r;
   }
-  
+
   /**
-   * 
+   *
    * @param bean
-   * @return 
+   * @return
    */
   public static Field[] getFields(Object bean) {
     Field[] fields = bean.getClass().getFields();
