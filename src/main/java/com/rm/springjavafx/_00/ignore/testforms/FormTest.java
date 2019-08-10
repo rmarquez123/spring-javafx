@@ -1,4 +1,4 @@
-package com.rm.springjavafx.ignore;
+package com.rm.springjavafx._00.ignore.testforms;
 
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.form.AbstractForm;

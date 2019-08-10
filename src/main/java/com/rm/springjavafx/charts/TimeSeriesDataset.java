@@ -15,4 +15,5 @@ public @interface TimeSeriesDataset {
   String chart();
   int dataset();
   String name();
+  String lineColorHex() default "#000000";
 }

@@ -1,4 +1,4 @@
-package com.rm.springjavafx.ignore;
+package com.rm.springjavafx._00.ignore.testcharts;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -39,16 +39,17 @@ import org.springframework.context.annotation.ImportResource;
 @ComponentScan(
   basePackages = {
     "com.rm.springjavafx"
+    
   }, excludeFilters = {
     @ComponentScan.Filter(
       type = FilterType.REGEX,
       pattern = {
-        "com.*.ignore.*![com.rm.springjavafx.ignore]",
+        "com.rm.springjavafx._00.ignore.testforms.*",
       }
     )
   }
 )
-public class WplsMain extends Application {
+public class MainTestCharts extends Application {
 
   private FxmlInitializer fxmlInitializer;
   private Parent root;
