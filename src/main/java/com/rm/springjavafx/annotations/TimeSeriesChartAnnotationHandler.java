@@ -112,9 +112,17 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
     Map<String, Object> datasetBeans = this.appContext.getBeansWithAnnotation(TimeSeriesDataset.class);
     Map<String, Object> chartBeans = this.appContext.getBeansWithAnnotation(TimeSeriesChart.class);
     Map<String, TimeSeriesCollectionManager> managers = new HashMap<>();
-    for (Object value : datasetBeans.values()) {
+    for (Map.Entry<String, Object> entry : datasetBeans.entrySet()) {
+      Object value = entry.getValue();
+      String beanId = entry.getKey();
       if (value instanceof SpringFxTimeSeries) {
         SpringFxTimeSeries seriesDataset = (SpringFxTimeSeries) value;
+        try {
+          seriesDataset.validate();
+        } catch (Exception ex) {
+          throw new RuntimeException(
+            String.format("timeseries dataset '%s' is invalid", beanId), ex); 
+        }
         TimeSeriesDataset annotation = value.getClass().getDeclaredAnnotation(TimeSeriesDataset.class);
         Object chartBean = chartBeans.values().stream()
           .filter((b) -> getChartId(b).equals(annotation.chart()))

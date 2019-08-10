@@ -2,6 +2,7 @@ package com.rm.springjavafx.charts;
 
 import common.timeseries.TimeSeries;
 import common.timeseries.TimeStepValue;
+import java.util.Objects;
 import java.util.function.Function;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
@@ -29,6 +30,13 @@ public class SpringFxTimeSeries {
     this.name = conf.name();
     this.datasetId = conf.dataset();
     this.lineColor = Color.web(conf.lineColorHex());
+  }
+  
+  /**
+   * 
+   */
+  public void validate() throws Exception {
+    Objects.requireNonNull(this.valueAccessorProperty.getValue(), "value accesor cannot be null"); 
   }
   
   /**
@@ -66,8 +74,8 @@ public class SpringFxTimeSeries {
   /**
    *
    */
-  public void setTimeSeries(TimeSeries<?> record) {
-    this.seriesProperty.setValue(record);
+  public void setTimeSeries(TimeSeries<?> timeseries) {
+    this.seriesProperty.setValue(timeseries);
   }
 
   /**

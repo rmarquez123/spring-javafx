@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Second;
@@ -79,11 +81,15 @@ public final class TimeSeriesCollectionManager {
       collection.removeSeries(index);
     }
     TimeSeries jfcSeries = new TimeSeries(dataset.getKey());
-    if (series != null) {
+    Function<TimeStepValue<?>, Double> accessor = dataset.getValueAccessor();
+    if (accessor == null) {
+      Logger.getLogger(TimeSeriesCollectionManager.class.getName()).log(Level.WARNING, 
+        String.format("accessor is not defined for dataset '%s'", dataset.getKey()));
+    } 
+    if (series != null && accessor != null) {
       series.forEach((r) -> {
         ZonedDateTime dateTime = r.getZoneDateTime();
         Date time = Date.from(dateTime.toInstant());
-        Function<TimeStepValue<?>, Double> accessor = dataset.getValueAccessor();
         Double value = accessor.apply(r);
         Second second = new Second(time);
         TimeSeriesDataItem item = new TimeSeriesDataItem(second, value);
@@ -91,9 +97,9 @@ public final class TimeSeriesCollectionManager {
       });
     }
     collection.addSeries(jfcSeries);
-    
-    XYItemRenderer renderer = this.plot.getRenderer(dataset.getDatasetId()); 
-    int seriesIndex = collection.getSeriesIndex(dataset.getKey()); 
+
+    XYItemRenderer renderer = this.plot.getRenderer(dataset.getDatasetId());
+    int seriesIndex = collection.getSeriesIndex(dataset.getKey());
     renderer.setSeriesPaint(seriesIndex, dataset.getLineColorAwt());
     this.setVisibility(dataset);
     this.updateChartDatasetsProperty();
@@ -151,7 +157,7 @@ public final class TimeSeriesCollectionManager {
   }
 
   /**
-   * 
+   *
    */
   private void updateChartDatasetsProperty() {
     this.chart.writableDatasetsProperty().setValue(new ArrayList<>(this.datasets.keySet()));

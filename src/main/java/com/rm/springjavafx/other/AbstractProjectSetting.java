@@ -71,7 +71,7 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
    */
   @Override
   public final void deSerialize(Serializable serializable) {
-    SerializableHashMap<String, Serializable> map 
+    SerializableHashMap<String, Serializable> map
       = (SerializableHashMap<String, Serializable>) serializable;
     for (Map.Entry<String, Serializable> entry : map.entrySet()) {
       String fieldName = entry.getKey();
@@ -85,7 +85,15 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
       } else {
         object = serialized;
       }
-      property.setValue(object);
+      try {
+        System.out.println("is bound : " + property.isBound());
+        property.setValue(object);
+      } catch (Exception ex) {
+        throw new IllegalStateException(
+          String.format("An error occured setting the value to field '%s'.", fieldName), ex
+        );
+      }
+
     }
   }
 
