@@ -232,8 +232,10 @@ public final class SpringFxUtils {
               }
             }
           } else {
-            throw new IllegalStateException("A tab with no content was detected.  "
-              + "Make sure tabs have a pane content (i.e. Anchor Pane).");
+            throw new IllegalStateException(
+              String.format(
+              "The tab with label '%s' must have a "
+                + "pane content (i.e. Anchor Pane).", tab.getText()));
           }
         }
       } else if (node instanceof ToolBar) {

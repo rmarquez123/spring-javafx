@@ -36,7 +36,7 @@ public class BlueChartDataSet extends SpringFxTimeSeries implements Initializing
     DateTimeRange dateTimeRange = DateTimeRange.of(ZoneId.of("UTC"), "yyyy/MM/dd HH:mm", 
       "2017/01/10 00:00", "2017/01/20 00:00");
     for (ZonedDateTime zonedDateTime : dateTimeRange.iterator(interval)) {
-      records.add(new SimpleTimeStepValue<Double>(zonedDateTime, Math.random())); 
+      records.add(new SimpleTimeStepValue<>(zonedDateTime, Math.random())); 
     }
     DefaultTimeSeries<Double> series = new DefaultTimeSeries<>(interval, records);
     super.valueAccessorProperty().setValue((tstepVal)->(Double) tstepVal.getUserObject());

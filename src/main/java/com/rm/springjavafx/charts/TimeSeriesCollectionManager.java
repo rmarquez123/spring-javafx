@@ -43,6 +43,14 @@ public final class TimeSeriesCollectionManager {
     });
     this.updateChartDatasetsProperty();
   }
+  
+  /**
+   * 
+   * @return 
+   */
+  public TimeSeriesChartPane getChart() {
+    return chart;
+  }
 
   /**
    *
@@ -64,6 +72,9 @@ public final class TimeSeriesCollectionManager {
     RmBindings.bindActionOnAnyChange(() -> this.updateSeries(dataset, collection),
       dataset.valueAccessorProperty(),
       dataset.seriesProperty());
+    
+    
+    
     this.updateSeries(dataset, collection);
 
   }
@@ -101,6 +112,8 @@ public final class TimeSeriesCollectionManager {
     XYItemRenderer renderer = this.plot.getRenderer(dataset.getDatasetId());
     int seriesIndex = collection.getSeriesIndex(dataset.getKey());
     renderer.setSeriesPaint(seriesIndex, dataset.getLineColorAwt());
+    renderer.setSeriesStroke(seriesIndex, dataset.getLineStroke());
+    renderer.setSeriesShape(seriesIndex, dataset.getShape());
     this.setVisibility(dataset);
     this.updateChartDatasetsProperty();
   }

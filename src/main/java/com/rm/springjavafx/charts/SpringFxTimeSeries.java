@@ -2,12 +2,16 @@ package com.rm.springjavafx.charts;
 
 import common.timeseries.TimeSeries;
 import common.timeseries.TimeStepValue;
+import java.awt.BasicStroke;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.util.Objects;
 import java.util.function.Function;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
+import org.jfree.chart.util.ShapeUtils;
 
 /**
  *
@@ -31,29 +35,37 @@ public class SpringFxTimeSeries {
     this.datasetId = conf.dataset();
     this.lineColor = Color.web(conf.lineColorHex());
   }
-  
+
   /**
-   * 
+   *
    */
   public void validate() throws Exception {
-    Objects.requireNonNull(this.valueAccessorProperty.getValue(), "value accesor cannot be null"); 
+    Objects.requireNonNull(this.valueAccessorProperty.getValue(), "value accesor cannot be null");
   }
-  
+
   /**
-   * 
+   *
    */
   public Color getLineColor() {
     return lineColor;
   }
-  
+
   /**
-   * 
+   *
    */
   public java.awt.Color getLineColorAwt() {
     float r = new Double(this.lineColor.getRed()).floatValue();
     float g = new Double(this.lineColor.getGreen()).floatValue();
     float b = new Double(this.lineColor.getBlue()).floatValue();
     return new java.awt.Color(r, g, b);
+  }
+
+  /**
+   * 
+   * @return 
+   */
+  public Shape getShape() {
+    return ShapeUtils.createDiamond(0);
   }
 
   /**
@@ -110,4 +122,11 @@ public class SpringFxTimeSeries {
     return this.valueAccessorProperty.getValue();
   }
 
+  /**
+   * 
+   * @return 
+   */
+  Stroke getLineStroke() {
+    return new BasicStroke(2); 
+  }
 }

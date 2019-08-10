@@ -289,10 +289,9 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (!this.fxmlInitializer.isInitialized()) {
-      this.fxmlInitializer.initializeRoots(context);
-    }
-    this.context.getBean(this.id);
+    this.fxmlInitializer.addListener((i) -> {
+      this.context.getBean(this.id);
+    });
   }
 
   /**

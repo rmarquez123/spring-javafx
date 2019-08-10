@@ -6,6 +6,7 @@
 package com.rm.springjavafx.tabs;
 
 import com.rm.springjavafx.FxmlInitializer;
+import java.util.Objects;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
@@ -47,8 +48,10 @@ public abstract class AbstractTabsGroup implements InitializingBean {
           String fxml = tabItem.fxml();
           String label = tabItem.label();
           Parent node = this.fxmlInitializer.getRoot(fxml);
+          Objects.requireNonNull(node, String.format("Fxml '%s' does not have a root node", fxml)); 
           Tab tab = new Tab(label, node);
           Tab current = tabPane.getSelectionModel().getSelectedItem();
+          
           tabPane.getTabs().add(tab);
           if (current != null) {
             Platform.runLater(() -> {

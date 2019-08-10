@@ -147,6 +147,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
         if (child == null) {
           throw new IllegalStateException("Child node is null.  Check args: {"
             + "fxml = " + fxml
+            + ", parent = " + parent
             + ", id = " + id
             + "}");
         }

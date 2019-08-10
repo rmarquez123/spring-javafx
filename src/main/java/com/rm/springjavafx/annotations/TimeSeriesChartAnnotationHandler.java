@@ -8,8 +8,10 @@ import com.rm.springjavafx.charts.TimeSeriesChart;
 import com.rm.springjavafx.charts.TimeSeriesChartPane;
 import com.rm.springjavafx.charts.TimeSeriesCollectionManager;
 import com.rm.springjavafx.charts.TimeSeriesDataset;
+import common.bindings.RmBindings;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.jfree.chart.fx.ChartViewer;
@@ -60,7 +62,6 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
       this.fxmlInitializer.addFxml(fxml);
     }
   }
-
 
   /**
    *
@@ -121,7 +122,7 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
           seriesDataset.validate();
         } catch (Exception ex) {
           throw new RuntimeException(
-            String.format("timeseries dataset '%s' is invalid", beanId), ex); 
+            String.format("timeseries dataset '%s' is invalid", beanId), ex);
         }
         TimeSeriesDataset annotation = value.getClass().getDeclaredAnnotation(TimeSeriesDataset.class);
         Object chartBean = chartBeans.values().stream()
@@ -132,10 +133,28 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
           if (!managers.containsKey(annotation.chart())) {
             TimeSeriesChartPane timeSeriesChart = (TimeSeriesChartPane) chartBean;
             TimeSeriesCollectionManager manager = new TimeSeriesCollectionManager(timeSeriesChart);
-            managers.put(annotation.chart(), manager); 
+            managers.put(annotation.chart(), manager);
           }
-          TimeSeriesCollectionManager manager = managers.get(annotation.chart()); 
+          TimeSeriesCollectionManager manager = managers.get(annotation.chart());
           manager.addDataSet(seriesDataset);
+          String visibilityBean = annotation.visibilityProperty();
+          if (!visibilityBean.isEmpty()) {
+            Property<Boolean> visibilityProperty = (Property<Boolean>) this.appContext.getBean(visibilityBean);
+            if (visibilityBean == null) {
+              throw new IllegalStateException(
+                String.format("Bean does not exist for bean id = '%s'", beanId));
+            }
+            RmBindings.bindActionOnAnyChange(() -> {
+              Boolean visible = visibilityProperty.getValue();
+              if (visible != null) {
+                manager.getChart().setVisible(annotation.name(), visible);
+              }
+            }, visibilityProperty);
+            Boolean visible = visibilityProperty.getValue();
+            if (visible != null) {
+              manager.getChart().setVisible(annotation.name(), visible);
+            }
+          }
         } else {
           throw new IllegalStateException(
             String.format("Bean '%s' does not implement '%s'", value, TimeSeriesChart.class));
