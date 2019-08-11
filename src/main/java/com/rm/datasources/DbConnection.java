@@ -51,14 +51,14 @@ public class DbConnection implements Serializable {
     this.port = port;
     this.converters = new Converters();
   }
-  
+
   /**
-   * The parent database. 
-   * <code> new DbConnection(user, password, url, port); </code>  
-   * @return 
+   * The parent database. <code> new DbConnection(user, password, url, port); </code>
+   *
+   * @return
    */
   public DbConnection parentDb() {
-    return new DbConnection(user, password, url, port); 
+    return new DbConnection(user, password, url, port);
   }
 
   /**
@@ -185,6 +185,28 @@ public class DbConnection implements Serializable {
       + ":" + this.port
       + "/" + this.databaseName;
     return _url;
+  }
+
+  /**
+   *
+   * @param connUrl
+   * @param user
+   * @param password
+   * @return
+   */
+  public static DbConnection create(String connUrl, String user, String password) {
+    String[] parts = connUrl.replace("jdbc:postgresql://", "").replace(":", ",").replace("/", ",").split(",");
+    String url = parts[0];
+    String database = parts[2];
+    Integer port = Integer.parseInt(parts[1]);
+    DbConnection result = new DbConnection.Builder()
+      .setUrl(url)
+      .setPort(port)
+      .setDatabaseName(database)
+      .setUser(user)
+      .setPassword(password)
+      .createDbConnection();
+    return result;
   }
 
   /**
