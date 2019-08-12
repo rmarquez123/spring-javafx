@@ -86,7 +86,6 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
         object = serialized;
       }
       try {
-        System.out.println("is bound : " + property.isBound());
         property.setValue(object);
       } catch (Exception ex) {
         throw new IllegalStateException(

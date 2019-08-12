@@ -38,7 +38,6 @@ public class DbConnectionBeanDefParser extends AbstractBeanDefinitionParser {
         case "db-schema":
           String value = element.getAttribute("value");
           String propName = toCamelCase(tagName);
-          System.out.println("value " + value);
           beanDef.addPropertyValue(propName, value);          
           break;
         default:

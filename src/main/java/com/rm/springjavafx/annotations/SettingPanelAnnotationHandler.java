@@ -57,7 +57,6 @@ public class SettingPanelAnnotationHandler implements InitializingBean, Annotati
       throw new RuntimeException("File does not have .fxml extension: '" + fxml + "'");
     }
     this.fxmlInitializer.addFxml(fxml);
-    System.out.println("added fxml: " + fxml);
   }
 
   /**

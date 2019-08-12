@@ -87,7 +87,6 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
           + ", popupComponent = " + p
           + "}"); 
       }
-      System.out.println("popup = " + p.id());
       registry.registerBeanDefinition(p.id(), dynamicBean);
     }
   }

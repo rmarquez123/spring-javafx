@@ -42,7 +42,6 @@ public class TabsAnnotationHandler implements InitializingBean, AnnotationHandle
     Map<String, Object> tabItemBeans = appContext.getBeansWithAnnotation(TabItem.class);
     for (Object value : tabItemBeans.values()) {
       String fxml = value.getClass().getDeclaredAnnotation(TabItem.class).fxml();
-      System.out.println(String.format("adding tab fxml : '%s'", fxml));
       this.addFxml(fxml);
     }
     Map<String, Object> beans = appContext.getBeansWithAnnotation(TabsGroup.class);

@@ -70,12 +70,14 @@ public class TableViewColumn implements InitializingBean{
   public String toString() {
     return "TableViewRenderer{" + "name=" + label + ", column=" + columnIndex + ", rendererType=" + rendererType + '}';
   }
-
+  
+  /**
+   * 
+   * @throws Exception 
+   */
   @Override
   public void afterPropertiesSet() throws Exception {
-    System.out.println(this);
+    
   }
-  
- 
   
 }

@@ -2,16 +2,19 @@ package com.rm.springjavafx.charts;
 
 import common.bindings.RmBindings;
 import common.timeseries.TimeStepValue;
+import java.io.InvalidObjectException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
@@ -43,10 +46,10 @@ public final class TimeSeriesCollectionManager {
     });
     this.updateChartDatasetsProperty();
   }
-  
+
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public TimeSeriesChartPane getChart() {
     return chart;
@@ -72,9 +75,7 @@ public final class TimeSeriesCollectionManager {
     RmBindings.bindActionOnAnyChange(() -> this.updateSeries(dataset, collection),
       dataset.valueAccessorProperty(),
       dataset.seriesProperty());
-    
-    
-    
+
     this.updateSeries(dataset, collection);
 
   }
@@ -84,19 +85,15 @@ public final class TimeSeriesCollectionManager {
    * @param dataset
    * @param collection
    */
-  private void updateSeries(SpringFxTimeSeries dataset, TimeSeriesCollection collection) {
+  private synchronized void updateSeries(SpringFxTimeSeries dataset, TimeSeriesCollection collection) {
     common.timeseries.TimeSeries<?> series = dataset.getSeries();
-    TimeSeries old = collection.getSeries(dataset.getKey());
-    if (old != null) {
-      int index = collection.indexOf(dataset.getKey());
-      collection.removeSeries(index);
-    }
+
     TimeSeries jfcSeries = new TimeSeries(dataset.getKey());
     Function<TimeStepValue<?>, Double> accessor = dataset.getValueAccessor();
     if (accessor == null) {
-      Logger.getLogger(TimeSeriesCollectionManager.class.getName()).log(Level.WARNING, 
+      Logger.getLogger(TimeSeriesCollectionManager.class.getName()).log(Level.WARNING,
         String.format("accessor is not defined for dataset '%s'", dataset.getKey()));
-    } 
+    }
     if (series != null && accessor != null) {
       series.forEach((r) -> {
         ZonedDateTime dateTime = r.getZoneDateTime();
@@ -107,15 +104,42 @@ public final class TimeSeriesCollectionManager {
         jfcSeries.add(item);
       });
     }
+    TimeSeries old = collection.getSeries(dataset.getKey());
+    if (old != null) {
+      collection.removeSeries(old);
+    }
     collection.addSeries(jfcSeries);
-
-    XYItemRenderer renderer = this.plot.getRenderer(dataset.getDatasetId());
-    int seriesIndex = collection.getSeriesIndex(dataset.getKey());
-    renderer.setSeriesPaint(seriesIndex, dataset.getLineColorAwt());
-    renderer.setSeriesStroke(seriesIndex, dataset.getLineStroke());
-    renderer.setSeriesShape(seriesIndex, dataset.getShape());
-    this.setVisibility(dataset);
+    collection.setNotify(true);
+    this.plot.setDataset(dataset.getDatasetId(), collection);
+    if (this.plot.getChart() != null) {
+      this.plot.getChart().fireChartChanged();
+    }
+    try {
+      collection.validateObject();
+    } catch (InvalidObjectException ex) {
+      throw new RuntimeException(ex);
+    }
+    this.resetRenderer(collection, dataset.getDatasetId());
     this.updateChartDatasetsProperty();
+  }
+  
+  /**
+   * 
+   * @param collection
+   * @param datasetId 
+   */
+  private void resetRenderer(TimeSeriesCollection collection, int datasetId) {
+    XYItemRenderer renderer = new DefaultXYItemRenderer();
+    for (SpringFxTimeSeries dataset1 : this.datasets.values()) {
+      if (Objects.equals(dataset1.getDatasetId(), dataset1)) {
+        int seriesIndex = collection.getSeriesIndex(dataset1.getKey());
+        renderer.setSeriesPaint(seriesIndex, dataset1.getLineColorAwt(), true);
+        renderer.setSeriesStroke(seriesIndex, dataset1.getLineStroke(), true);
+        renderer.setSeriesShape(seriesIndex, dataset1.getShape(), true);
+        renderer.setSeriesVisible(seriesIndex, this.getVisibility(dataset1), true);
+      }
+    }
+    this.plot.setRenderer(datasetId, renderer);
   }
 
   /**
@@ -148,6 +172,24 @@ public final class TimeSeriesCollectionManager {
    *
    * @param dataset
    */
+  private boolean getVisibility(SpringFxTimeSeries dataset) {
+    String key = dataset.getKey();
+    List<String> value = this.chart.visibleDatasetsProperty().getValue();
+    boolean visible = value == null ? true : value.contains(key);
+    return visible;
+  }
+
+  /**
+   *
+   */
+  private void updateChartDatasetsProperty() {
+    this.chart.writableDatasetsProperty().setValue(new ArrayList<>(this.datasets.keySet()));
+  }
+
+  /**
+   *
+   * @param dataset
+   */
   private void setVisibility(SpringFxTimeSeries dataset) {
     String key = dataset.getKey();
     List<String> value = this.chart.visibleDatasetsProperty().getValue();
@@ -167,12 +209,5 @@ public final class TimeSeriesCollectionManager {
     TimeSeriesCollection collection = (TimeSeriesCollection) plot.getDataset(datasetId);
     int seriesIndex = collection.getSeriesIndex(key);
     this.plot.getRenderer(datasetId).setSeriesVisible(seriesIndex, visible, Boolean.TRUE);
-  }
-
-  /**
-   *
-   */
-  private void updateChartDatasetsProperty() {
-    this.chart.writableDatasetsProperty().setValue(new ArrayList<>(this.datasets.keySet()));
   }
 }

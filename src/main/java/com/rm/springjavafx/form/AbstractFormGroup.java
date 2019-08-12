@@ -44,7 +44,6 @@ public abstract class AbstractFormGroup {
     });
     this.updateSelected();
     this.selectedProperty.addListener((obs, old, change) -> {
-      System.out.println("selected = " + change);
       this.updateFormItems();
     });
   }

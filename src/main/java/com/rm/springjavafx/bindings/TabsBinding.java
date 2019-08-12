@@ -1,10 +1,10 @@
 package com.rm.springjavafx.bindings;
 
+import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.converters.Converter;
 import com.rm.springjavafx.properties.ElementSelectableListProperty;
 import com.rm.springjavafx.properties.ListItem;
-import com.rm.springjavafx.FxmlInitializer;
 import java.util.List;
 import java.util.Objects;
 import javafx.scene.Parent;
@@ -117,8 +117,7 @@ public class TabsBinding implements InitializingBean, ApplicationContextAware {
     if (newNode == null) {
       throw new NullPointerException("Node doe not exist for fxml : '" + newNodeFxml + "'");
     }
-    SpringFxUtils.setNodeOnRefPane(refPane, newNode);    
-    System.out.println("Showing node: '" + newNodeFxml + "'");
+    SpringFxUtils.setNodeOnRefPane(refPane, newNode);
   }
 
   @Override
