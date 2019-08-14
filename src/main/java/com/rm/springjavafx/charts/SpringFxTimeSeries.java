@@ -5,13 +5,13 @@ import common.timeseries.TimeStepValue;
 import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 import java.util.Objects;
 import java.util.function.Function;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
-import org.jfree.chart.util.ShapeUtils;
 
 /**
  *
@@ -65,7 +65,9 @@ public class SpringFxTimeSeries {
    * @return 
    */
   public Shape getShape() {
-    return ShapeUtils.createDiamond(0);
+    double radius = 4;
+    Ellipse2D e =new Ellipse2D.Double(-radius/2., -radius/2., radius, radius);
+    return e;
   }
 
   /**

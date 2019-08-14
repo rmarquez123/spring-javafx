@@ -17,6 +17,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.fx.ChartViewer;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -45,11 +46,16 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
     this.plot = new XYPlot();
     this.plot.setDomainAxis(new DateAxis());
     this.plot.setRangeAxes(new ValueAxis[]{new NumberAxis()});
+    StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator();
+    DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
+    this.plot.setRenderer(renderer);
+
     for (int i = 0; i < datasets; i++) {
       this.plot.setDataset(i, new TimeSeriesCollection());
-      this.plot.setRenderer(i, new DefaultXYItemRenderer());
+      renderer.setSeriesToolTipGenerator(i, ttg);
+      this.plot.setRenderer(i, renderer);
     }
-    
+
     this.datasetsProperty.addListener((obs, old, change) -> {
       for (String string : change) {
         if (old != null && !old.contains(string)) {
@@ -96,7 +102,6 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
       Parent root = i.getRoot(fxml);
       this.chartPane = SpringFxUtils.getChildByID(root, chart.node());
       ChartViewer viewer = this.getChart();
-
       this.chartPane.getChildren().clear();
       SpringFxUtils.setNodeOnRefPane(this.chartPane, viewer);
     });
@@ -108,8 +113,8 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
    * @return
    */
   private ChartViewer getChart() {
-    JFreeChart jfreeChart = new JFreeChart(plot);
-    ChartViewer result = new ChartViewer(jfreeChart);
+    JFreeChart jfreeChart = new JFreeChart(this.plot);
+    ChartViewer result = new ChartViewer(jfreeChart, true);
     return result;
   }
 

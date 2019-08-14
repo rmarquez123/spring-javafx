@@ -3,6 +3,8 @@ package com.rm.springjavafx.charts;
 import common.bindings.RmBindings;
 import common.timeseries.TimeStepValue;
 import java.io.InvalidObjectException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -20,6 +23,7 @@ import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.xy.XYDataset;
 
 /**
  *
@@ -131,12 +135,20 @@ public final class TimeSeriesCollectionManager {
   private void resetRenderer(TimeSeriesCollection collection, int datasetId) {
     XYItemRenderer renderer = new DefaultXYItemRenderer();
     for (SpringFxTimeSeries dataset1 : this.datasets.values()) {
-      if (Objects.equals(dataset1.getDatasetId(), dataset1)) {
+      if (Objects.equals(dataset1.getDatasetId(), datasetId)) {
         int seriesIndex = collection.getSeriesIndex(dataset1.getKey());
         renderer.setSeriesPaint(seriesIndex, dataset1.getLineColorAwt(), true);
         renderer.setSeriesStroke(seriesIndex, dataset1.getLineStroke(), true);
         renderer.setSeriesShape(seriesIndex, dataset1.getShape(), true);
         renderer.setSeriesVisible(seriesIndex, this.getVisibility(dataset1), true);
+        StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
+            new SimpleDateFormat("d-MMM-yyyy"), new DecimalFormat("0.00")){
+          @Override
+          public String generateToolTip(XYDataset dataset, int series, int item) {
+            String tooltip = super.generateToolTip(dataset, series, item);
+            return tooltip;
+          }};
+        renderer.setSeriesToolTipGenerator(seriesIndex, ttg);
       }
     }
     this.plot.setRenderer(datasetId, renderer);

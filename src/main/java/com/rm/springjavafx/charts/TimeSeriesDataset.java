@@ -16,5 +16,5 @@ public @interface TimeSeriesDataset {
   int dataset();
   String name();
   String lineColorHex() default "#000000";
-  String visibilityProperty() default "histDlrSeriesPlotAarVisible";
+  String visibilityProperty() default "";
 }

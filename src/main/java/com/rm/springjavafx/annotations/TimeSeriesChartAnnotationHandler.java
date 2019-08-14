@@ -174,7 +174,12 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
   private String getChartId(Object b) {
     return b.getClass().getDeclaredAnnotation(TimeSeriesChart.class).id();
   }
-
+  
+  /**
+   * 
+   * @param bean
+   * @return 
+   */
   private Node createChart(Object bean) {
     ChartViewer chartView = new ChartViewer();
     return chartView;

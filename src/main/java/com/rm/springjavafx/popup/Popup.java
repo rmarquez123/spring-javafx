@@ -42,19 +42,18 @@ public class Popup {
       }
     });
   }
-  
+
   public void setNode(Node node) {
     this.contentNodeProperty.setValue(node);
   }
-  
+
   /**
-   * 
-   * @param controller 
+   *
+   * @param controller
    */
   public void setController(PopupContent controller) {
     this.popupControllerProperty.setValue(controller);
   }
-  
 
   /**
    *
@@ -110,7 +109,9 @@ public class Popup {
    */
   public void show() {
     Stage alertWindow = this.getAlert();
-    alertWindow.showAndWait();
+    if (!alertWindow.isShowing()) {
+      alertWindow.showAndWait();
+    }
   }
 
   /**
@@ -140,15 +141,15 @@ public class Popup {
         } else {
           Window window = this.windowProperty.getValue();
           if (window != null) {
-            double xPos = window.getX() + 0.25*window.getWidth();
-            double yPos = window.getY() + 0.25*window.getHeight();
+            double xPos = window.getX() + 0.25 * window.getWidth();
+            double yPos = window.getY() + 0.25 * window.getHeight();
             this.alert.setX(xPos);
             this.alert.setY(yPos);
             this.alert.setAlwaysOnTop(true);
             alert.getScene().getWindow().setX(xPos);
             alert.getScene().getWindow().setY(yPos);
-            ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets(); 
-            alert.getScene().getStylesheets().addAll(styleSheets); 
+            ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets();
+            alert.getScene().getStylesheets().addAll(styleSheets);
           }
         }
         this.showProperty.setValue(this.alert.showingProperty().getValue());
