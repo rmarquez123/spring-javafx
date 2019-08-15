@@ -1,4 +1,4 @@
-package com.rm.springjavafx.charts;
+package com.rm.springjavafx.charts.xy;
 
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
@@ -13,14 +13,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Ricardo Marquez
  */
-public abstract class TimeSeriesChartPane implements InitializingBean {
+public abstract class XYChartPane implements InitializingBean {
 
   @Autowired
   private FxmlInitializer _fxmlInitializer;
@@ -40,21 +38,21 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
   /**
    *
    */
-  public TimeSeriesChartPane() {
-    TimeSeriesChart chart = this.getClass().getDeclaredAnnotation(TimeSeriesChart.class);
+  public XYChartPane() {
+    XYChart chart = this.getClass().getDeclaredAnnotation(XYChart.class);
     int datasets = chart.datasets();
     this.plot = new XYPlot();
-    this.plot.setDomainAxis(new DateAxis());
+    this.plot.setDomainAxis(new NumberAxis());
     NumberAxis numberAxis = new NumberAxis();
     numberAxis.setLabel(this.getLabel(0));
     this.plot.setRangeAxes(new ValueAxis[]{numberAxis});
-    
+
     StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator();
     DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
     this.plot.setRenderer(renderer);
 
     for (int i = 0; i < datasets; i++) {
-      this.plot.setDataset(i, new TimeSeriesCollection());
+      this.plot.setDataset(i, new JFreeXYDataSet());
       renderer.setSeriesToolTipGenerator(i, ttg);
       this.plot.setRenderer(i, renderer);
     }
@@ -97,9 +95,9 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
    * @throws Exception
    */
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public final void afterPropertiesSet() throws Exception {
     this._fxmlInitializer.addListener((i) -> {
-      TimeSeriesChart chart = this.getClass().getDeclaredAnnotation(TimeSeriesChart.class);
+      XYChart chart = this.getClass().getDeclaredAnnotation(XYChart.class);
       FxController controller = this.getClass().getDeclaredAnnotation(FxController.class);
       String fxml = controller.fxml();
       Parent root = i.getRoot(fxml);
@@ -123,11 +121,6 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
 
   /**
    *
-   */
-  protected abstract void postInit();
-
-  /**
-   *
    * @return
    */
   public XYPlot getPlot() {
@@ -136,30 +129,29 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
 
   /**
    *
-   * @param string
+   * @param key
    * @param visible
    */
-  public void setVisible(String string, boolean visible) {
+  public void setVisible(String key, boolean visible) {
     if (visible) {
       List<String> current = this.visibleDatasetsProperty.getValue();
       if (current == null) {
-        this.visibleDatasetsProperty.setValue(Arrays.asList(string));
-      } else if (!current.contains(string)) {
+        this.visibleDatasetsProperty.setValue(Arrays.asList(key));
+      } else if (!current.contains(key)) {
         List<String> newList = new ArrayList<>(current);
-        newList.add(string);
+        newList.add(key);
         this.visibleDatasetsProperty.setValue(newList);
       }
     } else {
       List<String> current = this.visibleDatasetsProperty.getValue();
       if (current == null) {
         this.visibleDatasetsProperty.setValue(Collections.EMPTY_LIST);
-      } else if (current.contains(string)) {
+      } else if (current.contains(key)) {
         List<String> newList = new ArrayList<>(current);
-        newList.remove(string);
+        newList.remove(key);
         this.visibleDatasetsProperty.setValue(newList);
       }
     }
-
   }
 
   /**
@@ -174,11 +166,9 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
         this.visibleDatasetsProperty.setValue(strings);
       } else {
         List<String> newList = new ArrayList<>(current);
-        for (String string : strings) {
-          if (!current.contains(string)) {
-            newList.add(string);
-          }
-        }
+        strings.stream()
+          .filter((s)->!current.contains(s))
+          .forEach((s)-> newList.add(s));
         this.visibleDatasetsProperty.setValue(newList);
       }
     } else {
@@ -186,23 +176,24 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
         this.visibleDatasetsProperty.setValue(Collections.EMPTY_LIST);
       } else {
         List<String> newList = new ArrayList<>(current);
-        for (String string : strings) {
-          if (current.contains(string)) {
-            newList.remove(string);
-          }
-        }
+        newList.removeIf(e->strings.contains(e));
         this.visibleDatasetsProperty.setValue(newList);
       }
     }
 
   }
-  
+
   /**
-   * 
+   *
    * @param i
-   * @return 
+   * @return
    */
   protected String getLabel(int i) {
     return null;
   }
+  
+  /**
+   *
+   */
+  protected abstract void postInit();
 }

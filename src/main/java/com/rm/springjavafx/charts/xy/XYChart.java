@@ -1,6 +1,5 @@
-package com.rm.springjavafx.charts;
+package com.rm.springjavafx.charts.xy;
 
-import com.rm.springjavafx.annotations.FxController;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,8 +11,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface TimeSeriesChart {
-  
+public @interface XYChart {
+
   /**
    * The chart id which is used for reference from other datas sets.
    *
@@ -37,5 +36,5 @@ public @interface TimeSeriesChart {
    * @return
    */
   int datasets();
-  
+
 }
