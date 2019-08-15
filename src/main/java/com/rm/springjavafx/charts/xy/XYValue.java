@@ -35,4 +35,12 @@ public class XYValue {
     return this.y;
   }
 
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String toString() {
+    return "XYValue{" + "y=" + y + ", x=" + x + '}';
+  }
 }

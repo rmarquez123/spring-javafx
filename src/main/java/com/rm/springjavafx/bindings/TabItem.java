@@ -74,10 +74,13 @@ public class TabItem implements InitializingBean, ApplicationContextAware {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (!this.fxmlInitializer.isInitialized()) {
-      this.fxmlInitializer.initializeRoots(context);
-    }
-    this.node = this.fxmlInitializer.getNode(fxml, fxmlId);
+    this.fxmlInitializer.addListener((i) -> {
+      try {
+        this.node = this.fxmlInitializer.getNode(fxml, fxmlId);
+      } catch (IllegalAccessException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
   }
 
   @Override
@@ -86,7 +89,7 @@ public class TabItem implements InitializingBean, ApplicationContextAware {
   }
 
   void bindToSelectionModel(SingleSelectionModel<TabItem> selection) {
-    selection.selectedItemProperty().addListener((e)->{
+    selection.selectedItemProperty().addListener((e) -> {
       onSelected(selection);
     });
     onSelected(selection);

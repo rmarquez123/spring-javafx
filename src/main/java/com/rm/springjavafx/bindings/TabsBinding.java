@@ -69,36 +69,36 @@ public class TabsBinding implements InitializingBean, ApplicationContextAware {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    if (!this.fxmlInitializer.isInitialized()) {
-      this.fxmlInitializer.initializeRoots(context);
-    }
-    for (ListItem listItem : this.listRef.getListProperty().getValue()) {
-      String fxml = String.valueOf(listItem.getValue("fxml"));
-      Parent r = this.fxmlInitializer.getRoot(fxml);
-      if (r == null) {
-        throw new NullPointerException("list item fxml does not exist.  Check args : {"
-                + "listItem =" + listItem
-                + ", fxml = " + fxml
-                + "}"); 
+    this.fxmlInitializer.addListener((i) -> {
+      for (ListItem listItem : this.listRef.getListProperty().getValue()) {
+        String fxml = String.valueOf(listItem.getValue("fxml"));
+        Parent r = this.fxmlInitializer.getRoot(fxml);
+        if (r == null) {
+          throw new NullPointerException("list item fxml does not exist.  Check args : {"
+            + "listItem =" + listItem
+            + ", fxml = " + fxml
+            + "}");
+        }
       }
-    }
-    
-    ConverterImpl converter = new ConverterImpl();
-    ElementSelectableListProperty.bind(tabs.getSelection(), listRef.getSelection(), converter);
-    for (TabItem tabItem : tabs.getListProperty().getValue()) {
-      ListItem c = converter.convert(tabItem); 
-      if (c == null) {
-        throw new IllegalStateException("Tab item with selection id : '" + tabItem.getSelectionId() + "' does not have an association to the model."); 
+
+      ConverterImpl converter = new ConverterImpl();
+      ElementSelectableListProperty.bind(tabs.getSelection(), listRef.getSelection(), converter);
+      for (TabItem tabItem : tabs.getListProperty().getValue()) {
+        ListItem c = converter.convert(tabItem);
+        if (c == null) {
+          throw new IllegalStateException("Tab item with selection id : '" + tabItem.getSelectionId() + "' does not have an association to the model.");
+        }
+        tabItem.bindToSelectionModel(tabs.getSelection());
+        tabItem.setOnAction(() -> {
+          tabs.getSelection().select(tabItem);
+        });
       }
-      tabItem.bindToSelectionModel(tabs.getSelection()); 
-      tabItem.setOnAction(() -> {
-        tabs.getSelection().select(tabItem);
+      this.listRef.getSelection().selectedItemProperty().addListener((obs, old, change) -> {
+        this.setNodeOnRefPane(change);
       });
-    }
-    listRef.getSelection().selectedItemProperty().addListener((obs, old, change) -> {
-      this.setNodeOnRefPane(change);
+      this.setNodeOnRefPane(this.listRef.getSelection().getSelectedItem());
     });
-    this.setNodeOnRefPane(listRef.getSelection().getSelectedItem());
+
   }
 
   /**

@@ -136,7 +136,7 @@ public class FxmlInitializer implements InitializingBean {
    */
   public void initializeRoots(ApplicationContext context) {
     if (!this.isInitialized()) {
-      if (this.initializing) {
+      if (this.initializing) {  
         throw new IllegalStateException("Fxml loaders are initalizing.  Add a listener instead.");
       }
       for (AnnotationHandler handler : this.annotationHandlers) {
@@ -160,7 +160,11 @@ public class FxmlInitializer implements InitializingBean {
       for (String fxml : this.fxmlList) {
         if (!this.rootNodes.containsKey(fxml)) {
           URL resource = classLoader.getResource(fxml);
+          if (resource == null) {
+            throw new IllegalStateException(String.format("Resource '%s' does not exists", fxml)); 
+          }
           FXMLLoader loader = new FXMLLoader(resource);
+          
           if (fxControllers.containsKey(fxml)) {
             Object controller = fxControllers.get(fxml);
             loader.setController(controller);

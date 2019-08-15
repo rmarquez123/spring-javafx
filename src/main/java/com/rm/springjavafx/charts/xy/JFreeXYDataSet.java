@@ -30,7 +30,8 @@ public class JFreeXYDataSet extends AbstractXYDataset {
    * @param values
    */
   public void addOrUpdate(XYValues values) {
-    int indexOf = this.datasetProperty.indexOf(values);
+    Objects.requireNonNull(values, "Values cannot be null");
+    int indexOf = this.getSeriesIndex((String) values.getKey());
     if (indexOf < 0) {
       this.datasetProperty.add(values);
     } else {
@@ -71,7 +72,7 @@ public class JFreeXYDataSet extends AbstractXYDataset {
     }
     return result;
   }
-  
+
   /**
    *
    * @param i
@@ -84,7 +85,7 @@ public class JFreeXYDataSet extends AbstractXYDataset {
       index++;
       if (Objects.equals(xYValues.getKey(), key)) {
         result = index;
-        break; 
+        break;
       }
     }
     return result;

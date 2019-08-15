@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
@@ -29,13 +30,14 @@ public class SpringFxXYDataSet {
     this.name = conf.name();
     this.datasetId = conf.dataset();
     this.lineColor = Color.web(conf.lineColorHex());
+    this.setTimeSeries(Collections.EMPTY_LIST);
   }
 
   /**
    *
    */
   public void validate() throws Exception {
-    
+
   }
 
   /**
@@ -83,9 +85,13 @@ public class SpringFxXYDataSet {
   /**
    *
    */
-  public void setTimeSeries(List<XYValue> values) {
-    XYValues a = new XYValues(name, values);
-    this.seriesProperty.setValue(a);
+  public final void setTimeSeries(List<XYValue> values) {
+    if (values != null) {
+      XYValues a = new XYValues(this.getKey(), values);
+      this.seriesProperty.setValue(a);
+    } else {
+      this.setTimeSeries(Collections.EMPTY_LIST);
+    }
   }
 
   /**
@@ -103,7 +109,6 @@ public class SpringFxXYDataSet {
   public XYValues getSeries() {
     return seriesProperty.getValue();
   }
-    
 
   /**
    *
