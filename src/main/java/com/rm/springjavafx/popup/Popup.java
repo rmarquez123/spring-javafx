@@ -10,6 +10,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -120,42 +122,63 @@ public class Popup {
    */
   private Stage getAlert() {
     if (this.alert == null) {
-      Node contentNode = this.contentNodeProperty.getValue();
-      Scene dialogScene = new Scene(new AnchorPane(contentNode));
-      AnchorPane.setBottomAnchor(contentNode, 0.0);
-      AnchorPane.setLeftAnchor(contentNode, 0.0);
-      AnchorPane.setRightAnchor(contentNode, 0.0);
-      AnchorPane.setTopAnchor(contentNode, 0.0);
-
-      this.alert = new Stage();
-      this.alert.setTitle("");
-      this.alert.setScene(dialogScene);
-      this.alert.showingProperty().addListener((evt) -> {
-
-        if (!this.alert.showingProperty().getValue()) {
-          try {
-            (this.popupControllerProperty).getValue().onClose();
-          } catch (IOException ex) {
-            Logger.getLogger(Popup.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        } else {
-          Window window = this.windowProperty.getValue();
-          if (window != null) {
-            double xPos = window.getX() + 0.25 * window.getWidth();
-            double yPos = window.getY() + 0.25 * window.getHeight();
-            this.alert.setX(xPos);
-            this.alert.setY(yPos);
-            this.alert.setAlwaysOnTop(true);
-            alert.getScene().getWindow().setX(xPos);
-            alert.getScene().getWindow().setY(yPos);
-            ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets();
-            alert.getScene().getStylesheets().addAll(styleSheets);
-          }
-        }
-        this.showProperty.setValue(this.alert.showingProperty().getValue());
-      });
-
+      this.createAlert();
+      this.alert.showingProperty().addListener((evt) -> this.onAlertShowing());
+      this.alert.addEventFilter(KeyEvent.KEY_RELEASED, this::closeIfEscapeKey);
     }
     return this.alert;
+  }
+  
+  /**
+   * 
+   * @param evt 
+   */
+  private void closeIfEscapeKey(KeyEvent evt) {
+    if (evt.getCode() == KeyCode.ESCAPE) {
+      this.showProperty.set(false);
+    }
+  }
+  
+  /**
+   * 
+   */
+  private void onAlertShowing() {
+    if (!this.alert.showingProperty().getValue()) {
+      try {
+        (this.popupControllerProperty).getValue().onClose();
+      } catch (IOException ex) {
+        Logger.getLogger(Popup.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    } else {
+      Window window = this.windowProperty.getValue();
+      if (window != null) {
+        double xPos = window.getX() + 0.25 * window.getWidth();
+        double yPos = window.getY() + 0.25 * window.getHeight();
+        this.alert.setX(xPos);
+        this.alert.setY(yPos);
+        this.alert.setAlwaysOnTop(true);
+        alert.getScene().getWindow().setX(xPos);
+        alert.getScene().getWindow().setY(yPos);
+        ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets();
+        alert.getScene().getStylesheets().addAll(styleSheets);
+      }
+    }
+    this.showProperty.setValue(this.alert.showingProperty().getValue());
+  }
+  
+  /**
+   * 
+   */
+  private void createAlert() {
+    Node contentNode = this.contentNodeProperty.getValue();
+    Scene dialogScene = new Scene(new AnchorPane(contentNode));
+    AnchorPane.setBottomAnchor(contentNode, 0.0);
+    AnchorPane.setLeftAnchor(contentNode, 0.0);
+    AnchorPane.setRightAnchor(contentNode, 0.0);
+    AnchorPane.setTopAnchor(contentNode, 0.0);
+    
+    this.alert = new Stage();
+    this.alert.setTitle("");
+    this.alert.setScene(dialogScene);
   }
 }

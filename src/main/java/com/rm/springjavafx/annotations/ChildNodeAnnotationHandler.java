@@ -35,7 +35,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
 
   @Override
   public void afterPropertiesSet() throws Exception {
-    this.fxmlInitializer.addAnnotationHandler(new AnnotationHandler() {
+    fxmlInitializer.addAnnotationHandler(new AnnotationHandler() {
       @Override
       public void readyFxmls() {
         onReadyFxmls();
@@ -53,23 +53,36 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    */
   private void onReadyFxmls() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
-    for (Object bean : beans.values()) {
-
-      FxController fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
-      String parentFxml = fxController.fxml();
-      if (!parentFxml.isEmpty()) {
-        addFxml(parentFxml);
+    for (Map.Entry<String, Object> bean : beans.entrySet()) {
+      try {
+        this.readyBeanAndChildFxmls(bean.getValue());
+      } catch(Exception ex) {
+        throw new RuntimeException(
+          String.format("Error on creating bean '%s'", bean.getKey()), ex); 
       }
-      Field[] fields = SpringFxUtils.getFields(bean);
-      for (Field field : fields) {
-        ChildNode childNode = field.getDeclaredAnnotation(ChildNode.class);
-        if (childNode != null) {
-          String fxml = childNode.fxml();
-          if (parentFxml.isEmpty() && !fxml.isEmpty()) {
-            addFxml(fxml);
-          } else if (parentFxml.isEmpty()) {
-            throw new RuntimeException("No fxml file specified for node: '" + field + "'");
-          }
+    }
+  }
+
+  /**
+   * 
+   * @param bean
+   * @throws RuntimeException 
+   */
+  private void readyBeanAndChildFxmls(Object bean) throws RuntimeException {
+    FxController fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
+    String parentFxml = fxController.fxml();
+    if (!parentFxml.isEmpty()) {
+      addFxml(parentFxml);
+    }
+    Field[] fields = SpringFxUtils.getFields(bean);
+    for (Field field : fields) {
+      ChildNode childNode = field.getDeclaredAnnotation(ChildNode.class);
+      if (childNode != null) {
+        String fxml = childNode.fxml();
+        if (parentFxml.isEmpty() && !fxml.isEmpty()) {
+          addFxml(fxml);
+        } else if (parentFxml.isEmpty()) {
+          throw new RuntimeException("No fxml file specified for node: '" + field + "'");
         }
       }
     }
