@@ -13,26 +13,26 @@ public class AbstractForm {
   private List<AbstractFormGroup> formGroups;
 
   /**
-   * 
+   *
    */
   public AbstractForm() {
-    this.fxForm = this.getClass().getDeclaredAnnotation(FxForm.class);  
+    this.fxForm = this.getClass().getDeclaredAnnotation(FxForm.class);
   }
-  
+
   /**
-   * 
-   * @param formGroups 
+   *
+   * @param formGroups
    */
   public void setFormGroups(List<AbstractFormGroup> formGroups) {
     this.formGroups = formGroups;
     String idField = null;
     for (AbstractFormGroup formGroup : this.formGroups) {
       if (idField == null) {
-        idField = formGroup.getIdField(); 
+        idField = formGroup.getIdField();
       } else {
         if (!Objects.equals(idField, formGroup.getIdField())) {
           throw new IllegalArgumentException(
-            String.format("Form groups associated with form: '%s' have inconsistent id fields", this.fxForm.formId())); 
+            String.format("Form groups associated with form: '%s' have inconsistent id fields", this.fxForm.formId()));
         }
       }
     }
@@ -53,6 +53,15 @@ public class AbstractForm {
   public void selectNext() {
     for (AbstractFormGroup formGroup : this.formGroups) {
       formGroup.selectNext();
+    }
+  }
+
+  /**
+   *
+   */
+  protected void saveAll() {
+    for (AbstractFormGroup formGroup : this.formGroups) {
+      formGroup.saveAll();
     }
   }
 }

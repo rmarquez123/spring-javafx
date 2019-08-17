@@ -96,7 +96,6 @@ public class FxMenuItemAnnotationHandler implements InitializingBean, Annotation
             value.getClass().getSimpleName(), 
             AbstractFxMenuItem.class.getSimpleName()));
       }
-      
       Class<? extends Object> clazz = value.getClass();
       FxMenuItem fxMenuItem = clazz.getDeclaredAnnotation(FxMenuItem.class);
       String fxml = fxMenuItem.fxml();

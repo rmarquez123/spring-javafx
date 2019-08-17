@@ -14,6 +14,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.scene.control.Button;
 import javafx.util.StringConverter;
 
 /**
@@ -26,7 +27,8 @@ public abstract class AbstractFormGroup {
   private final Property<RecordValue> selectedProperty = new SimpleObjectProperty<>();
   private final Property<List<RecordValue>> recordsProperty = new SimpleObjectProperty<>();
   private final FormGroup formGroup = new FormGroup();
-  private final Map<Object, List<FormItem>> formItems = new HashMap<>();
+  private final Map<Object, List<FormItem>> formItemsMap = new HashMap<>();
+  private final Map<String, List<Consumer<RecordValue>>> btnActionHandlers = new HashMap<>();
 
   /**
    *
@@ -47,17 +49,17 @@ public abstract class AbstractFormGroup {
       this.updateFormItems();
     });
   }
-  
+
   /**
-   * 
+   *
    * @param idValue
-   * @return 
+   * @return
    */
   public boolean containsKey(Object idValue) {
     List<RecordValue> records = this.recordsProperty.getValue();
     boolean result;
     if (records != null) {
-      result = records.stream().anyMatch((r)->Objects.equals(r.getIdValue(), idValue));
+      result = records.stream().anyMatch((r) -> Objects.equals(r.getIdValue(), idValue));
     } else {
       result = false;
     }
@@ -192,11 +194,11 @@ public abstract class AbstractFormGroup {
     RecordValue selected = this.selectedProperty.getValue();
     if (selected != null) {
       Object idValue = selected.get(this.idField);
-      if (!this.formItems.containsKey(idValue)) {
+      if (!this.formItemsMap.containsKey(idValue)) {
         List<FormItem> newFormItems = this.createFormItems(selected);
-        this.formItems.put(idValue, new ArrayList<>(newFormItems));
+        this.formItemsMap.put(idValue, new ArrayList<>(newFormItems));
       }
-      List<FormItem> items = this.formItems.get(idValue);
+      List<FormItem> items = this.formItemsMap.get(idValue);
       this.formGroup.getItems().addAll(items);
     }
   }
@@ -214,7 +216,6 @@ public abstract class AbstractFormGroup {
       if (fxFormItem != null) {
         String id = fxFormItem.id();
         ObjectProperty valueProperty = new SimpleObjectProperty();
-
         Object value = r.get(id);
         valueProperty.set(value);
         StringConverter converter;
@@ -225,10 +226,37 @@ public abstract class AbstractFormGroup {
         }
         String label = fxFormItem.label();
         FormItem formItem = new FormItem(label, valueProperty, converter);
+        formItem.setId(id); 
+        formItem.editableProperty().set(fxFormItem.editable());
+        if (!fxFormItem.button().isEmpty()) {
+          Button button = new Button(fxFormItem.button());
+          button.setOnAction((e) -> {
+            List<Consumer<RecordValue>> handlers = this.btnActionHandlers.get(fxFormItem.id());
+            if (handlers != null) {
+              handlers.stream().forEach((h)->h.accept(r));
+            }
+          });
+          formItem.buttonProperty().setValue(button);
+        }
         items.add(formItem);
       }
     }
     return items;
+  }
+  
+    /**
+   * 
+   * @param newRecord 
+   */
+  public void replaceRecord(RecordValue newRecord) {
+    this.forRecord(newRecord.get(idField), (r)->{
+      String idValue = (String) r.getIdValue();
+      List<FormItem> formItems = this.formItemsMap.get(idValue); 
+      for (FormItem formItem : formItems) {
+        String key = formItem.getId();
+        formItem.valueProperty().set(r.get(key));
+      }
+    });
   }
 
   /**
@@ -269,4 +297,24 @@ public abstract class AbstractFormGroup {
       }
     }
   }
+
+  /**
+   *
+   */
+  public void setOnButtonPressed(String fieldId, Consumer<RecordValue> consumer) {
+    if (!this.btnActionHandlers.containsKey(fieldId)){
+      this.btnActionHandlers.put(fieldId, new ArrayList<>()); 
+    } 
+    this.btnActionHandlers.get(fieldId).add(consumer);
+  }
+
+  /**
+   * 
+   * @return 
+   */
+  public RecordValue getSelected() {
+    return this.selectedProperty.getValue();
+  }
+
+
 }

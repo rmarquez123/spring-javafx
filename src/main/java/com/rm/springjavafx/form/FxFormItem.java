@@ -16,5 +16,7 @@ public @interface FxFormItem {
 
   String id();
   String label();
+  boolean editable() default true;
+  String button() default "";
   Class<? extends StringConverter> converter();
 }

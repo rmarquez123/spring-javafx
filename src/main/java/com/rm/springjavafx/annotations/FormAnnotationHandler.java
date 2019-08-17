@@ -69,7 +69,7 @@ public class FormAnnotationHandler implements AnnotationHandler, InitializingBea
       } else {
         throw new IllegalStateException(
           String.format("Form bean '%s' is not an instance of '%s'", 
-            value.getClass(), AbstractForm.class.getName())); 
+            value == null? "": value.getClass(), AbstractForm.class.getName())); 
       }
       FxForm formConf = value.getClass().getDeclaredAnnotation(FxForm.class);
       Form form = this.initializeForm(formConf);

@@ -1,7 +1,6 @@
 package com.rm.springjavafx.form;
 
 import com.sun.javafx.scene.control.skin.TableHeaderRow;
-import com.sun.javafx.scene.control.skin.TableViewSkinBase;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class Form extends VBox {
     this.tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
     tableView.skinProperty().addListener((a, b, newSkin) -> {
-      TableHeaderRow header = ((TableViewSkinBase) newSkin).getTableHeaderRow();
+      TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
       header.setMinHeight(0);
       header.setPrefHeight(0);
       header.setMaxHeight(0);
@@ -291,13 +290,15 @@ public class Form extends VBox {
         super.setText(item);
         Button button = (Button) formItem.buttonProperty().getValue();
         if (button != null) {
-          Pane pane = new Pane();
-          pane.setPrefWidth(100);
-          pane.setMinWidth(100);
+          Pane glue = new Pane();
           HBox hbox = new HBox();
           Label label = new Label();
-          hbox.getChildren().addAll(label, pane, button);
-          HBox.setHgrow(pane, Priority.ALWAYS);
+          hbox.getChildren().addAll(label, glue, button);
+          HBox.setHgrow(glue, Priority.ALWAYS);
+          HBox.setHgrow(label, Priority.ALWAYS);
+          hbox.setMaxWidth(Double.MAX_VALUE);
+          label.setMinWidth(USE_PREF_SIZE);
+          label.setPrefWidth(USE_COMPUTED_SIZE);
           super.setGraphic(hbox);
           super.textProperty().addListener((obs, old, change) -> {
             label.setText(change);

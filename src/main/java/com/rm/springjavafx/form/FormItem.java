@@ -23,6 +23,7 @@ public final class FormItem<T> {
   private final BooleanProperty editableProperty = new SimpleBooleanProperty(true);
   private final StringConverter<T> stringConverter;
   private final Property<Button> buttonProperty = new SimpleObjectProperty<>(null);
+  private String id;
 
   /**
    *
@@ -103,6 +104,14 @@ public final class FormItem<T> {
   public String toString() {
     Object value = valueProperty.getValue();
     return "FormItem{" + "valueProperty=" + (value != null ? value : null) + '}';
+  }
+
+  String getId() {
+    return this.id;
+  }
+
+  void setId(String id) {
+    this.id = id;
   }
 
 }

@@ -29,7 +29,20 @@ public class RecordValue {
     this.idField = idField;
     this.values.putAll(values);
   }
-
+  
+  
+  /**
+   * 
+   * @param key
+   * @param value
+   * @return 
+   */
+  public RecordValue set(String key, Object value) {
+    Map<String, Object> map = new HashMap<>(this.values); 
+    map.put(key, value); 
+    RecordValue result = new RecordValue(this.idField, map);
+    return result;
+  }
   /**
    *
    * @return
@@ -141,5 +154,7 @@ public class RecordValue {
       .collect(Collectors.toList()); 
     return result; 
   }
+
+
   
 }
