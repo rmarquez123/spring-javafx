@@ -1,6 +1,7 @@
 package com.rm.springjavafx.form;
 
 import com.sun.javafx.scene.control.skin.TableHeaderRow;
+import common.bindings.RmBindings;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class Form extends VBox {
                     if (c.getAddedSize() == 2) {
                       TableCell a = (TableCell) c.getAddedSubList().get(0);
                       a.setStyle("-fx-font-weight: bold");
-                      a.textProperty().bind(item.labelProperty());
+                      RmBindings.bind1To2(a.textProperty(), item.labelProperty());
                     }
                   }
                 }
