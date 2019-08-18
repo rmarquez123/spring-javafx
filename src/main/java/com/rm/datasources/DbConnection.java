@@ -476,6 +476,42 @@ public class DbConnection implements Serializable {
 
   /**
    *
+   * @param query
+   * @return
+   */
+  public int[] executeStatements(String... statements) {
+    int[] result = new int[statements.length];
+    int i = -1;
+    Connection conn = this.getConnection();
+    try {
+      conn.setAutoCommit(false);
+    } catch (SQLException ex) {
+      throw new RuntimeException(ex);
+    }
+    for (String statementText : statements) {
+      i++;
+      PreparedStatement statement;
+      try {
+        statement = conn.prepareStatement(statementText);
+      } catch (SQLException ex) {
+        throw new RuntimeException(ex);
+      }
+      try {
+        result[i] = statement.executeUpdate();
+      } catch (SQLException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+    try {
+      conn.commit();
+    } catch (SQLException ex) {
+      throw new RuntimeException(ex);
+    }
+    return result;
+  }
+
+  /**
+   *
    */
   public static class Builder {
 
