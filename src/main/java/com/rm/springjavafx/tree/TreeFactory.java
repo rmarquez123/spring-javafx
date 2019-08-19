@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -202,7 +203,8 @@ public class TreeFactory implements FactoryBean<TreeView>, InitializingBean, App
             String textField = cellFactory.getTextField();
             String textVal = String.valueOf(treeNode.getValueObject().get(textField));
             super.setText(textVal);
-            super.setContextMenu(cellFactory.getContextMenu(treeNode.getObject()));
+            ContextMenu contextMenu = cellFactory.getContextMenu(treeNode.getObject());
+            super.setContextMenu(contextMenu);
             if (cellFactory.isCheckBox()) {
 
               CheckBox checkBox = new CheckBox();

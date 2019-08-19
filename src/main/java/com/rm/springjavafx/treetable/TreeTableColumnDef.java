@@ -67,6 +67,7 @@ public class TreeTableColumnDef {
     for (LevelCellFactory cellFactory : cellFactories) {
       if (Objects.equals(cellFactory.getLevel(), level)) {
         result = cellFactory;
+        break; 
       }
     }
     return result;

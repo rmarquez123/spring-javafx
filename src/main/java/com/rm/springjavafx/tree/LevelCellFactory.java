@@ -73,7 +73,8 @@ public class LevelCellFactory implements InitializingBean {
   }
 
   public ContextMenu getContextMenu(RecordValue object) {
-    return this.contextMenuProvider.getContextMenu(object); 
+    return this.contextMenuProvider == null ? null 
+      : this.contextMenuProvider.getContextMenu(object); 
   }
   
 

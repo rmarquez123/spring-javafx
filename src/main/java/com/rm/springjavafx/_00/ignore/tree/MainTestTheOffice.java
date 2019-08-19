@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testcharts;
+package com.rm.springjavafx._00.ignore.tree;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import org.springframework.context.annotation.ImportResource;
  * @author rmarquez
  */
 @SpringBootApplication()
-@ImportResource(locations = {"spring/main.xml"})
+@ImportResource(locations = {"spring/theoffice.xml"})
 @ComponentScan(
   basePackages = {
     "com.rm.springjavafx"
@@ -46,11 +46,12 @@ import org.springframework.context.annotation.ImportResource;
       pattern = {
         "com.rm.springjavafx._00.ignore.testforms.*",
         "com.rm.springjavafx._00.ignore.testxycharts.*",
+        "com.rm.springjavafx._00.ignore.testcharts.*",
       }
     )
   }
 )
-public class MainTestCharts extends Application {
+public class MainTestTheOffice extends Application {
 
   private FxmlInitializer fxmlInitializer;
   private Parent root;

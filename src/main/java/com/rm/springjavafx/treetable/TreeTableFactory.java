@@ -9,6 +9,7 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
@@ -18,11 +19,14 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexedCell;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
@@ -182,30 +186,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
           col.setMaxWidth(ttCol.getWidth());
           col.setMinWidth(ttCol.getWidth());
         }
-
-        col.setCellValueFactory((param) -> {
-          Property<Object> resultProp = new SimpleObjectProperty<>();
-          TreeItem treeItem = param.getValue();
-          Object value = treeItem.getValue();
-          if (value instanceof TreeNode) {
-            int level = ((TreeNode) value).getLevel();
-            LevelCellFactory cellFactory = ttCol.getCellFactory(level);
-            if (cellFactory != null) {
-              String textField = cellFactory.getTextField();
-              RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
-              resultProp.setValue(recordVal.get(textField));
-              if (cellFactory.isCheckBox()) {
-                col.setCellFactory((p) -> {
-                  TreeTableCell<Object, Object> res
-                    = (TreeTableCell<Object, Object>) this.createCheckBoxCellFactory();
-                  return res;
-                });
-              }
-            }
-          }
-          return resultProp;
-        });
-
+        this.setColCellValueFactory(col, ttCol);
         cols.add(col);
       } catch (Exception ex) {
         throw new RuntimeException("Error creating Tree table column for 'ttCol'.  Check args: {"
@@ -213,12 +194,77 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
           + "}", ex);
 
       }
-
     }
     ObservableList<TreeTableColumn<? extends Object, ?>> colsObs = FXCollections.observableArrayList(cols);
     for (TreeTableColumn colsOb : colsObs) {
       result.getColumns().add(colsOb);
     }
+    result.setRowFactory((Object param) -> {
+      TreeTableRow<Object> treeTableRow = new TreeTableRow<Object>() {
+        @Override
+        protected void updateItem(Object item, boolean empty) {
+          super.updateItem(item, empty);
+          if (item instanceof TreeNode) {
+            int level = ((TreeNode) item).getLevel();
+            TreeTableColumnDef cellfactory = cellFactories.get(0);
+            LevelCellFactory a = cellfactory.getCellFactory(level);
+            RecordValue r = (RecordValue) ((TreeNode) item).getValueObject();
+            ContextMenu cm = a.getContextMenu(r);
+            if (cm != null) {
+              ContextMenu proxy = new ContextMenu();
+              proxy.getItems().addAll(cm.getItems().stream().map((m)->{
+                MenuItem menuItem = new MenuItem(m.getText());
+                menuItem.setOnAction((e)->{
+                  menuItem.setUserData(r);
+                  m.getOnAction().handle(e);
+                });
+                return menuItem;
+              }).collect(Collectors.toList()));
+              cm.getItems().addListener((ListChangeListener.Change<? extends MenuItem> c) -> {
+                if (c.next()) {
+                  if (c.wasAdded()) {
+                    List<? extends MenuItem> added = c.getAddedSubList();
+                    proxy.getItems().addAll(added);
+                  } else if (c.wasRemoved()) {
+                    List<? extends MenuItem> removed1 = c.getRemoved();
+                    proxy.getItems().removeAll(removed1);
+                  }
+                }
+              });
+              
+              super.setContextMenu(proxy);
+            }
+          }
+        }
+      };
+      return treeTableRow;
+    });
+  }
+
+  private void setColCellValueFactory(TreeTableColumn<Object, Object> col, TreeTableColumnDef ttCol) {
+    col.setCellValueFactory((param) -> {
+      Property<Object> resultProp = new SimpleObjectProperty<>();
+      TreeItem treeItem = param.getValue();
+      Object value = treeItem.getValue();
+      if (value instanceof TreeNode) {
+        int level = ((TreeNode) value).getLevel();
+        LevelCellFactory cellFactory = ttCol.getCellFactory(level);
+        if (cellFactory != null) {
+          String textField = cellFactory.getTextField();
+          RecordValue recordVal = (RecordValue) ((TreeNode) value).getValueObject();
+          resultProp.setValue(recordVal.get(textField));
+          if (cellFactory.isCheckBox()) {
+            col.setCellFactory((p) -> {
+              TreeTableCell<Object, Object> res
+                = (TreeTableCell<Object, Object>) this.createCheckBoxCellFactory();
+
+              return res;
+            });
+          }
+        }
+      }
+      return resultProp;
+    });
   }
 
   /**
@@ -257,6 +303,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
       treeItem.setValue(node);
       parentTreeItem.getChildren().add(treeItem);
       this.addTreeItems(treeItem);
+
     }
     parentTreeItem.setExpanded(true);
   }

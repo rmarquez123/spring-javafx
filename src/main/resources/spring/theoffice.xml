@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:rm="http://www.mycompany.com/schema/rm"
+       xmlns:fxmap="http://www.mycompany.com/schema/fxmap"
+       
+        
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+          http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-5.0.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-5.0.xsd
+          http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-5.0.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+          http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd
+          http://www.mycompany.com/schema/fxmap http://www.mycompany.com/schema/fxmap/fxmap.xsd"  
+>  
+  <bean class="com.rm.springjavafx.FxmlInitializer"> 
+    <property name="sceneRoot" value="fxml/Main.fxml"/>
+    <property name="fxmlList"> 
+      <list>         
+      </list>
+    </property>
+  </bean>
+  <rm:content-panel 
+    id="bind.theoffice.fxml"
+    parentFxml="fxml/Main.fxml"
+    parentNode="theAnchorPane"
+    childFxml="fxml/theoffice.fxml"
+  />
+  <bean id="office.departmentcontextmenu" class="javafx.scene.control.ContextMenu"> 
+    
+  </bean>
+  
+  <rm:treemodel id="office.treemodel">
+    <rm:datasources>
+      <rm:datasource-ref level="0" idField="department_id" ref="office.departments_datasource"/> 
+      <rm:datasource-ref level="1" idField="staff_id" ref="office.staff_datasource"/> 
+    </rm:datasources>
+    <rm:links> 
+      <rm:link childLevel="1" parentField="department_id" childField="department_id"/> 
+    </rm:links>
+  </rm:treemodel> 
+  <rm:treetable id="maplegendpaneltreetable" 
+                fxml="fxml/theoffice.fxml"
+                fxmlId="treetable"
+                treemodelRef = "office.treemodel"> 
+    <rm:tt-columns> 
+      
+      <rm:tt-column label="Department" colindex="0" width="100"> 
+        <rm:level-cellfactory level="0" textField="department_name" contextMenuRef="office.departmentcontextmenu.provider"/> 
+        <rm:level-cellfactory level="1" textField="name" contextMenuRef=""/> 
+      </rm:tt-column>
+      <rm:tt-column label="Income" colindex="1"> 
+        <rm:level-cellfactory level="0" textField="blank" contextMenuRef="office.departmentcontextmenu.provider"/> 
+        <rm:level-cellfactory level="1" textField="income" contextMenuRef=""/> 
+      </rm:tt-column>
+    </rm:tt-columns>  
+  </rm:treetable>
+</beans>

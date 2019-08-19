@@ -29,6 +29,8 @@ public class Popup {
   private final Property<PopupContent> popupControllerProperty = new SimpleObjectProperty<>();
   private final Property<Window> windowProperty = new SimpleObjectProperty<>();
 
+  private final Property<Object> userDataProperty = new SimpleObjectProperty<>();
+
   private Stage alert;
 
   /**
@@ -108,6 +110,23 @@ public class Popup {
 
   /**
    *
+   * @return
+   */
+  public Object getUserData() {
+    return this.userDataProperty.getValue();
+  }
+
+  /**
+   *
+   * @param userData
+   * @return
+   */
+  public void setUserData(Object userData) {
+    this.userDataProperty.setValue(userData);
+  }
+
+  /**
+   *
    */
   public void show() {
     Stage alertWindow = this.getAlert();
@@ -128,19 +147,19 @@ public class Popup {
     }
     return this.alert;
   }
-  
+
   /**
-   * 
-   * @param evt 
+   *
+   * @param evt
    */
   private void closeIfEscapeKey(KeyEvent evt) {
     if (evt.getCode() == KeyCode.ESCAPE) {
       this.showProperty.set(false);
     }
   }
-  
+
   /**
-   * 
+   *
    */
   private void onAlertShowing() {
     if (!this.alert.showingProperty().getValue()) {
@@ -165,9 +184,9 @@ public class Popup {
     }
     this.showProperty.setValue(this.alert.showingProperty().getValue());
   }
-  
+
   /**
-   * 
+   *
    */
   private void createAlert() {
     Node contentNode = this.contentNodeProperty.getValue();
@@ -176,7 +195,7 @@ public class Popup {
     AnchorPane.setLeftAnchor(contentNode, 0.0);
     AnchorPane.setRightAnchor(contentNode, 0.0);
     AnchorPane.setTopAnchor(contentNode, 0.0);
-    
+
     this.alert = new Stage();
     this.alert.setTitle("");
     this.alert.setScene(dialogScene);

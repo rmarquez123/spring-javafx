@@ -46,6 +46,7 @@ import org.springframework.context.annotation.ImportResource;
       type = FilterType.REGEX,
       pattern = {
         "com.rm.springjavafx._00.ignore.testcharts.*",
+        "com.rm.springjavafx._00.ignore.testxycharts.*",
       }
     )
   }

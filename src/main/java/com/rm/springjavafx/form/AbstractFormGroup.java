@@ -254,7 +254,7 @@ public abstract class AbstractFormGroup {
       List<FormItem> formItems = this.formItemsMap.get(idValue); 
       for (FormItem formItem : formItems) {
         String key = formItem.getId();
-        formItem.valueProperty().set(r.get(key));
+        formItem.valueProperty().set(newRecord.get(key));
       }
     });
   }
