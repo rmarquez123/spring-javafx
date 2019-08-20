@@ -8,6 +8,7 @@ import java.util.Map;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -75,20 +76,34 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
       PopupComponent p = bean.getClass().getDeclaredAnnotation(PopupComponent.class);
       String fxml = fxController.fxml();
       Parent node = this.fxmlInitializer.getRoot(fxml);
-      BeanDefinitionRegistry registry = (BeanDefinitionRegistry) this.appContext.getAutowireCapableBeanFactory();
-      BeanDefinition dynamicBean = BeanDefinitionBuilder
-        .rootBeanDefinition(Popup.class)
-        .getBeanDefinition();
-      dynamicBean.getPropertyValues().add("node", node); 
-      dynamicBean.getPropertyValues().add("controller", (PopupContent) bean);
-      if (p.id().trim().isEmpty()) {
-        throw new IllegalStateException("Bean name cannot be empty. Check args: {"
-          + "bean = " + bean
-          + ", popupComponent = " + p
-          + "}"); 
-      }
-      registry.registerBeanDefinition(p.id(), dynamicBean);
+      registerBean(node, bean, p.id());
     }
+  }
+  
+  /**
+   * 
+   * @param node
+   * @param bean
+   * @param p
+   * @throws IllegalStateException
+   * @throws BeanDefinitionStoreException 
+   */
+  private void registerBean(Parent node, Object bean, String beanId) {
+    if (beanId.trim().isEmpty()) {
+      throw new IllegalStateException("Bean name cannot be empty. Check args: {"
+        + "bean = " + bean
+        + ", popupComponent = " + beanId
+        + "}");
+    }
+    BeanDefinitionRegistry registry = (BeanDefinitionRegistry) 
+      this.appContext.getAutowireCapableBeanFactory();
+    BeanDefinition dynamicBean = BeanDefinitionBuilder
+      .rootBeanDefinition(Popup.class)
+      .getBeanDefinition();
+    dynamicBean.getPropertyValues().add("node", node);
+    dynamicBean.getPropertyValues().add("controller", (PopupContent) bean);
+    
+    registry.registerBeanDefinition(beanId, dynamicBean);
   }
 
 }
