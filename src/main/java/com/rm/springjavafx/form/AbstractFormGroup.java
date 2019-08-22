@@ -129,7 +129,7 @@ public abstract class AbstractFormGroup {
    *
    * @param records
    */
-  public void setRecords(List<RecordValue> records) {
+  public final void setRecords(List<RecordValue> records) {
     this.recordsProperty.setValue(records);
   }
 

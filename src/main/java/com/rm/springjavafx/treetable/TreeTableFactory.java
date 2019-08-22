@@ -9,6 +9,7 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -199,40 +200,48 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
     for (TreeTableColumn colsOb : colsObs) {
       result.getColumns().add(colsOb);
     }
+
     result.setRowFactory((Object param) -> {
       TreeTableRow<Object> treeTableRow = new TreeTableRow<Object>() {
         @Override
         protected void updateItem(Object item, boolean empty) {
           super.updateItem(item, empty);
-          if (item instanceof TreeNode) {
-            int level = ((TreeNode) item).getLevel();
-            TreeTableColumnDef cellfactory = cellFactories.get(0);
-            LevelCellFactory a = cellfactory.getCellFactory(level);
-            RecordValue r = (RecordValue) ((TreeNode) item).getValueObject();
-            ContextMenu cm = a.getContextMenu(r);
-            if (cm != null) {
-              ContextMenu proxy = new ContextMenu();
-              proxy.getItems().addAll(cm.getItems().stream().map((m)->{
-                MenuItem menuItem = new MenuItem(m.getText());
-                menuItem.setOnAction((e)->{
-                  menuItem.setUserData(r);
-                  m.getOnAction().handle(e);
-                });
-                return menuItem;
-              }).collect(Collectors.toList()));
-              cm.getItems().addListener((ListChangeListener.Change<? extends MenuItem> c) -> {
-                if (c.next()) {
-                  if (c.wasAdded()) {
-                    List<? extends MenuItem> added = c.getAddedSubList();
-                    proxy.getItems().addAll(added);
-                  } else if (c.wasRemoved()) {
-                    List<? extends MenuItem> removed1 = c.getRemoved();
-                    proxy.getItems().removeAll(removed1);
-                  }
+          if (item != null) {
+            Set<Node> treeTableRowCell = result.lookupAll(".tree-table-row-cell");
+            for (Node node : treeTableRowCell) {
+              TreeTableRow row = (javafx.scene.control.TreeTableRow) node;
+              TreeItem treeItem = row.getTreeItem();
+              if (treeItem != null && row.getContextMenu() == null) {
+                TreeNode v = (TreeNode) treeItem.getValue();
+                int level = v.getLevel();
+                TreeTableColumnDef columnDef = cellFactories.get(0);
+                LevelCellFactory a = columnDef.getCellFactory(level);
+                RecordValue r = (RecordValue) ((TreeNode) item).getValueObject();
+                ContextMenu cm = a.getContextMenu(r);
+                if (cm != null) {
+                  ContextMenu proxy = new ContextMenu();
+                  proxy.getItems().addAll(cm.getItems().stream().map((m) -> {
+                    MenuItem menuItem = new MenuItem(m.getText());
+                    menuItem.setOnAction((e) -> {
+                      menuItem.setUserData(r);
+                      m.getOnAction().handle(e);
+                    });
+                    return menuItem;
+                  }).collect(Collectors.toList()));
+                  cm.getItems().addListener((ListChangeListener.Change<? extends MenuItem> c) -> {
+                    if (c.next()) {
+                      if (c.wasAdded()) {
+                        List<? extends MenuItem> added = c.getAddedSubList();
+                        proxy.getItems().addAll(added);
+                      } else if (c.wasRemoved()) {
+                        List<? extends MenuItem> removed1 = c.getRemoved();
+                        proxy.getItems().removeAll(removed1);
+                      }
+                    }
+                  });
+                  super.setContextMenu(proxy);
                 }
-              });
-              
-              super.setContextMenu(proxy);
+              }
             }
           }
         }
