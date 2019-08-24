@@ -34,6 +34,7 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
     result.addPropertyValue("fxmlId", elmnt.getAttribute("fxmlId"));
     this.addDataSourceBean(elmnt, result, pc);
     this.addChildElements(elmnt, result);
+    System.out.println("id = " + elmnt.getAttribute(ID_ATTRIBUTE));
     return result.getBeanDefinition();
   } 
   
@@ -54,7 +55,7 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
    * @throws NoSuchBeanDefinitionException
    * @throws BeanDefinitionStoreException 
    */
-  private void addDataSourceBean(Element elmnt, BeanDefinitionBuilder result, ParserContext pc) throws NoSuchBeanDefinitionException, BeanDefinitionStoreException {
+  private void addDataSourceBean(Element elmnt, BeanDefinitionBuilder result, ParserContext pc) {
     String datasource = elmnt.getAttribute("datasource-ref");
     result.addPropertyValue("datasourceRef", datasource);
     BeanDefinition datasourceBeanDef = pc.getRegistry().getBeanDefinition(datasource);
