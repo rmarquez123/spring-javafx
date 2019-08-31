@@ -169,6 +169,11 @@ public class DbConnection implements Serializable {
       String _url = this.getConnectionUrl();
       String _username = this.user;
       String _password = this.password;
+      try {
+        Class.forName("org.postgresql.Driver");
+      } catch (ClassNotFoundException ex) {
+        throw new RuntimeException(ex);
+      }
       result = DriverManager.getConnection(_url, _username, _password);
     } catch (SQLException ex) {
       throw new RuntimeException(ex);
