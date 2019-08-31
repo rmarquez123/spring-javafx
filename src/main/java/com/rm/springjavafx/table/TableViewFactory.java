@@ -1,7 +1,7 @@
 package com.rm.springjavafx.table;
 
 import com.rm.datasources.DataSource;
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.converters.Converter;
 import java.util.ArrayList;

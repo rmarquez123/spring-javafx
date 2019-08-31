@@ -1,6 +1,6 @@
 package com.rm.springjavafx._00.ignore.testforms;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.form.AbstractFormGroup;
 import com.rm.springjavafx.form.FxFormGroup;
 import com.rm.springjavafx.form.FxFormItem;

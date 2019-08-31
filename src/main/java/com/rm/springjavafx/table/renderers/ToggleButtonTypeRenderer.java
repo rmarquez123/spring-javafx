@@ -1,6 +1,6 @@
 package com.rm.springjavafx.table.renderers;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.table.RenderType;
 import com.rm.springjavafx.table.TableViewColumn;
 import com.rm.springjavafx.table.renderers.ActionToggleButtonTableCell.Handler;

@@ -1,6 +1,6 @@
 package com.rm.springjavafx.project;
 
-import com.rm.datasources.DbConnection;
+import common.db.DbConnection;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;

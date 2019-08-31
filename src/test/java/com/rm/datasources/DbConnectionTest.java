@@ -1,5 +1,6 @@
 package com.rm.datasources;
 
+import common.db.DbConnection;
 import org.junit.Assert;
 import org.junit.Test;
 

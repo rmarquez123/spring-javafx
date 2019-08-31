@@ -1,6 +1,6 @@
 package com.rm.springjavafx.tree;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

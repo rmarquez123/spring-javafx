@@ -1,6 +1,6 @@
 package com.rm.springjavafx.converters;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

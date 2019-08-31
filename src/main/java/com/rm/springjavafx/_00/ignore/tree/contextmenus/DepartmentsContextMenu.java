@@ -1,6 +1,6 @@
 package com.rm.springjavafx._00.ignore.tree.contextmenus;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.tree.ContextMenuProvider;
 import javafx.scene.control.ContextMenu;
 import org.springframework.beans.factory.annotation.Autowired;

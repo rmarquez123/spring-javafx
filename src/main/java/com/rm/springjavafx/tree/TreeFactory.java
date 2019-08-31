@@ -1,6 +1,6 @@
 package com.rm.springjavafx.tree;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.FxmlInitializer;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;

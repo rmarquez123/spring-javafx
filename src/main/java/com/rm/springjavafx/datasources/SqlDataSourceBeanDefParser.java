@@ -1,6 +1,6 @@
 package com.rm.springjavafx.datasources;
 
-import com.rm.datasources.QueryParameters;
+import common.db.QueryParameters;
 import java.util.List;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

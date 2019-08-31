@@ -1,6 +1,6 @@
 package com.rm.springjavafx._00.ignore.tree.datasources;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.datasources.AbstractDataSource;
 import java.util.Arrays;
 import java.util.HashMap;

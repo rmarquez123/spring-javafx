@@ -1,6 +1,6 @@
 package com.rm.springjavafx.datasources;
 
-import com.rm.datasources.QueryParameter;
+import common.db.QueryParameter;
 import com.rm.springjavafx.SpringFxUtils;
 import javafx.beans.property.Property;
 import org.springframework.beans.BeansException;

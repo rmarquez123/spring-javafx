@@ -1,6 +1,6 @@
 package com.rm.springjavafx.treetable;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.tree.LevelCellFactory;
 import com.rm.springjavafx.tree.TreeModel;

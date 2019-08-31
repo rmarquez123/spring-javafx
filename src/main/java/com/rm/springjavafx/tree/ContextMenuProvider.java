@@ -1,6 +1,6 @@
 package com.rm.springjavafx.tree;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import javafx.scene.control.ContextMenu;
 
 /**

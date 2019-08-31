@@ -1,6 +1,6 @@
 package com.rm.springjavafx.bindings;
 
-import com.rm.datasources.Invoker;
+import common.db.Invoker;
 import com.rm.springjavafx.components.*;
 import com.rm.springjavafx.FxmlInitializer;
 import javafx.scene.control.Button;

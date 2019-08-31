@@ -1,6 +1,6 @@
 package com.rm.springjavafx.datasources;
 
-import com.rm.datasources.DbConnection;
+import common.db.DbConnection;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 

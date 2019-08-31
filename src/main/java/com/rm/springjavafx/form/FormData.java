@@ -1,6 +1,6 @@
 package com.rm.springjavafx.form;
 
-import com.rm.datasources.RecordValue;
+import common.db.RecordValue;
 import java.util.HashMap;
 import java.util.Map;
 

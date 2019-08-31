@@ -1,6 +1,7 @@
 package com.rm.springjavafx.popup;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
@@ -10,9 +11,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -44,6 +47,9 @@ public class Popup {
       if (!showProperty.getValue()) {
         this.getAlert().close();
       }
+    });
+    this.windowProperty.addListener((obs, old, change) -> {
+      this.setModality();
     });
   }
 
@@ -175,11 +181,15 @@ public class Popup {
         double yPos = window.getY() + 0.25 * window.getHeight();
         this.alert.setX(xPos);
         this.alert.setY(yPos);
-        this.alert.setAlwaysOnTop(true);
-        alert.getScene().getWindow().setX(xPos);
-        alert.getScene().getWindow().setY(yPos);
+        this.alert.setAlwaysOnTop(false);
+        this.alert.getScene().getWindow().setX(xPos);
+        this.alert.getScene().getWindow().setY(yPos);
         ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets();
-        alert.getScene().getStylesheets().addAll(styleSheets);
+        this.alert.getScene().getStylesheets().addAll(styleSheets);
+        if (window instanceof Stage) {
+          List<Image> icons = ((Stage) window).getIcons();
+          this.alert.getIcons().addAll(icons);
+        }
       }
     }
     this.showProperty.setValue(this.alert.showingProperty().getValue());
@@ -195,9 +205,20 @@ public class Popup {
     AnchorPane.setLeftAnchor(contentNode, 0.0);
     AnchorPane.setRightAnchor(contentNode, 0.0);
     AnchorPane.setTopAnchor(contentNode, 0.0);
-
     this.alert = new Stage();
     this.alert.setTitle("");
     this.alert.setScene(dialogScene);
+    this.setModality();
+  }
+
+  /**
+   *
+   */
+  private void setModality() {
+    Window window = this.windowProperty.getValue();
+    if (window != null && this.alert != null) {
+      this.alert.initOwner(window);
+      this.alert.initModality(Modality.WINDOW_MODAL);
+    }
   }
 }
