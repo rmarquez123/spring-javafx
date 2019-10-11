@@ -43,7 +43,7 @@ public abstract class XYChartPane implements InitializingBean {
     int datasets = chart.datasets();
     this.plot = new XYPlot();
     this.plot.setDomainAxis(new NumberAxis());
-    NumberAxis numberAxis = new NumberAxis();
+    NumberAxis numberAxis = this.getRangeAxis();
     numberAxis.setLabel(this.getLabel(0));
     this.plot.setRangeAxes(new ValueAxis[]{numberAxis});
 
@@ -196,4 +196,13 @@ public abstract class XYChartPane implements InitializingBean {
    *
    */
   protected abstract void postInit();
+
+  
+  /**
+   * 
+   * @return 
+   */
+  protected NumberAxis getRangeAxis() {
+    return new NumberAxis();
+  }
 }

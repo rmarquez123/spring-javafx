@@ -8,30 +8,42 @@ public class XYValue {
 
   private final double y;
   private final double x;
+  private final Object userObj;
 
   /**
    *
    * @param x
    * @param y
    */
-  public XYValue(double x, double y) {
+  public XYValue(double x, double y, Object userObj) {
     this.x = x;
     this.y = y;
+    this.userObj = userObj;
   }
+
 
   /**
    *
    * @return
    */
-  Number getX() {
+  public Number getX() {
     return this.x;
   }
 
   /**
+   * 
+   * @return 
+   */
+  public Object getUserObj() {
+    return userObj;
+  }
+  
+
+  /**
    *
    * @return
    */
-  Number getY() {
+  public Number getY() {
     return this.y;
   }
 

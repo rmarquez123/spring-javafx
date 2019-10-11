@@ -33,7 +33,7 @@ public class RedChartDataSet extends SpringFxXYDataSet implements InitializingBe
     for (int i = 0; i < 100; i++) {
       double x = Math.random();
       double y = Math.random();
-      records.add(new XYValue(x, y));
+      records.add(new XYValue(x, y, null));
     }
     super.setTimeSeries(records);
   }
