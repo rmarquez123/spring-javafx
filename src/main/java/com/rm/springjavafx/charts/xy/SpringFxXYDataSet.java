@@ -115,6 +115,8 @@ public class SpringFxXYDataSet {
    * @return
    */
   Stroke getLineStroke() {
-    return new BasicStroke(2);
+    BasicStroke stroke = new BasicStroke(2);
+    return stroke;
   }
+  
 }

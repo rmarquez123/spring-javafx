@@ -39,13 +39,15 @@ import org.springframework.context.annotation.ImportResource;
 @ComponentScan(
   basePackages = {
     "com.rm.springjavafx"
-    
   }, excludeFilters = {
     @ComponentScan.Filter(
       type = FilterType.REGEX,
       pattern = {
-        "com.rm.springjavafx._00.ignore.testforms.*",
-        "com.rm.springjavafx._00.ignore.testcharts.*",
+        "com.rm.springjavafx._00.ignore.testcharts.*",    
+        "com.rm.springjavafx._00.ignore.testforms.*",    
+        "com.rm.springjavafx._00.ignore.tree.*",    
+        "com.rm.springjavafx._00.ignore.contextmenus.*",    
+        "com.rm.springjavafx._00.ignore.datasources.*",    
       }
     )
   }

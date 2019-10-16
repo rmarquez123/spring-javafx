@@ -35,6 +35,6 @@ public @interface XYChart {
    *
    * @return
    */
-  int datasets();
+  XYDataSetGroup[] datasetgroups();
 
 }

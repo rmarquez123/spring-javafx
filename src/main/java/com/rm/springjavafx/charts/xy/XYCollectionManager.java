@@ -1,17 +1,13 @@
 package com.rm.springjavafx.charts.xy;
 
 import common.bindings.RmBindings;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import javafx.beans.property.ReadOnlyProperty;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.data.xy.XYDataset;
 
 /**
  *
@@ -25,6 +21,7 @@ public final class XYCollectionManager {
   private final XYPlot plot;
   private final XYChartPane chart;
   private final Map<String, SpringFxXYDataSet> datasets = new HashMap<>();
+  private final SeriesRenderer renderer; 
 
   /**
    *
@@ -33,6 +30,8 @@ public final class XYCollectionManager {
   public XYCollectionManager(XYChartPane chart) {
     this.chart = chart;
     this.plot = chart.getPlot();
+    
+    this.renderer = new SeriesRenderer(this.chart, this.datasets);
     this.chart.visibleDatasetsProperty().addListener((obs, old, change) -> {
       this.updateVisibilities();
     });
@@ -58,16 +57,15 @@ public final class XYCollectionManager {
     }
     this.datasets.put(dataset.getKey(), dataset);
     int datasetId = dataset.getDatasetId();
-    JFreeXYDataSet collection = (JFreeXYDataSet) plot.getDataset(datasetId);
+    JFreeDataSet collection = (JFreeDataSet) plot.getDataset(datasetId);
     if (collection == null) {
       throw new IllegalStateException(
         String.format("No timeseries collection for datasetId = '%d'", datasetId));
     }
-    RmBindings.bindActionOnAnyChange(
-      () -> this.updateSeries(dataset, collection),
-       dataset.seriesProperty());
-
-    this.updateSeries(dataset, collection);
+    
+    ReadOnlyProperty<XYValues> seriesProperty = dataset.seriesProperty();
+    RmBindings.bindActionOnAnyChange(() -> this.updateSeries(dataset), seriesProperty);
+    this.updateSeries(dataset);
 
   }
 
@@ -76,43 +74,17 @@ public final class XYCollectionManager {
    * @param dataset
    * @param collection
    */
-  private synchronized void updateSeries(SpringFxXYDataSet dataset, JFreeXYDataSet collection) {
+  private synchronized void updateSeries(SpringFxXYDataSet dataset) {
     XYValues series = dataset.getSeries();
-    JFreeXYDataSet jfdataset = (JFreeXYDataSet) this.plot.getDataset(dataset.getDatasetId());
+    int datasetId = dataset.getDatasetId();
+    JFreeDataSet jfdataset = (JFreeDataSet) this.plot.getDataset(datasetId);
     jfdataset.addOrUpdate(series);
-    this.resetRenderer(jfdataset, dataset.getDatasetId());
+    XYItemRenderer r = renderer.resetRenderer(jfdataset, datasetId);
+    this.plot.setRenderer(datasetId, r);
     this.updateChartDatasetsProperty();
   }
 
-  /**
-   *
-   * @param collection
-   * @param datasetId
-   */
-  private void resetRenderer(JFreeXYDataSet collection, int datasetId) {
-    XYItemRenderer renderer = new DefaultXYItemRenderer();
-    for (SpringFxXYDataSet dataset1 : this.datasets.values()) {
-      if (Objects.equals(dataset1.getDatasetId(), datasetId)) {
-        int seriesIndex = collection.getSeriesIndex(dataset1.getKey());
-        renderer.setSeriesPaint(seriesIndex, dataset1.getLineColorAwt(), true);
-        renderer.setSeriesStroke(seriesIndex, dataset1.getLineStroke(), true);
-        renderer.setSeriesShape(seriesIndex, dataset1.getShape(), true);
-        renderer.setSeriesVisible(seriesIndex, this.getVisibility(dataset1), true);
-        StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator(
-          StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
-          new DecimalFormat("0.00"), new DecimalFormat("0.00")) {
-          @Override
-          public String generateToolTip(XYDataset dataset, int series, int item) {
-            String tooltip = super.generateToolTip(dataset, series, item);
-            return tooltip;
-          }
-        };
-        renderer.setSeriesToolTipGenerator(seriesIndex, ttg);
-      }
-    }
-    this.plot.setRenderer(datasetId, renderer);
-  }
-
+  
   /**
    *
    */
@@ -137,17 +109,6 @@ public final class XYCollectionManager {
       SpringFxXYDataSet dataset = this.datasets.get(key);
       setVisibility(dataset, Boolean.TRUE);
     }
-  }
-
-  /**
-   *
-   * @param dataset
-   */
-  private boolean getVisibility(SpringFxXYDataSet dataset) {
-    String key = dataset.getKey();
-    List<String> value = this.chart.visibleDatasetsProperty().getValue();
-    boolean visible = value == null ? true : value.contains(key);
-    return visible;
   }
 
   /**
@@ -177,7 +138,7 @@ public final class XYCollectionManager {
   private void setVisibility(SpringFxXYDataSet dataset, boolean visible) {
     int datasetId = dataset.getDatasetId();
     String key = dataset.getKey();
-    JFreeXYDataSet collection = (JFreeXYDataSet) plot.getDataset(datasetId);
+    JFreeDataSet collection = (JFreeDataSet) plot.getDataset(datasetId);
     int seriesIndex = collection.getSeriesIndex(key);
     this.plot.getRenderer(datasetId).setSeriesVisible(seriesIndex, visible, Boolean.TRUE);
   }

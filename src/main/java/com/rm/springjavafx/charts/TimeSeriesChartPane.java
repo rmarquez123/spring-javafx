@@ -44,9 +44,16 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
     TimeSeriesChart chart = this.getClass().getDeclaredAnnotation(TimeSeriesChart.class);
     int datasets = chart.datasets();
     this.plot = new XYPlot();
-    this.plot.setDomainAxis(new DateAxis());
+    DateAxis dateAxis = new DateAxis();
+    dateAxis.setAutoRange(true);
+    this.plot.setDomainAxis(dateAxis);
     NumberAxis numberAxis = new NumberAxis();
+    numberAxis.setAutoRangeIncludesZero(false);
+    numberAxis.setAutoRangeStickyZero(false);
     numberAxis.setLabel(this.getLabel(0));
+    numberAxis.setAutoRange(true);
+    numberAxis.setAutoRangeIncludesZero(false);
+    numberAxis.setAutoRangeStickyZero(false);
     this.plot.setRangeAxes(new ValueAxis[]{numberAxis});
     
     StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator();

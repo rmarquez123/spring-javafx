@@ -1,5 +1,7 @@
-package com.rm.springjavafx.charts.xy;
+package com.rm.springjavafx.charts.xy.datasets;
 
+import com.rm.springjavafx.charts.xy.JFreeDataSet;
+import com.rm.springjavafx.charts.xy.XYValues;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -10,14 +12,14 @@ import org.jfree.data.xy.AbstractXYDataset;
  *
  * @author Ricardo Marquez
  */
-public class JFreeXYDataSet extends AbstractXYDataset {
-
+public class JFreeAbstractXYDataSet extends AbstractXYDataset implements JFreeDataSet {
+  
   public final ObservableList<XYValues> datasetProperty = FXCollections.observableArrayList();
 
   /**
    *
    */
-  public JFreeXYDataSet() {
+  public JFreeAbstractXYDataSet() {
     this.datasetProperty.addListener((ListChangeListener.Change<? extends XYValues> c) -> {
       if (c.next()) {
         fireDatasetChanged();
@@ -29,6 +31,7 @@ public class JFreeXYDataSet extends AbstractXYDataset {
    *
    * @param values
    */
+  @Override
   public void addOrUpdate(XYValues values) {
     Objects.requireNonNull(values, "Values cannot be null");
     int indexOf = this.getSeriesIndex((String) values.getKey());
@@ -37,7 +40,6 @@ public class JFreeXYDataSet extends AbstractXYDataset {
     } else {
       this.datasetProperty.set(indexOf, values);
     }
-
   }
 
   /**
@@ -78,6 +80,7 @@ public class JFreeXYDataSet extends AbstractXYDataset {
    * @param i
    * @return
    */
+  @Override
   public int getSeriesIndex(String key) {
     int result = -1;
     int index = -1;

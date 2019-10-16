@@ -4,8 +4,10 @@ import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.annotations.ChildNode;
 import com.rm.springjavafx.annotations.FxAttach;
 import com.rm.springjavafx.annotations.FxController;
+import com.rm.springjavafx.charts.xy.PlotType;
 import com.rm.springjavafx.charts.xy.XYChart;
 import com.rm.springjavafx.charts.xy.XYChartPane;
+import com.rm.springjavafx.charts.xy.XYDataSetGroup;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.Property;
@@ -27,7 +29,11 @@ import org.springframework.stereotype.Component;
 @XYChart(
   id = "testchart",
   node = "chart",
-  datasets = 1
+  datasetgroups = {
+    @XYDataSetGroup,
+    @XYDataSetGroup(plotType = PlotType.BAR_PLOT, barwidth = 1),
+    @XYDataSetGroup(plotType = PlotType.MARKER_ONLY)
+  }
 )
 @FxAttach(fxml = "fxml/Main.fxml", id = "theAnchorPane")
 public class ChartPaneImpl extends XYChartPane {

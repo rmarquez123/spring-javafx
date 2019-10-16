@@ -16,12 +16,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 @XYDataSet(
-  name = "Red Data",
+  name = "Green Data",
   chart = "testchart",
-  dataset = 2, 
-  lineColorHex = "#8B0000"
+  dataset = 1,
+  lineColorHex = "#00aa00"
 )
-public class RedChartDataSet extends SpringFxXYDataSet implements InitializingBean {
+public class GreenChartDataSet extends SpringFxXYDataSet implements InitializingBean {
 
   /**
    *
@@ -30,14 +30,13 @@ public class RedChartDataSet extends SpringFxXYDataSet implements InitializingBe
   @Override
   public void afterPropertiesSet() throws Exception {
     List<XYValue> records = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      
-      double x = Math.random()*100;
-      double y = Math.random()*100;
+    for (int i = 0; i < 100; i = i + 2) {
+      double x = i;
+      double y = Math.random() * 100;
       records.add(new XYValue(x, y, null));
     }
-    
+    records.sort((i1, i2) -> Double.compare(i1.getX().doubleValue(), i2.getX().doubleValue()));
     super.setTimeSeries(records);
   }
-  
+
 }

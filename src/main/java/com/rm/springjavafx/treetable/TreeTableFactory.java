@@ -1,11 +1,12 @@
 package com.rm.springjavafx.treetable;
 
-import common.db.RecordValue;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.tree.LevelCellFactory;
 import com.rm.springjavafx.tree.TreeModel;
 import com.rm.springjavafx.tree.TreeNode;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
+import common.bindings.RmBindings;
+import common.db.RecordValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -292,6 +293,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
         } else {
           CheckBox checkBox = new CheckBox();
           ObjectProperty<Boolean> property = (ObjectProperty<Boolean>) item;
+          RmBindings.bind1To2(checkBox.selectedProperty(), property);
           checkBox.selectedProperty().bindBidirectional(property);
           super.setGraphic(checkBox);
         }

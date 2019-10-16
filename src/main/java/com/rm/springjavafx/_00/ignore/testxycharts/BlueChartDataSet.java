@@ -31,10 +31,11 @@ public class BlueChartDataSet extends SpringFxXYDataSet implements InitializingB
   public void afterPropertiesSet() throws Exception {
     List<XYValue> records = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      double x = Math.random();
-      double y = Math.random();
+      double x = Math.random()*100;
+      double y = Math.random()*100;
       records.add(new XYValue(x, y, null));
     }
+    records.sort((i1, i2)->Double.compare(i1.getX().doubleValue(), i2.getX().doubleValue()));
     super.setTimeSeries(records);
   }
 

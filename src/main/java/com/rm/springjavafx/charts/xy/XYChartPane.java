@@ -18,7 +18,7 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,29 +34,34 @@ public abstract class XYChartPane implements InitializingBean {
   private final XYPlot plot;
   private final Property<List<String>> visibleDatasetsProperty = new SimpleObjectProperty();
   private final Property<List<String>> datasetsProperty = new SimpleObjectProperty();
+  private final XYDataSetGroup[] datasetgroups;
 
   /**
    *
    */
   public XYChartPane() {
     XYChart chart = this.getClass().getDeclaredAnnotation(XYChart.class);
-    int datasets = chart.datasets();
+    this.datasetgroups = chart.datasetgroups();
     this.plot = new XYPlot();
-    this.plot.setDomainAxis(new NumberAxis());
+    NumberAxis domainAxis = new NumberAxis();
+    domainAxis.setAutoRange(true);
+    domainAxis.setAutoRangeIncludesZero(false);
+    
+    this.plot.setDomainAxis(domainAxis);
     NumberAxis numberAxis = this.getRangeAxis();
+    numberAxis.setAutoRange(true);
+    numberAxis.setAutoRangeIncludesZero(false);
     numberAxis.setLabel(this.getLabel(0));
     this.plot.setRangeAxes(new ValueAxis[]{numberAxis});
-
     StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator();
-    DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
-    this.plot.setRenderer(renderer);
-
-    for (int i = 0; i < datasets; i++) {
-      this.plot.setDataset(i, new JFreeXYDataSet());
+    int i = -1;
+    for (XYDataSetGroup dataset : datasetgroups) {
+      i++;
+      XYItemRenderer renderer = dataset.plotType().getRenderer();
+      this.plot.setDataset(i, dataset.plotType().getDataset(dataset));
       renderer.setSeriesToolTipGenerator(i, ttg);
       this.plot.setRenderer(i, renderer);
     }
-
     this.datasetsProperty.addListener((obs, old, change) -> {
       for (String string : change) {
         if (old != null && !old.contains(string)) {
@@ -88,6 +93,22 @@ public abstract class XYChartPane implements InitializingBean {
    */
   public final Property<List<String>> visibleDatasetsProperty() {
     return this.visibleDatasetsProperty;
+  }
+
+  /**
+   *
+   * @return
+   */
+  public XYDataSetGroup[] getDatasetgroups() {
+    return datasetgroups;
+  }
+
+  /**
+   *
+   * @return
+   */
+  public XYDataSetGroup getDatasetgroup(int datasetId) {
+    return datasetgroups[datasetId];
   }
 
   /**
@@ -167,8 +188,8 @@ public abstract class XYChartPane implements InitializingBean {
       } else {
         List<String> newList = new ArrayList<>(current);
         strings.stream()
-          .filter((s)->!current.contains(s))
-          .forEach((s)-> newList.add(s));
+          .filter((s) -> !current.contains(s))
+          .forEach((s) -> newList.add(s));
         this.visibleDatasetsProperty.setValue(newList);
       }
     } else {
@@ -176,11 +197,10 @@ public abstract class XYChartPane implements InitializingBean {
         this.visibleDatasetsProperty.setValue(Collections.EMPTY_LIST);
       } else {
         List<String> newList = new ArrayList<>(current);
-        newList.removeIf(e->strings.contains(e));
+        newList.removeIf(e -> strings.contains(e));
         this.visibleDatasetsProperty.setValue(newList);
       }
     }
-
   }
 
   /**
@@ -191,16 +211,15 @@ public abstract class XYChartPane implements InitializingBean {
   protected String getLabel(int i) {
     return null;
   }
-  
+
   /**
    *
    */
   protected abstract void postInit();
 
-  
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   protected NumberAxis getRangeAxis() {
     return new NumberAxis();
