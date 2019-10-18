@@ -184,8 +184,11 @@ public class Popup {
         this.alert.setAlwaysOnTop(false);
         this.alert.getScene().getWindow().setX(xPos);
         this.alert.getScene().getWindow().setY(yPos);
-        ObservableList<String> styleSheets = window.getScene().getRoot().getStylesheets();
+        ObservableList<String> styleSheets = window.getScene()
+          .getRoot().getStylesheets();
         this.alert.getScene().getStylesheets().addAll(styleSheets);
+        ObservableList<String> styleSheets2 = window.getScene().getStylesheets();
+        this.alert.getScene().getStylesheets().addAll(styleSheets2);
         if (window instanceof Stage) {
           List<Image> icons = ((Stage) window).getIcons();
           this.alert.getIcons().addAll(icons);

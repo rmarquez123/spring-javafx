@@ -1,10 +1,14 @@
 package com.rm.springjavafx.annotations;
 
+import com.rm.springjavafx.annotations.childnodes.ChildNodeArgs;
 import com.rm.springjavafx.AnnotationHandler;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
+import com.rm.springjavafx.annotations.childnodes.CheckBoxAnnotationHandler;
+import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.scene.Parent;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeansException;
@@ -21,17 +25,18 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 public class ChildNodeAnnotationHandler implements InitializingBean {
-
-  
   private static FxmlInitializer fxmlInitializer;
-  
+  @Autowired
+  private ApplicationContext appContext;
+
+  @Autowired
+  private CheckBoxAnnotationHandler handler;
+
+
   @Autowired
   public void setFxmlInitializer(FxmlInitializer fxmlInitializer) {
     ChildNodeAnnotationHandler.fxmlInitializer = fxmlInitializer;
   }
-
-  @Autowired
-  private ApplicationContext appContext;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -56,17 +61,17 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     for (Map.Entry<String, Object> bean : beans.entrySet()) {
       try {
         this.readyBeanAndChildFxmls(bean.getValue());
-      } catch(Exception ex) {
+      } catch (Exception ex) {
         throw new RuntimeException(
-          String.format("Error on creating bean '%s'", bean.getKey()), ex); 
+          String.format("Error on creating bean '%s'", bean.getKey()), ex);
       }
     }
   }
 
   /**
-   * 
+   *
    * @param bean
-   * @throws RuntimeException 
+   * @throws RuntimeException
    */
   private void readyBeanAndChildFxmls(Object bean) throws RuntimeException {
     FxController fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
@@ -114,13 +119,26 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
       String fxml = fxController.fxml();
       Parent parent = fxmlInitializer.getRoot(fxml);
       try {
-        setBeanChildNodes(parent, bean);
+        setBeanChildNodes(parent, bean, this::handleField);
       } catch (Exception ex) {
         throw new RuntimeException(
           String.format("Error creating child nodes for bean '%s'", bean.getClass().getName()), ex);
       }
-
     }
+  }
+  
+  
+  /**
+   * 
+   * @param f 
+   */
+  private void handleField(ChildNodeArgs f) {
+    handler.handle(f);
+  }
+  
+
+  public static void setBeanChildNodes(Parent parentArg, Object bean) {
+    setBeanChildNodes(parentArg, bean, null);
   }
 
   /**
@@ -128,7 +146,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    * @param parentArg
    * @param bean
    */
-  public static void setBeanChildNodes(Parent parentArg, Object bean) {
+  public static void setBeanChildNodes(Parent parentArg, Object bean, Consumer<ChildNodeArgs> consumer) {
     Field[] fields = bean.getClass().getDeclaredFields();
     FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
     if (fxController == null) {
@@ -145,7 +163,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
           if (fxml.isEmpty()) {
             fxml = fxController.fxml();
           }
-          parent = fxmlInitializer.getRoot(fxml); 
+          parent = fxmlInitializer.getRoot(fxml);
         } else {
           parent = parentArg;
         }
@@ -170,9 +188,12 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
         } catch (IllegalArgumentException | IllegalAccessException ex) {
           throw new RuntimeException(ex);
         }
+        if (consumer != null) {
+          consumer.accept(new ChildNodeArgs(bean, field, child));
+        }
       }
-
     }
   }
+  
 
 }

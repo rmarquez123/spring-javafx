@@ -1,4 +1,4 @@
-package com.rm.springjavafx.annotations;
+package com.rm.springjavafx.annotations.childnodes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

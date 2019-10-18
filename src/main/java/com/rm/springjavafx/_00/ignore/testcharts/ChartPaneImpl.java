@@ -1,7 +1,7 @@
 package com.rm.springjavafx._00.ignore.testcharts;
 
 import com.rm.springjavafx.FxmlInitializer;
-import com.rm.springjavafx.annotations.ChildNode;
+import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.annotations.FxAttach;
 import com.rm.springjavafx.annotations.FxController;
 import com.rm.springjavafx.charts.TimeSeriesChart;
