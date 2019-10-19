@@ -1,11 +1,11 @@
 package com.rm.springjavafx.annotations;
 
-import com.rm.springjavafx.annotations.childnodes.ChildNodeArgs;
 import com.rm.springjavafx.AnnotationHandler;
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.annotations.childnodes.CheckBoxAnnotationHandler;
 import com.rm.springjavafx.annotations.childnodes.ChildNode;
+import com.rm.springjavafx.annotations.childnodes.ChildNodeArgs;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -31,8 +31,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
 
   @Autowired
   private CheckBoxAnnotationHandler handler;
-
-
+  
   @Autowired
   public void setFxmlInitializer(FxmlInitializer fxmlInitializer) {
     ChildNodeAnnotationHandler.fxmlInitializer = fxmlInitializer;
@@ -158,7 +157,10 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
       if (childNode != null) {
         String fxml = null;
         Parent parent;
-        if (parentArg == null) {
+        if (!childNode.fxml().isEmpty()) {
+          fxml = childNode.fxml();
+          parent = fxmlInitializer.getRoot(fxml);
+        } else if (parentArg == null) {
           fxml = childNode.fxml();
           if (fxml.isEmpty()) {
             fxml = fxController.fxml();
