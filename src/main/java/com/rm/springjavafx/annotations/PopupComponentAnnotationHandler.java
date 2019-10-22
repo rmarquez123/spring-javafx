@@ -57,9 +57,9 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
       }
       if (bean instanceof Initializable) {
         this.fxmlInitializer.addFxml(fxml);
-      } 
+      }
       this.fxmlInitializer.addFxml(fxml);
-      
+
     }
   }
 
@@ -71,22 +71,23 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
     Map<String, Object> beans = appContext.getBeansWithAnnotation(PopupComponent.class);
     for (Map.Entry<String, Object> entry : beans.entrySet()) {
       Object bean = entry.getValue();
-      
+
       FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
       PopupComponent p = bean.getClass().getDeclaredAnnotation(PopupComponent.class);
+
       String fxml = fxController.fxml();
       Parent node = this.fxmlInitializer.getRoot(fxml);
       registerBean(node, bean, p.id());
     }
   }
-  
+
   /**
-   * 
+   *
    * @param node
    * @param bean
    * @param p
    * @throws IllegalStateException
-   * @throws BeanDefinitionStoreException 
+   * @throws BeanDefinitionStoreException
    */
   private void registerBean(Parent node, Object bean, String beanId) {
     if (beanId.trim().isEmpty()) {
@@ -95,14 +96,14 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
         + ", popupComponent = " + beanId
         + "}");
     }
-    BeanDefinitionRegistry registry = (BeanDefinitionRegistry) 
-      this.appContext.getAutowireCapableBeanFactory();
+    PopupComponent p = bean.getClass().getDeclaredAnnotation(PopupComponent.class);
+    BeanDefinitionRegistry registry = (BeanDefinitionRegistry) this.appContext.getAutowireCapableBeanFactory();
     BeanDefinition dynamicBean = BeanDefinitionBuilder
       .rootBeanDefinition(Popup.class)
       .getBeanDefinition();
     dynamicBean.getPropertyValues().add("node", node);
+    dynamicBean.getPropertyValues().add("title", p.title());
     dynamicBean.getPropertyValues().add("controller", (PopupContent) bean);
-    
     registry.registerBeanDefinition(beanId, dynamicBean);
   }
 

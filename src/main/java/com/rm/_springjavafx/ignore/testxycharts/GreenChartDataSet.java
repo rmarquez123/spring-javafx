@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testxycharts;
+package com.rm._springjavafx.ignore.testxycharts;
 
 import com.rm.springjavafx.charts.xy.SpringFxXYDataSet;
 import com.rm.springjavafx.charts.xy.XYDataSet;

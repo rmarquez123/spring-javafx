@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testforms;
+package com.rm._springjavafx.ignore.testforms;
 
 import common.db.RecordValue;
 import com.rm.springjavafx.form.AbstractFormGroup;

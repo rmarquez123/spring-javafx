@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.tree.contextmenus;
+package com.rm._springjavafx.ignore.tree.contextmenus;
 
 import common.db.RecordValue;
 import com.rm.springjavafx.tree.ContextMenuProvider;

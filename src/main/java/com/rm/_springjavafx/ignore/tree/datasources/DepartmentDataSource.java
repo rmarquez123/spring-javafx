@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.tree.datasources;
+package com.rm._springjavafx.ignore.tree.datasources;
 
 import common.db.RecordValue;
 import com.rm.springjavafx.datasources.AbstractDataSource;

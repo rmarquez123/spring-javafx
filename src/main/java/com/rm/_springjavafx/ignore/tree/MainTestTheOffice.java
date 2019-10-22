@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testxycharts;
+package com.rm._springjavafx.ignore.tree;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
 /**
  * Contains main method but also implements JavaFX {@linkplain Application}. Invokes
@@ -35,24 +34,14 @@ import org.springframework.context.annotation.ImportResource;
  * @author rmarquez
  */
 @SpringBootApplication()
-@ImportResource(locations = {"spring/main.xml"})
+@ImportResource(locations = {"spring/theoffice.xml"})
 @ComponentScan(
   basePackages = {
-    "com.rm.springjavafx"
-  }, excludeFilters = {
-    @ComponentScan.Filter(
-      type = FilterType.REGEX,
-      pattern = {
-        "com.rm.springjavafx._00.ignore.testcharts.*",    
-        "com.rm.springjavafx._00.ignore.testforms.*",    
-        "com.rm.springjavafx._00.ignore.tree.*",    
-        "com.rm.springjavafx._00.ignore.contextmenus.*",    
-        "com.rm.springjavafx._00.ignore.datasources.*",    
-      }
-    )
+    "com.rm.springjavafx", 
+    "com.rm._springjavafx.ignore.tree"
   }
 )
-public class MainTestCharts extends Application {
+public class MainTestTheOffice extends Application {
 
   private FxmlInitializer fxmlInitializer;
   private Parent root;

@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.tree;
+package com.rm._springjavafx.ignore.testforms;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
+
 /**
  * Contains main method but also implements JavaFX {@linkplain Application}. Invokes
  * SpringBoot before getting the scene root node from {@linkplain FxmlInitializer} helper
@@ -35,23 +35,14 @@ import org.springframework.context.annotation.ImportResource;
  * @author rmarquez
  */
 @SpringBootApplication()
-@ImportResource(locations = {"spring/theoffice.xml"})
+@ImportResource(locations = {"spring/main.xml"})
 @ComponentScan(
   basePackages = {
-    "com.rm.springjavafx"
-    
-  }, excludeFilters = {
-    @ComponentScan.Filter(
-      type = FilterType.REGEX,
-      pattern = {
-        "com.rm.springjavafx._00.ignore.testforms.*",
-        "com.rm.springjavafx._00.ignore.testxycharts.*",
-        "com.rm.springjavafx._00.ignore.testcharts.*",
-      }
-    )
+    "com.rm.springjavafx",
+    "com.rm._springjavafx.ignore.testforms"
   }
 )
-public class MainTestTheOffice extends Application {
+public class MainTestFormGroups extends Application {
 
   private FxmlInitializer fxmlInitializer;
   private Parent root;
@@ -84,7 +75,7 @@ public class MainTestTheOffice extends Application {
     if (this.root == null) {
       throw new NullPointerException("Root cannot be null");
     }
-    
+
     Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> {
       Platform.runLater(() -> {
         this.showAlert(e);

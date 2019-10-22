@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 
 /**
  * Helper class for initializing fxml with controllers instantiated through spring.
@@ -20,6 +21,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author rmarquez
  */
+@Scope("singleton") 
 public class FxmlInitializer implements InitializingBean {
 
   @Autowired

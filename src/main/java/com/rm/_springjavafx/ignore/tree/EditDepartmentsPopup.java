@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.tree;
+package com.rm._springjavafx.ignore.tree;
 
 import com.rm.springjavafx.annotations.FxController;
 import com.rm.springjavafx.annotations.PopupComponent;

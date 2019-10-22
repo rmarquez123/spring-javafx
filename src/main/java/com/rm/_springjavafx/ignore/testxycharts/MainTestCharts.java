@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testcharts;
+package com.rm._springjavafx.ignore.testxycharts;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
 /**
  * Contains main method but also implements JavaFX {@linkplain Application}. Invokes
@@ -38,16 +37,8 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource(locations = {"spring/main.xml"})
 @ComponentScan(
   basePackages = {
-    "com.rm.springjavafx"
-    
-  }, excludeFilters = {
-    @ComponentScan.Filter(
-      type = FilterType.REGEX,
-      pattern = {
-        "com.rm.springjavafx._00.ignore.testforms.*",
-        "com.rm.springjavafx._00.ignore.testxycharts.*",
-      }
-    )
+    "com.rm.springjavafx", 
+    "com.rm._springjavafx.ignore.testxycharts", 
   }
 )
 public class MainTestCharts extends Application {

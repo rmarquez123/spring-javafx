@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testcharts;
+package com.rm._springjavafx.ignore.testcharts;
 
 import com.rm.springjavafx.charts.SpringFxTimeSeries;
 import com.rm.springjavafx.charts.TimeSeriesDataset;
@@ -20,7 +20,8 @@ import org.springframework.stereotype.Component;
  *
  * @author Ricardo Marquez
  */
-@Component@Lazy(false)
+@Component
+@Lazy(false)
 @TimeSeriesDataset(
   name = "Blue Data",
   chart = "testchart",

@@ -33,6 +33,7 @@ public class Popup {
   private final Property<Window> windowProperty = new SimpleObjectProperty<>();
 
   private final Property<Object> userDataProperty = new SimpleObjectProperty<>();
+  private final Property<String> titleProperty = new SimpleObjectProperty<>("");
 
   private Stage alert;
 
@@ -52,7 +53,19 @@ public class Popup {
       this.setModality();
     });
   }
-
+  
+  /**
+   * 
+   * @param title 
+   */
+  public void setTitle(String title) {
+    this.titleProperty.setValue(title);
+  }
+  
+  /**
+   * 
+   * @param node 
+   */
   public void setNode(Node node) {
     this.contentNodeProperty.setValue(node);
   }
@@ -209,7 +222,7 @@ public class Popup {
     AnchorPane.setRightAnchor(contentNode, 0.0);
     AnchorPane.setTopAnchor(contentNode, 0.0);
     this.alert = new Stage();
-    this.alert.setTitle("");
+    this.alert.setTitle(this.titleProperty.getValue());
     this.alert.setScene(dialogScene);
     this.setModality();
   }

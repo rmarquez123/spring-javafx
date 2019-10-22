@@ -1,4 +1,4 @@
-package com.rm.springjavafx._00.ignore.testforms;
+package com.rm._springjavafx.ignore.testcharts;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -25,9 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
-
 /**
  * Contains main method but also implements JavaFX {@linkplain Application}. Invokes
  * SpringBoot before getting the scene root node from {@linkplain FxmlInitializer} helper
@@ -40,18 +38,10 @@ import org.springframework.context.annotation.ImportResource;
 @ComponentScan(
   basePackages = {
     "com.rm.springjavafx",
-    "com.rm.springjavafx._00.ignore.testforms"
-  }, excludeFilters = {
-    @ComponentScan.Filter(
-      type = FilterType.REGEX,
-      pattern = {
-        "com.rm.springjavafx._00.ignore.testcharts.*",
-        "com.rm.springjavafx._00.ignore.testxycharts.*",
-      }
-    )
+    "com.rm._springjavafx.ignore.testcharts",
   }
 )
-public class MainTestFormGroups extends Application {
+public class MainTestCharts extends Application {
 
   private FxmlInitializer fxmlInitializer;
   private Parent root;
@@ -84,7 +74,7 @@ public class MainTestFormGroups extends Application {
     if (this.root == null) {
       throw new NullPointerException("Root cannot be null");
     }
-
+    
     Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> {
       Platform.runLater(() -> {
         this.showAlert(e);
