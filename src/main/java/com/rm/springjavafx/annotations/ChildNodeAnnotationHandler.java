@@ -6,6 +6,9 @@ import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.annotations.childnodes.CheckBoxAnnotationHandler;
 import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.annotations.childnodes.ChildNodeArgs;
+import com.rm.springjavafx.nodes.NodeProcessor;
+import com.rm.springjavafx.nodes.NodeProcessorFactory;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -25,16 +28,25 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 public class ChildNodeAnnotationHandler implements InitializingBean {
+
   private static FxmlInitializer fxmlInitializer;
+  
+  private static NodeProcessorFactory nodeProcessorFactory;
+    
   @Autowired
   private ApplicationContext appContext;
 
   @Autowired
   private CheckBoxAnnotationHandler handler;
-  
+
   @Autowired
   public void setFxmlInitializer(FxmlInitializer fxmlInitializer) {
     ChildNodeAnnotationHandler.fxmlInitializer = fxmlInitializer;
+  }
+  
+  @Autowired
+  public void setNodeProcessorFactory(NodeProcessorFactory factory) {
+    ChildNodeAnnotationHandler.nodeProcessorFactory = factory;
   }
 
   @Override
@@ -57,13 +69,19 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    */
   private void onReadyFxmls() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
-    for (Map.Entry<String, Object> bean : beans.entrySet()) {
-      try {
-        this.readyBeanAndChildFxmls(bean.getValue());
-      } catch (Exception ex) {
-        throw new RuntimeException(
-          String.format("Error on creating bean '%s'", bean.getKey()), ex);
-      }
+    beans.entrySet().stream().forEach(this::readyFxmlForBeanEntry);
+  }
+
+  /**
+   *
+   * @param entry
+   */
+  private void readyFxmlForBeanEntry(Map.Entry<String, Object> entry) {
+    try {
+      this.readyBeanAndChildFxmls(entry.getValue());
+    } catch (Exception ex) {
+      throw new RuntimeException(
+        String.format("Error on creating bean '%s'", entry.getKey()), ex);
     }
   }
 
@@ -113,28 +131,33 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    */
   private void setBeanChildNodes() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
-    for (Object bean : beans.values()) {
-      FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
-      String fxml = fxController.fxml();
-      Parent parent = fxmlInitializer.getRoot(fxml);
-      try {
-        setBeanChildNodes(parent, bean, this::handleField);
-      } catch (Exception ex) {
-        throw new RuntimeException(
-          String.format("Error creating child nodes for bean '%s'", bean.getClass().getName()), ex);
-      }
-    }
+    beans.values().forEach(this::setBeanChildNode);
   }
   
   
   /**
    * 
-   * @param f 
+   * @param bean 
+   */
+  private void setBeanChildNode(Object bean) {
+    FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
+    String fxml = fxController.fxml();
+    Parent parent = fxmlInitializer.getRoot(fxml);
+    try {
+      setBeanChildNodes(parent, bean, this::handleField);
+    } catch (Exception ex) {
+      String message = String.format("Error creating child nodes for bean '%s'", bean.getClass().getName());
+      throw new RuntimeException(message, ex);
+    }
+  }
+
+  /**
+   *
+   * @param f
    */
   private void handleField(ChildNodeArgs f) {
     handler.handle(f);
   }
-  
 
   public static void setBeanChildNodes(Parent parentArg, Object bean) {
     setBeanChildNodes(parentArg, bean, null);
@@ -172,10 +195,13 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
         String id = childNode.id();
         Object child;
         try {
-          child = SpringFxUtils.getChildByID(parent, id);
-        } catch (Exception ex) {
-          throw new RuntimeException(
-            String.format("Error getting child element.  Check args: {fxml='%s', childId='%s'}", fxml, id), ex);
+          child = (Object) getChildNode(parent, id, fxml);
+        } catch(Exception ex) {
+          throw new RuntimeException("Error on getting child node.  Check args: {"
+            + "parent = " + parent
+            + ", id = " + id
+            + ", fxml = " + fxml
+            + "}", ex); 
         }
         if (child == null) {
           throw new IllegalStateException("Child node is null.  Check args: {"
@@ -184,12 +210,12 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
             + ", id = " + id
             + "}");
         }
-        try {
-          field.setAccessible(true);
-          field.set(bean, child);
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-          throw new RuntimeException(ex);
-        }
+        setChildNodeToFieldValue(field, bean, child);
+        NodeProcessHelper nodeProcessor // 
+          = new NodeProcessHelper(nodeProcessorFactory, bean, field, child);
+        nodeProcessorFactory.getAnnotations().stream()
+          .filter((e)->field.getDeclaredAnnotation(e) != null)
+          .forEach(nodeProcessor::processNode);
         if (consumer != null) {
           consumer.accept(new ChildNodeArgs(bean, field, child));
         }
@@ -197,5 +223,72 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     }
   }
   
+  
+
+  /**
+   *
+   * @param field
+   * @param bean
+   * @param child
+   */
+  private static void setChildNodeToFieldValue(Field field, Object bean, Object child) {
+    try {
+      field.setAccessible(true);
+      field.set(bean, child);
+    } catch (IllegalArgumentException | IllegalAccessException ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  /**
+   *
+   * @param parent
+   * @param id
+   * @param fxml
+   * @return
+   */
+  private static Object getChildNode(Parent parent, String id, String fxml) {
+    Object child;
+    try {
+      child = SpringFxUtils.getChildByID(parent, id);
+    } catch (Exception ex) {
+      throw new RuntimeException(
+        String.format("Error getting child element.  Check args: {fxml='%s', childId='%s'}", fxml, id), ex);
+    }
+    return child;
+  }
+  
+  
+  private static class NodeProcessHelper {
+
+    private final NodeProcessorFactory factory;
+    private final Object parentBean;
+    private final Field field;
+    private final Object child;
+
+    /**
+     * 
+     * @param factory
+     * @param bean
+     * @param field
+     * @param child 
+     */
+    private NodeProcessHelper(NodeProcessorFactory factory, Object parentBean, Field field, Object child) {
+      this.factory = factory;
+      this.parentBean = parentBean;
+      this.field = field;
+      this.child = child;
+    }
+    
+    /**
+     * 
+     * @param clazz 
+     */
+    private void processNode(Class<? extends Annotation> clazz) {
+      Annotation annotation = this.field.getDeclaredAnnotation(clazz);
+      NodeProcessor processor = this.factory.getProcessor(clazz);
+      processor.process(this.parentBean, this.child, annotation);
+    }
+  }
 
 }

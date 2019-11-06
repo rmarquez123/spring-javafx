@@ -178,7 +178,7 @@ public abstract class Wizard implements Initializable, PopupContent {
   }
 
   @Override
-  public void setPopupWindow(Popup popup) {
+  public final void setPopupWindow(Popup popup) {
     this.popup = popup;
     Platform.runLater(() -> {
       this.fxmlInitializer.addListener((i) -> {

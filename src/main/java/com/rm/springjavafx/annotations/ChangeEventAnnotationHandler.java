@@ -62,7 +62,7 @@ public class ChangeEventAnnotationHandler implements AnnotationHandler, Initiali
           try {
             method.invoke(bean, propertyBean, null, propertyBean.getValue());
           } catch (Exception ex) {
-            throw new RuntimeException(ex); 
+            throw new RuntimeException("check method : " + method, ex); 
           }
         }
       }
