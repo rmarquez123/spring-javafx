@@ -1,4 +1,4 @@
-package com.rm.springjavafx.charts;
+package com.rm.springjavafx.charts.timeseries;
 
 import com.rm.springjavafx.annotations.FxController;
 import java.lang.annotation.ElementType;

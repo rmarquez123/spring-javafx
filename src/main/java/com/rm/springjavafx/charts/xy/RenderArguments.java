@@ -7,9 +7,6 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
  * @author Ricardo Marquez
  */
 public class RenderArguments {
-
-  
-
   final XYItemRenderer renderer;
   final XYDataSetGroup datasetgroup;
   final int seriesIndex;
@@ -21,7 +18,8 @@ public class RenderArguments {
    * @param seriesIndex
    * @param dataset 
    */
-  public RenderArguments(SpringFxXYDataSet dataset, XYDataSetGroup datasetgroup,  XYItemRenderer renderer, int seriesIndex) {
+  public RenderArguments(SpringFxXYDataSet dataset, XYDataSetGroup datasetgroup, //  
+    XYItemRenderer renderer, int seriesIndex) {
     this.datasetgroup = datasetgroup;
     this.renderer = renderer;
     this.seriesIndex = seriesIndex;

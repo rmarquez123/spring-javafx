@@ -1,4 +1,4 @@
-package com.rm.springjavafx.charts;
+package com.rm.springjavafx.charts.timeseries;
 
 import common.bindings.RmBindings;
 import common.timeseries.TimeStepValue;

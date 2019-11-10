@@ -1,13 +1,11 @@
-package com.rm.springjavafx.charts.xy;
+package com.rm.springjavafx.charts.category;
 
 /**
  *
  * @author Ricardo Marquez
  */
-public class XYValue {
-
+public class CategoryValue {
   private final double y;
-  private final double x;
   private final Object userObj;
 
   /**
@@ -15,20 +13,11 @@ public class XYValue {
    * @param x
    * @param y
    */
-  public XYValue(double x, double y, Object userObj) {
-    this.x = x;
+  public CategoryValue(double y, Object userObj) {
     this.y = y;
     this.userObj = userObj;
   }
-
-
-  /**
-   *
-   * @return
-   */
-  public Number getX() {
-    return this.x;
-  }
+  
 
   /**
    * 
@@ -53,16 +42,6 @@ public class XYValue {
    */
   @Override
   public String toString() {
-    return "XYValue{" + "y=" + y + ", x=" + x + '}';
-  }
-  
-  /**
-   * 
-   * @param i1
-   * @param i2
-   * @return 
-   */
-  public static int compareX(XYValue i1, XYValue i2){
-    return Double.compare(i1.x, i2.x);
+    return "XYValue{" + "y=" + y + '}';
   }
 }

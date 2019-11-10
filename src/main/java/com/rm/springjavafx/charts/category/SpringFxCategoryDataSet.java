@@ -1,46 +1,56 @@
-package com.rm.springjavafx.charts;
+package com.rm.springjavafx.charts.category;
 
-import common.timeseries.TimeSeries;
-import common.timeseries.TimeStepValue;
 import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
-import java.util.Objects;
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.List;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import javafx.scene.paint.Color;
 
 /**
  *
  * @author Ricardo Marquez
  */
-public class SpringFxTimeSeries {
+public class SpringFxCategoryDataSet {
 
   private final int datasetId;
   private final String name;
-
-  private final Property<TimeSeries<?>> seriesProperty = new SimpleObjectProperty<>();
-  private final Property<Function<TimeStepValue<?>, Double>> valueAccessorProperty = new SimpleObjectProperty<>();
+  private final Property<CategoryValues> seriesProperty = new SimpleObjectProperty<>();
+  private final ObservableSet<String> categoriesProperty = FXCollections.observableSet();
   private final Color lineColor;
-
+  
   /**
    *
    */
-  public SpringFxTimeSeries() {
-    TimeSeriesDataset conf = this.getClass().getDeclaredAnnotation(TimeSeriesDataset.class);
+  public SpringFxCategoryDataSet() {
+    CategoryFxDataSet conf = this.getClass().getDeclaredAnnotation(CategoryFxDataSet.class);
     this.name = conf.name();
     this.datasetId = conf.dataset();
     this.lineColor = Color.web(conf.lineColorHex());
+    this.setTimeSeries(Collections.EMPTY_LIST);
   }
+
+  /**
+   * 
+   * @return 
+   */
+  public ObservableSet<String> categoriesProperty() {
+    return categoriesProperty;
+  }
+  
+  
 
   /**
    *
    */
   public void validate() throws Exception {
-    Objects.requireNonNull(this.valueAccessorProperty.getValue(), "value accesor cannot be null");
+    
   }
 
   /**
@@ -61,12 +71,12 @@ public class SpringFxTimeSeries {
   }
 
   /**
-   * 
-   * @return 
+   *
+   * @return
    */
   public Shape getShape() {
     double radius = 4;
-    Ellipse2D e =new Ellipse2D.Double(-radius/2., -radius/2., radius, radius);
+    Ellipse2D e = new Ellipse2D.Double(-radius / 2.0, -radius / 2.0, radius, radius);
     return e;
   }
 
@@ -88,15 +98,20 @@ public class SpringFxTimeSeries {
   /**
    *
    */
-  public void setTimeSeries(TimeSeries<?> timeseries) {
-    this.seriesProperty.setValue(timeseries);
+  public final void setTimeSeries(List<CategoryValue> values) {
+    if (values != null) {
+      CategoryValues a = new CategoryValues(this.getKey(), values);
+      this.seriesProperty.setValue(a);
+    } else {
+      this.setTimeSeries(Collections.EMPTY_LIST);
+    }
   }
 
   /**
    *
    * @return
    */
-  public ReadOnlyProperty<TimeSeries<?>> seriesProperty() {
+  public ReadOnlyProperty<CategoryValues> seriesProperty() {
     return this.seriesProperty;
   }
 
@@ -104,7 +119,7 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
-  public TimeSeries<?> getSeries() {
+  public CategoryValues getSeries() {
     return seriesProperty.getValue();
   }
 
@@ -112,23 +127,9 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
-  public Property<Function<TimeStepValue<?>, Double>> valueAccessorProperty() {
-    return this.valueAccessorProperty;
-  }
-
-  /**
-   *
-   * @return
-   */
-  Function<TimeStepValue<?>, Double> getValueAccessor() {
-    return this.valueAccessorProperty.getValue();
-  }
-
-  /**
-   * 
-   * @return 
-   */
   Stroke getLineStroke() {
-    return new BasicStroke(2); 
+    BasicStroke stroke = new BasicStroke(2);
+    return stroke;
   }
+  
 }

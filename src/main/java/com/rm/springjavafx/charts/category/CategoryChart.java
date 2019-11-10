@@ -1,6 +1,8 @@
-package com.rm.springjavafx.charts.xy;
+package com.rm.springjavafx.charts.category;
 
+import com.rm.springjavafx.annotations.FxController;
 import com.rm.springjavafx.charts.FxPlotOrientation;
+import com.rm.springjavafx.charts.timeseries.TimeSeriesDataset;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XYChart {
+public @interface CategoryChart {
   /**
    * The chart id which is used for reference from other datas sets.
    *
@@ -35,7 +37,7 @@ public @interface XYChart {
    *
    * @return
    */
-  XYDataSetGroup[] datasetgroups();
+  CategoryFxDataSetGroup[] datasetgroups();
   
   
   /**
@@ -43,5 +45,11 @@ public @interface XYChart {
    * @return 
    */
   FxPlotOrientation orientation() default FxPlotOrientation.VERTICAL;
-
+  
+  
+  /**
+   * 
+   * @return 
+   */
+  String categories();
 }

@@ -1,7 +1,7 @@
 package com.rm._springjavafx.ignore.testcharts;
 
-import com.rm.springjavafx.charts.SpringFxTimeSeries;
-import com.rm.springjavafx.charts.TimeSeriesDataset;
+import com.rm.springjavafx.charts.timeseries.SpringFxTimeSeries;
+import com.rm.springjavafx.charts.timeseries.TimeSeriesDataset;
 import common.timeseries.TimeStepValue;
 import common.timeseries.impl.DefaultTimeSeries;
 import common.timeseries.impl.SimpleTimeStepValue;

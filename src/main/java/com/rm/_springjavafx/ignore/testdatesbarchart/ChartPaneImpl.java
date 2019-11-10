@@ -1,11 +1,14 @@
-package com.rm._springjavafx.ignore.testcharts;
+package com.rm._springjavafx.ignore.testdatesbarchart;
 
 import com.rm.springjavafx.FxmlInitializer;
-import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.annotations.FxAttach;
 import com.rm.springjavafx.annotations.FxController;
-import com.rm.springjavafx.charts.timeseries.TimeSeriesChart;
-import com.rm.springjavafx.charts.timeseries.TimeSeriesChartPane;
+import com.rm.springjavafx.annotations.childnodes.ChildNode;
+import com.rm.springjavafx.charts.FxPlotOrientation;
+import com.rm.springjavafx.charts.category.CategoryChart;
+import com.rm.springjavafx.charts.category.CategoryChartPane;
+import com.rm.springjavafx.charts.category.CategoryFxDataSetGroup;
+import com.rm.springjavafx.charts.category.PlotType;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.Property;
@@ -24,40 +27,47 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 @FxController(fxml = "fxml/charts.fxml")
-@TimeSeriesChart(
+@CategoryChart(
   id = "testchart",
   node = "chart",
-  datasets = 1
+  datasetgroups = {
+    @CategoryFxDataSetGroup(
+      plotType = PlotType.STACKED_PLOT, 
+      barwidth = 1
+    )
+  },
+  orientation = FxPlotOrientation.HORIZONTAL, 
+  categories = "categories"
 )
 @FxAttach(fxml = "fxml/Main.fxml", id = "theAnchorPane")
-public class ChartPaneImpl extends TimeSeriesChartPane {
+public class ChartPaneImpl extends CategoryChartPane {
 
   @Autowired
   private FxmlInitializer fxmlInitializer;
   @ChildNode(id = "listview")
   private CheckListView<String> listview;
-
+  
   @Bean("testchart_datasets")
   public Property<String> getDatasets() {
     return new SimpleObjectProperty<>();
   }
-  
+
   /**
    *
    */
   @Override
   protected void postInit() {
     this.fxmlInitializer.addListener((i) -> {
-      super.datasetsProperty().addListener((obs, old, change)->{
+      super.datasetsProperty().addListener((obs, old, change) -> {
         this.updateListViewItems();
       });
       this.updateListViewItems();
-      
+
       super.visibleDatasetsProperty().addListener((obs, old, change) -> {
         this.updateListViewItemsCheckedValues();
       });
       this.updateListViewItemsCheckedValues();
-      
+
       this.listview.getCheckModel().getCheckedItems().addListener(
         (ListChangeListener.Change<? extends String> c) -> {
           if (c.next()) {
@@ -83,7 +93,7 @@ public class ChartPaneImpl extends TimeSeriesChartPane {
   }
 
   /**
-   * 
+   *
    */
   private void updateListViewItems() {
     List<String> datasets = this.datasetsProperty().getValue();

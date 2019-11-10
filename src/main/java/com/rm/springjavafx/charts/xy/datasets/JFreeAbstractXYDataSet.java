@@ -134,7 +134,7 @@ public class JFreeAbstractXYDataSet extends AbstractXYDataset implements JFreeDa
    * @return
    */
   @Override
-  public Number getY(int i, int i1) {
+  public Number getY(final int i, final int i1) {
     Number result;
     if (0 <= i && i < this.getSeriesCount()) {
       result = this.datasetProperty.get(i).getY(i1);

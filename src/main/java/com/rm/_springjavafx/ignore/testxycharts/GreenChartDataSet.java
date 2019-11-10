@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
   lineColorHex = "#00aa00"
 )
 public class GreenChartDataSet extends SpringFxXYDataSet implements InitializingBean {
-
+  
   /**
    *
    * @throws Exception
@@ -35,8 +35,9 @@ public class GreenChartDataSet extends SpringFxXYDataSet implements Initializing
       double y = Math.random() * 100;
       records.add(new XYValue(x, y, null));
     }
-    records.sort((i1, i2) -> Double.compare(i1.getX().doubleValue(), i2.getX().doubleValue()));
+    records.sort(XYValue::compareX);
     super.setTimeSeries(records);
   }
-
+  
+  
 }

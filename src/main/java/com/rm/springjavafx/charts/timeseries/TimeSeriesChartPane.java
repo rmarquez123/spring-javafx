@@ -1,4 +1,4 @@
-package com.rm.springjavafx.charts;
+package com.rm.springjavafx.charts.timeseries;
 
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.SpringFxUtils;
