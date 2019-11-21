@@ -1,4 +1,4 @@
-package com.rm._springjavafx.ignore.testdatesbarchart;
+package com.rm._springjavafx.ignore.testcategories;
 
 import com.rm.springjavafx.charts.category.CategoryFxDataSet;
 import com.rm.springjavafx.charts.category.CategoryValue;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Component
 @Lazy(false)
 @CategoryFxDataSet(
-  name = "Green Data",
+  name = "Blue Data",
   chart = "testchart",
   dataset = 0,
-  lineColorHex = "#00aa00"
+  lineColorHex = "#0000aa"
 )
-public class DatesDataSet extends SpringFxCategoryDataSet implements InitializingBean {
+public class BlueDataSet extends SpringFxCategoryDataSet implements InitializingBean {
 
-  /**
+  /** 
    *
    * @throws Exception
    */
@@ -45,13 +45,13 @@ public class DatesDataSet extends SpringFxCategoryDataSet implements Initializin
   }
 
   /**
-   *
+   * 
    * @param category
-   * @return
+   * @return 
    */
   public CategoryValue toRecord(String category) {
     double y = Math.random() * 100;
-    return new CategoryValue(y, null);
+    return new CategoryValue(category, y, null);
   }
 
   /**

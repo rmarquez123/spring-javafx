@@ -1,4 +1,4 @@
-package com.rm._springjavafx.ignore.testdatesbarchart;
+package com.rm._springjavafx.ignore.testcategories;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -57,9 +56,8 @@ public abstract class CategoryChartPane implements InitializingBean {
     this.plot.setOrientation(chart.orientation().toJFreeOrientation());
     CategoryAxis domainAxis = new CategoryAxis();
     this.plot.setDomainAxis(domainAxis);
-    NumberAxis numberAxis = this.getRangeAxis();
+    ValueAxis numberAxis = this.getRangeAxis();
     numberAxis.setAutoRange(true);
-    numberAxis.setAutoRangeIncludesZero(false);
     numberAxis.setLabel(this.getLabel(0));
     this.plot.setRangeAxes(new ValueAxis[]{numberAxis});
     StandardCategoryToolTipGenerator ttg = new StandardCategoryToolTipGenerator();
@@ -129,31 +127,41 @@ public abstract class CategoryChartPane implements InitializingBean {
   public final void afterPropertiesSet() throws Exception {
     CategoryChart chart = this.getClass().getDeclaredAnnotation(CategoryChart.class);
     this.categoriesProperty = (ObservableSet<String>) this.applicationContext.getBean(chart.categories());
+    this.bindCategories();
     this._fxmlInitializer.addListener((i) -> {
       FxController controller = this.getClass().getDeclaredAnnotation(FxController.class);
       String fxml = controller.fxml();
       Parent root = i.getRoot(fxml);
+
       this.chartPane = SpringFxUtils.getChildByID(root, chart.node());
       ChartViewer viewer = this.getChart();
       this.chartPane.getChildren().clear();
       SpringFxUtils.setNodeOnRefPane(this.chartPane, viewer);
-      this.categoriesProperty.addListener((SetChangeListener.Change<? extends String> change) -> {
-        this.updateDataSetCategories();
-      });
-      this.updateDataSetCategories();
+
     });
     this.postInit();
   }
-  
+    
   /**
    * 
+   */
+  private void bindCategories() {
+    this.categoriesProperty.addListener((SetChangeListener.Change<? extends String> change) -> {
+      this.updateDataSetCategories();
+    });
+    this.updateDataSetCategories();
+  }
+    
+
+  /**
+   *
    */
   private void updateDataSetCategories() {
     for (int j = 0; j < plot.getDatasetCount(); j++) {
       JFreeCategoryDataSet ds = (JFreeCategoryDataSet) plot.getDataset(j);
       ds.setCategories(categoriesProperty);
     }
-    Platform.runLater(()->plot.getChart().fireChartChanged());
+
   }
 
   /**
@@ -247,8 +255,10 @@ public abstract class CategoryChartPane implements InitializingBean {
    *
    * @return
    */
-  protected NumberAxis getRangeAxis() {
-    return new NumberAxis();
+  protected ValueAxis getRangeAxis() {
+    NumberAxis result = new NumberAxis();
+    result.setAutoRangeIncludesZero(false);
+    return result;
   }
 
   public ObservableSet<String> categoriesProperty() {

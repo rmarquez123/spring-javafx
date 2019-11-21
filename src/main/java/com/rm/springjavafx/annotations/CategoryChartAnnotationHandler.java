@@ -11,9 +11,11 @@ import com.rm.springjavafx.charts.category.SpringFxCategoryDataSet;
 import common.bindings.RmBindings;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableSet;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import org.jfree.chart.fx.ChartViewer;
 import org.springframework.beans.factory.InitializingBean;
@@ -188,6 +190,12 @@ public class CategoryChartAnnotationHandler implements InitializingBean, Annotat
    */
   private Node createChart(Object bean) {
     ChartViewer chartView = new ChartViewer();
+    RmBindings.bindActionOnAnyChange(()->{
+      Parent p = chartView.getParent();
+      Platform.runLater(()->{
+        System.out.println("bean = " + bean);
+      });
+    }, chartView.parentProperty());
     return chartView;
   }
 }

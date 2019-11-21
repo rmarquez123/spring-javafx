@@ -1,30 +1,32 @@
-package com.rm._springjavafx.ignore.testdatesbarchart;
+package com.rm._springjavafx.ignore.testdateranges;
 
 import com.rm.springjavafx.charts.category.CategoryFxDataSet;
 import com.rm.springjavafx.charts.category.CategoryValue;
 import com.rm.springjavafx.charts.category.SpringFxCategoryDataSet;
+import com.rm.springjavafx.charts.category.datasets.HasRanges;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.collections.SetChangeListener;
+import org.apache.commons.lang3.Range;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Ricardo Marquez
  */
-@Component
-@Lazy(false)
+//@Component
+@Lazy(true)
 @CategoryFxDataSet(
-  name = "Blue Data",
+  name = "Green Data",
   chart = "testchart",
   dataset = 0,
-  lineColorHex = "#0000aa"
+  lineColorHex = "#00aa00"
 )
-public class BlueDataSet extends SpringFxCategoryDataSet implements InitializingBean {
+public class GreenDataSet extends SpringFxCategoryDataSet implements InitializingBean {
 
-  /** 
+  /**
    *
    * @throws Exception
    */
@@ -45,13 +47,15 @@ public class BlueDataSet extends SpringFxCategoryDataSet implements Initializing
   }
 
   /**
-   * 
+   *
    * @param category
-   * @return 
+   * @return
    */
   public CategoryValue toRecord(String category) {
     double y = Math.random() * 100;
-    return new CategoryValue(y, null);
+    HasRanges<Double> userObj = () -> Arrays.asList(Range.between(y - 12, y - 2), Range.between(y, y + 10));
+    CategoryValue result = new CategoryValue(category, y, userObj);
+    return result;
   }
 
   /**

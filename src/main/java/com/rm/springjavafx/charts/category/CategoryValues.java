@@ -3,6 +3,7 @@ package com.rm.springjavafx.charts.category;
 import java.util.Iterator;
 import java.util.List;
 
+
 /**
  *
  * @author Ricardo Marquez
@@ -52,8 +53,33 @@ public class CategoryValues implements Iterable<CategoryValue>{
    * @param i1
    * @return 
    */
-  public Number getY(int i1) {
-    return this.values.get(i1).getY();
+  public Number getY(String category) {
+    CategoryValue value = getCategoryValue(category); 
+    Number result = value.getY();
+    return result;
   }
   
+  /**
+   * 
+   * @param category
+   * @return 
+   */
+  private CategoryValue getCategoryValue(String category) {
+    CategoryValue value = this.values.stream()
+      .filter((c)->c.getCategory().equals(category))
+      .findFirst()
+      .orElseThrow(()->new RuntimeException("Invalid category : " + category));
+    return value;
+  }
+  
+  /**
+   * 
+   * @param i
+   * @return 
+   */
+  public Object getUserObj(String category) {
+    CategoryValue value = getCategoryValue(category); 
+    Object result = value.getUserObj();
+    return result;
+  }
 }

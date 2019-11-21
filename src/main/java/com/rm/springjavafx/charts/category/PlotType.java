@@ -1,6 +1,8 @@
 package com.rm.springjavafx.charts.category;
 
 import com.rm.springjavafx.charts.category.datasets.JFreeDefaultCategoryDataset;
+import com.rm.springjavafx.charts.category.datasets.JFreeMultiIntervalCategoryDataSet;
+import com.rm.springjavafx.charts.category.datasets.MultiIntervalCategoryRenderer;
 import java.awt.BasicStroke;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
@@ -56,7 +58,27 @@ public enum PlotType {
     CategoryDataset getDataset(CategoryFxDataSetGroup args) {
       return new JFreeDefaultCategoryDataset();
     }
-    
+  },
+  ITEM_VALUES {
+    @Override
+    void setSeriesRenderer(RenderArguments args) {
+      args.renderer.setSeriesPaint(args.seriesIndex, args.dataset.getLineColorAwt(), true);
+      args.renderer.setSeriesStroke(args.seriesIndex, args.dataset.getLineStroke(), true);
+      args.renderer.setSeriesShape(args.seriesIndex, args.dataset.getShape(), true);
+    }
+
+    @Override
+    CategoryItemRenderer getRenderer() {
+      MultiIntervalCategoryRenderer result = new MultiIntervalCategoryRenderer();
+      result.setShadowVisible(false);
+      return result;
+      
+    }
+    @Override
+    CategoryDataset getDataset(CategoryFxDataSetGroup args) {
+//      return new JFreeDefaultCategoryDataset();
+      return new JFreeMultiIntervalCategoryDataSet();
+    }
   },
   BAR_PLOT {
     @Override
@@ -80,12 +102,20 @@ public enum PlotType {
     CategoryDataset getDataset(CategoryFxDataSetGroup args) {
       double width = args.barwidth();
       return new JFreeDefaultCategoryDataset();
-    }
-    
+    }  
   };
-
+    
+  
+  /**
+   * 
+   * @param args 
+   */
   abstract void setSeriesRenderer(RenderArguments args);
-
+  
+  /**
+   * 
+   * @return 
+   */
   abstract CategoryItemRenderer getRenderer();
 
   abstract CategoryDataset getDataset(CategoryFxDataSetGroup args);

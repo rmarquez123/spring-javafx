@@ -37,6 +37,7 @@ public class JFreeDefaultCategoryDataset extends AbstractDataset implements Cate
    */
   @Override
   public void setCategories(Set<String> categories) {
+    this.categories.clear();
     this.categories.addAll(categories);
   }
   
@@ -181,7 +182,7 @@ public class JFreeDefaultCategoryDataset extends AbstractDataset implements Cate
     if (0 <= seriesIndex && seriesIndex < this.getRowCount()) {
       CategoryValues values = this.datasetProperty.get(seriesIndex);
       if (recordIndex < values.size()) {
-        result = values.getY(recordIndex);
+        result = values.getY(this.categories.get(recordIndex));
       } else {
         result = 0;
       }

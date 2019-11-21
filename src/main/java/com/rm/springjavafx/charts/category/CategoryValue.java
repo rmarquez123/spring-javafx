@@ -1,10 +1,14 @@
 package com.rm.springjavafx.charts.category;
 
+import java.util.Objects;
+
 /**
  *
  * @author Ricardo Marquez
  */
 public class CategoryValue {
+
+  private final String category;
   private final double y;
   private final Object userObj;
 
@@ -13,9 +17,19 @@ public class CategoryValue {
    * @param x
    * @param y
    */
-  public CategoryValue(double y, Object userObj) {
+  public CategoryValue(String category, double y, Object userObj) {
+    Objects.requireNonNull(category); 
+    this.category = category;
     this.y = y;
     this.userObj = userObj;
+  }
+  
+  /**
+   * 
+   * @return 
+   */
+  public String getCategory() {
+    return category;
   }
   
 

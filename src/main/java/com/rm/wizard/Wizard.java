@@ -15,13 +15,11 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -151,7 +149,7 @@ public abstract class Wizard implements Initializable, PopupContent {
    *
    * @throws BeansException
    */
-  protected void initPanels() throws BeansException {
+  private void initPanels() throws BeansException {
     String[] beanNames = this.applicationContext.getBeanNamesForAnnotation(SettingPanel.class);
     this.labelsPanel.getChildren().clear();
     for (String string : beanNames) {
@@ -180,19 +178,6 @@ public abstract class Wizard implements Initializable, PopupContent {
   @Override
   public final void setPopupWindow(Popup popup) {
     this.popup = popup;
-    Platform.runLater(() -> {
-      this.fxmlInitializer.addListener((i) -> {
-        if (this.fxmlInitializer.getMainRoot().getScene() == null) {
-          this.fxmlInitializer.getMainRoot().sceneProperty().addListener((s) -> {
-            Scene scene = this.fxmlInitializer.getMainRoot().getScene();
-            this.popup.windowProperty().bind(scene.windowProperty());
-          });
-        } else {
-          Scene scene = this.fxmlInitializer.getMainRoot().getScene();
-          this.popup.windowProperty().setValue(scene.getWindow());
-        }
-      });
-    });
   }
 
   @Override

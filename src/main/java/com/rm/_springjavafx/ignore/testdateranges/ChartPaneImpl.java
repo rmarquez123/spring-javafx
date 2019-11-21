@@ -1,4 +1,4 @@
-package com.rm._springjavafx.ignore.testdatesbarchart;
+package com.rm._springjavafx.ignore.testdateranges;
 
 import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.annotations.FxAttach;
@@ -15,6 +15,8 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import org.controlsfx.control.CheckListView;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
@@ -32,11 +34,11 @@ import org.springframework.stereotype.Component;
   node = "chart",
   datasetgroups = {
     @CategoryFxDataSetGroup(
-      plotType = PlotType.STACKED_PLOT, 
+      plotType = PlotType.ITEM_VALUES,
       barwidth = 1
     )
   },
-  orientation = FxPlotOrientation.HORIZONTAL, 
+  orientation = FxPlotOrientation.HORIZONTAL,
   categories = "categories"
 )
 @FxAttach(fxml = "fxml/Main.fxml", id = "theAnchorPane")
@@ -46,10 +48,21 @@ public class ChartPaneImpl extends CategoryChartPane {
   private FxmlInitializer fxmlInitializer;
   @ChildNode(id = "listview")
   private CheckListView<String> listview;
-  
+
   @Bean("testchart_datasets")
   public Property<String> getDatasets() {
     return new SimpleObjectProperty<>();
+  }
+  
+  /**
+   * 
+   * @return 
+   */
+  @Override
+  protected ValueAxis getRangeAxis() {
+    DateAxis result = new DateAxis();
+    result.setAutoRange(true);
+    return result;
   }
 
   /**
@@ -67,7 +80,6 @@ public class ChartPaneImpl extends CategoryChartPane {
         this.updateListViewItemsCheckedValues();
       });
       this.updateListViewItemsCheckedValues();
-
       this.listview.getCheckModel().getCheckedItems().addListener(
         (ListChangeListener.Change<? extends String> c) -> {
           if (c.next()) {

@@ -1,4 +1,4 @@
-package com.rm._springjavafx.ignore.testdatesbarchart;
+package com.rm._springjavafx.ignore.testdateranges;
 
 import com.rm.springjavafx.FxmlInitializer;
 import java.util.Optional;
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.ImportResource;
 @ComponentScan(
   basePackages = {
     "com.rm.springjavafx", 
-    "com.rm._springjavafx.ignore.testdatesbarchart", 
+    "com.rm._springjavafx.ignore.testdateranges", 
   }
 )
 public class MainTestCharts extends Application {

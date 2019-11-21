@@ -1,6 +1,5 @@
 package com.rm.springjavafx.charts.category;
 
-import com.rm.springjavafx.charts.xy.*;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
