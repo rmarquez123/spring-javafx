@@ -4,6 +4,7 @@ import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.nodes.NodeProcessor;
 import com.rm.springjavafx.nodes.NodeProcessorFactory;
 import com.rm.springjavafx.nodes.TextFormatterPropertyBinder;
+import common.bindings.FileStringConverter;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -15,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
-import javafx.util.converter.DefaultStringConverter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,12 +35,12 @@ public class FileTextFieldProcessor implements InitializingBean, NodeProcessor {
 
   @Autowired
   private ApplicationContext appcontext;
-  
+
   @Autowired
   private FxmlInitializer fxmlInitializer;
 
   private List<Map<String, Object>> textfields = new ArrayList<>();
-  
+
   /**
    *
    * @throws Exception
@@ -48,36 +48,52 @@ public class FileTextFieldProcessor implements InitializingBean, NodeProcessor {
   @Override
   public void afterPropertiesSet() throws Exception {
     this.factory.addProcessor(FileTextField.class, this);
-    this.fxmlInitializer.addListener((i)->{
+    this.fxmlInitializer.addListener((i) -> {
       this.bindButtonAction();
     });
   }
-  
+
   private void bindButtonAction() {
     this.textfields.forEach(this::bindButtonAction);
   }
-  
+
   private void bindButtonAction(Map<String, Object> map) {
-    TextField textField = (TextField) map.get("textfield");
-    TextFormatter<String> textFormatter = (TextFormatter<String>) textField.getTextFormatter();
-    FileTextField conf = (FileTextField) map.get("conf"); 
-    Button button;
-    try {
-      Field f = map.get("parentBean").getClass()
-        .getDeclaredField(conf.buttonRef());
-      f.setAccessible(true);
-      button = (Button) f 
-      .get(map.get("parentBean")); 
-    } catch (Exception ex) {
-      throw new  RuntimeException(ex); 
-    }
-    button.setOnAction((e)->{
-      FileChooser chooser = new FileChooser();
-      File r = chooser.showOpenDialog(button.getScene().getWindow());
-      if (r != null) {
-        textFormatter.setValue(r.getAbsolutePath());
+
+    FileTextField conf = (FileTextField) map.get("conf");
+    String buttonRef = conf.buttonRef();
+    if (!buttonRef.isEmpty()) {
+      TextField textField = (TextField) map.get("textfield");
+      TextFormatter<File> textFormatter = (TextFormatter<File>) textField.getTextFormatter();
+      Button button;
+      try {
+        Field f = map.get("parentBean").getClass()
+          .getDeclaredField(buttonRef);
+        f.setAccessible(true);
+        button = (Button) f
+          .get(map.get("parentBean"));
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
       }
-    });
+      FileChooser chooser = new FileChooser();
+      button.setOnAction((e) -> {
+        File oldfile = textFormatter.getValue();
+        if (oldfile != null) {
+          File initialDirectory;
+          if (oldfile.isFile()) {
+            initialDirectory = oldfile.getParentFile();
+          } else {
+            initialDirectory = oldfile;
+          }
+          if (initialDirectory.exists()) {
+            chooser.setInitialDirectory(initialDirectory);
+          }
+        }
+        File newfile = chooser.showOpenDialog(button.getScene().getWindow());
+        if (newfile != null) {
+          textFormatter.setValue(newfile);
+        }
+      });
+    }
   }
 
   /**
@@ -95,21 +111,21 @@ public class FileTextFieldProcessor implements InitializingBean, NodeProcessor {
     }
     TextField textfield = (TextField) node;
     FileTextField conf = (FileTextField) annotation;
-    
-    TextFormatter<String> formatter = new TextFormatter<>(new DefaultStringConverter());
-    textfield.setTextFormatter(formatter);  
+
+    TextFormatter<File> formatter = new TextFormatter<>(new FileStringConverter());
+    textfield.setTextFormatter(formatter);
     textfield.setAlignment(conf.alignment());
     if (conf.beanId().length != 0) {
       Object bean = this.appcontext.getBean(conf.beanId()[0]);
-      TextFormatterPropertyBinder<String> propertyBinder //
+      TextFormatterPropertyBinder<File> propertyBinder //
         = new TextFormatterPropertyBinder<>(formatter, conf.beanId(), bean);
       propertyBinder.bind();
-    }    
-    Map<String, Object> map  = new HashMap<>(); 
-    map.put("textfield", textfield); 
-    map.put("conf", conf); 
-    map.put("parentBean", parentBean); 
-    this.textfields.add(map); 
+    }
+    Map<String, Object> map = new HashMap<>();
+    map.put("textfield", textfield);
+    map.put("conf", conf);
+    map.put("parentBean", parentBean);
+    this.textfields.add(map);
   }
 
 }

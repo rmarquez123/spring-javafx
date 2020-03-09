@@ -55,7 +55,7 @@ public class FxMenuItemAnnotationHandler implements InitializingBean, Annotation
         if (!menuItems.add(fxMenuItem)) {
           throw new IllegalStateException("Duplicate menu item configuration is not allowed: '{"
             + "fxml = "  + fxMenuItem.fxml()
-            + "id = "  + fxMenuItem.id()
+            + ", id = "  + fxMenuItem.id()
             + "}'"); 
         }
       }

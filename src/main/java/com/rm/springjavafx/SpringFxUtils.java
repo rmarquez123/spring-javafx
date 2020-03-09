@@ -144,11 +144,11 @@ public final class SpringFxUtils {
         if (menu.getGraphic() != null && Objects.equals(menu.getGraphic().getId(), id)) {
           return (T) menu.getGraphic();
         }
+
         List<MenuItem> menuItems = menu.getItems();
-        for (MenuItem item : menuItems) {
-          if (Objects.equals(item.getId(), id)) {
-            return (T) item;
-          }
+        Object a = getChildByIDFromMenuItems(menuItems, id);
+        if (a != null) {
+          return (T) a;
         }
       }
     }
@@ -234,7 +234,7 @@ public final class SpringFxUtils {
           } else {
             throw new IllegalStateException(
               String.format(
-              "The tab with label '%s' must have a "
+                "The tab with label '%s' must have a "
                 + "pane content (i.e. Anchor Pane).", tab.getText()));
           }
         }
@@ -256,6 +256,24 @@ public final class SpringFxUtils {
       } else if (node instanceof Parent) {
         T child = getChildByID((Parent) node, id);
 
+        if (child != null) {
+          return child;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   *
+   */
+  private static <T> T getChildByIDFromMenuItems(List<MenuItem> menuItems, String id) {
+    for (MenuItem item : menuItems) {
+      if (Objects.equals(item.getId(), id)) {
+        return (T) item;
+      }
+      if (item instanceof Menu) {
+        T child = getChildByIDFromMenuItems(((Menu) item).getItems(), id); 
         if (child != null) {
           return child;
         }

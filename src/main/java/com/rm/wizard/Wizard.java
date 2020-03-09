@@ -175,6 +175,7 @@ public abstract class Wizard implements Initializable, PopupContent {
     }
   }
 
+  
   @Override
   public final void setPopupWindow(Popup popup) {
     this.popup = popup;
@@ -188,5 +189,34 @@ public abstract class Wizard implements Initializable, PopupContent {
    *
    */
   protected abstract void onSubmit();
-
+  
+  /**
+   * 
+   * @param b 
+   */
+  public void setDisabled(boolean b) {
+    if (b) {
+      this.panels.stream().forEach(this::disablePanel);
+    } else {
+      this.panels.stream().forEach(this::enablePanel);
+    }
+  }
+  
+  /**
+   * 
+   * @param p 
+   */
+  private void disablePanel(AbstractSettingPanel p) {
+//    this.popup.contentNodeProperty().getValue().setDisable(true);
+    p.nextReadyProperty().setValue(false);
+  }
+  
+  /**
+   * 
+   * @param p 
+   */
+  private void enablePanel(AbstractSettingPanel p) {
+//    this.popup.contentNodeProperty().getValue().setDisable(false);
+    p.nextReadyProperty().setValue(true);
+  }
 }

@@ -2,9 +2,9 @@ package com.rm.springjavafx.charts.timeseries;
 
 import common.bindings.RmBindings;
 import common.timeseries.TimeStepValue;
-import java.io.InvalidObjectException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -23,7 +24,6 @@ import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.xy.XYDataset;
 
 /**
  *
@@ -76,12 +76,21 @@ public final class TimeSeriesCollectionManager {
         String.format("No timeseries collection for datasetId = '%d'", datasetId));
     }
 
-    RmBindings.bindActionOnAnyChange(() -> this.updateSeries(dataset, collection),
-      dataset.valueAccessorProperty(),
-      dataset.seriesProperty());
+    RmBindings.bindActionOnAnyChange(() -> {
+      updateChartDataSet(dataset, collection);
+    }, dataset.valueAccessorProperty(), dataset.seriesProperty());
+    updateChartDataSet(dataset, collection);
+  }
 
+  /**
+   *
+   * @param dataset
+   * @param collection
+   */
+  private void updateChartDataSet(SpringFxTimeSeries dataset, TimeSeriesCollection collection) {
     this.updateSeries(dataset, collection);
-
+    this.resetRenderer(collection, dataset.getDatasetId());
+    this.updateChartDatasetsProperty();
   }
 
   /**
@@ -91,46 +100,27 @@ public final class TimeSeriesCollectionManager {
    */
   private synchronized void updateSeries(SpringFxTimeSeries dataset, TimeSeriesCollection collection) {
     common.timeseries.TimeSeries<?> series = dataset.getSeries();
-
-    TimeSeries jfcSeries = new TimeSeries(dataset.getKey());
     Function<TimeStepValue<?>, Double> accessor = dataset.getValueAccessor();
     if (accessor == null) {
       Logger.getLogger(TimeSeriesCollectionManager.class.getName()).log(Level.WARNING,
         String.format("accessor is not defined for dataset '%s'", dataset.getKey()));
     }
+    JfcSeriesBuilder builder = new JfcSeriesBuilder(dataset, dataset.getKey());
     if (series != null && accessor != null) {
-      series.forEach((r) -> {
-        ZonedDateTime dateTime = r.getZoneDateTime();
-        Date time = Date.from(dateTime.toInstant());
-        Double value = accessor.apply(r);
-        Second second = new Second(time);
-        TimeSeriesDataItem item = new TimeSeriesDataItem(second, value);
-        jfcSeries.add(item);
-      });
+      series.forEach(builder::appendTimeStepValue);
     }
     TimeSeries old = collection.getSeries(dataset.getKey());
+    collection.setNotify(false);
     if (old != null) {
       collection.removeSeries(old);
     }
-    collection.addSeries(jfcSeries);
-    collection.setNotify(true);
-    this.plot.setDataset(dataset.getDatasetId(), collection);
-    if (this.plot.getChart() != null) {
-      this.plot.getChart().fireChartChanged();
-    }
-    try {
-      collection.validateObject();
-    } catch (InvalidObjectException ex) {
-      throw new RuntimeException(ex);
-    }
-    this.resetRenderer(collection, dataset.getDatasetId());
-    this.updateChartDatasetsProperty();
+    collection.addSeries(builder.build());
   }
-  
+
   /**
-   * 
+   *
    * @param collection
-   * @param datasetId 
+   * @param datasetId
    */
   private void resetRenderer(TimeSeriesCollection collection, int datasetId) {
     XYItemRenderer renderer = new DefaultXYItemRenderer();
@@ -141,14 +131,13 @@ public final class TimeSeriesCollectionManager {
         renderer.setSeriesStroke(seriesIndex, dataset1.getLineStroke(), true);
         renderer.setSeriesShape(seriesIndex, dataset1.getShape(), true);
         renderer.setSeriesVisible(seriesIndex, this.getVisibility(dataset1), true);
-        StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator(StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
-            new SimpleDateFormat("d-MMM-yyyy HH:mm"), new DecimalFormat("0.00")){
-          @Override
-          public String generateToolTip(XYDataset dataset, int series, int item) {
-            String tooltip = super.generateToolTip(dataset, series, item);
-            return tooltip;
-          }};
-        renderer.setSeriesToolTipGenerator(seriesIndex, ttg);
+        
+        String formatOption = StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT;
+        SimpleDateFormat xformat = new SimpleDateFormat("d-MMM-yyyy HH:mm");
+        DecimalFormat yformat = new DecimalFormat("0.00");
+        XYToolTipGenerator tooltipgenerator //
+          = new StandardXYToolTipGenerator(formatOption, xformat, yformat);
+        renderer.setSeriesToolTipGenerator(seriesIndex, tooltipgenerator);
       }
     }
     this.plot.setRenderer(datasetId, renderer);
@@ -195,7 +184,8 @@ public final class TimeSeriesCollectionManager {
    *
    */
   private void updateChartDatasetsProperty() {
-    this.chart.writableDatasetsProperty().setValue(new ArrayList<>(this.datasets.keySet()));
+    ArrayList<String> chartIds = new ArrayList<>(this.datasets.keySet());
+    this.chart.writableDatasetsProperty().setValue(chartIds);
   }
 
   /**
@@ -222,4 +212,41 @@ public final class TimeSeriesCollectionManager {
     int seriesIndex = collection.getSeriesIndex(key);
     this.plot.getRenderer(datasetId).setSeriesVisible(seriesIndex, visible, Boolean.TRUE);
   }
+  
+  /**
+   *
+   */
+  static class JfcSeriesBuilder {
+
+    private final TimeSeries jfcSeries;
+    private final SpringFxTimeSeries dataset;
+
+    JfcSeriesBuilder(SpringFxTimeSeries dataset, String seriesId) {
+      this.jfcSeries = new TimeSeries(seriesId);
+      this.dataset = dataset;
+    }
+
+    /**
+     *
+     * @param timestepvalue
+     */
+    void appendTimeStepValue(TimeStepValue timestepvalue) {
+      Function<TimeStepValue<?>, Double> accessor = dataset.getValueAccessor();
+      ZonedDateTime dateTime = timestepvalue.getZoneDateTime();
+      Date time = Date.from(dateTime.toOffsetDateTime()
+        .atZoneSimilarLocal(ZoneId.systemDefault()).toInstant());
+      Double value = accessor.apply(timestepvalue);
+      Second second = new Second(time);
+      TimeSeriesDataItem item = new TimeSeriesDataItem(second, value);
+      this.jfcSeries.add(item, false);
+    }
+
+    /**
+     *
+     */
+    TimeSeries build() {
+      return this.jfcSeries;
+    }
+  }
+
 }

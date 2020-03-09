@@ -1,4 +1,4 @@
-package com.rm.springjavafx.nodes.textfields.numeric;
+package com.rm.springjavafx.nodes.textfields.password;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,23 +12,17 @@ import javafx.geometry.Pos;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface NumericTextField {
+public @interface PasswordTextField {
 
   /**
-   * The number format.  For example '####.00'
-   * @return
-   */
-  String format();
-
-  /**
-   * The reference value bean
+   *
    * @return
    */
   String[] beanId() default "";
-  
+
   /**
-   * The position of the text in the text field. 
-   * @return 
+   *
+   * @return
    */
-  Pos alignment() default Pos.CENTER_RIGHT;
+  Pos alignment() default Pos.CENTER_LEFT;
 }

@@ -21,8 +21,8 @@ public class DatePickerPropertyBinder {
   private final Object parentBean;
 
   public DatePickerPropertyBinder( //
-    DateTimePicker formatter, String[] beanId, Property<ZoneId> zoneIdProperty, Object parentBean) {
-    this.datetimepicker = formatter;
+    DateTimePicker datetimepicker, String[] beanId, Property<ZoneId> zoneIdProperty, Object parentBean) {
+    this.datetimepicker = datetimepicker;
     this.beanId = beanId;
     this.zoneIdProperty = zoneIdProperty;
     this.parentBean = parentBean;
@@ -84,7 +84,8 @@ public class DatePickerPropertyBinder {
   private void doSingleLayerBinding() {
     Property<ZonedDateTime> property = (Property<ZonedDateTime>) parentBean;
     RmBindings.bindObject(property,
-      this::mapDatePickerToDateTime, datetimepicker.valueProperty());
+      this::mapDatePickerToDateTime, datetimepicker.dateTimeValueProperty());
+
   }
 
   /**

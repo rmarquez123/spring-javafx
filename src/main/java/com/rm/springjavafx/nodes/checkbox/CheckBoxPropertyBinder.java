@@ -26,7 +26,6 @@ public class CheckBoxPropertyBinder {
    *
    */
   public void bind() {
-    
     if (beanId.length == 1) {
       this.doSingleLayerBinding();
     } else if (parentBean != null) {

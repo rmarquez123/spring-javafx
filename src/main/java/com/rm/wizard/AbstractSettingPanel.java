@@ -21,6 +21,8 @@ public abstract class AbstractSettingPanel {
   public final BooleanProperty nextReadyProperty(){
     return this.booleanProperty;
   };
+  
+  
 
   /**
    * 
