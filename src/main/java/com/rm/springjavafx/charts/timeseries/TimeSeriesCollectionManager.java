@@ -36,7 +36,7 @@ public final class TimeSeriesCollectionManager {
    */
   private final XYPlot plot;
   private final TimeSeriesChartPane chart;
-  private final Map<String, SpringFxTimeSeries> datasets = new HashMap<>();
+  private final Map<String, ChartSeries> datasets = new HashMap<>();
 
   /**
    *
@@ -63,7 +63,7 @@ public final class TimeSeriesCollectionManager {
    *
    * @param dataset
    */
-  public void addDataSet(SpringFxTimeSeries dataset) {
+  public void addDataSet(ChartSeries dataset) {
     if (this.datasets.containsKey(dataset.getKey())) {
       throw new IllegalArgumentException(
         String.format("Data set '%s' cannot be added twice", dataset.getKey()));
@@ -75,11 +75,18 @@ public final class TimeSeriesCollectionManager {
       throw new IllegalStateException(
         String.format("No timeseries collection for datasetId = '%d'", datasetId));
     }
-
     RmBindings.bindActionOnAnyChange(() -> {
       updateChartDataSet(dataset, collection);
     }, dataset.valueAccessorProperty(), dataset.seriesProperty());
+    
     updateChartDataSet(dataset, collection);
+  }
+  
+  
+  public void removeDataSet(ChartSeries dataset) {
+    if (this.datasets.containsKey(dataset.getKey())) {
+      
+    }
   }
 
   /**
@@ -87,7 +94,7 @@ public final class TimeSeriesCollectionManager {
    * @param dataset
    * @param collection
    */
-  private void updateChartDataSet(SpringFxTimeSeries dataset, TimeSeriesCollection collection) {
+  private void updateChartDataSet(ChartSeries dataset, TimeSeriesCollection collection) {
     this.updateSeries(dataset, collection);
     this.resetRenderer(collection, dataset.getDatasetId());
     this.updateChartDatasetsProperty();
@@ -98,7 +105,7 @@ public final class TimeSeriesCollectionManager {
    * @param dataset
    * @param collection
    */
-  private synchronized void updateSeries(SpringFxTimeSeries dataset, TimeSeriesCollection collection) {
+  private synchronized void updateSeries(ChartSeries dataset, TimeSeriesCollection collection) {
     common.timeseries.TimeSeries<?> series = dataset.getSeries();
     Function<TimeStepValue<?>, Double> accessor = dataset.getValueAccessor();
     if (accessor == null) {
@@ -124,7 +131,7 @@ public final class TimeSeriesCollectionManager {
    */
   private void resetRenderer(TimeSeriesCollection collection, int datasetId) {
     XYItemRenderer renderer = new DefaultXYItemRenderer();
-    for (SpringFxTimeSeries dataset1 : this.datasets.values()) {
+    for (ChartSeries dataset1 : this.datasets.values()) {
       if (Objects.equals(dataset1.getDatasetId(), datasetId)) {
         int seriesIndex = collection.getSeriesIndex(dataset1.getKey());
         renderer.setSeriesPaint(seriesIndex, dataset1.getLineColorAwt(), true);
@@ -151,8 +158,8 @@ public final class TimeSeriesCollectionManager {
     if (value == null) {
       this.allVisible();
     } else {
-      for (Map.Entry<String, SpringFxTimeSeries> entry : this.datasets.entrySet()) {
-        SpringFxTimeSeries dataset = entry.getValue();
+      for (Map.Entry<String, ChartSeries> entry : this.datasets.entrySet()) {
+        ChartSeries dataset = entry.getValue();
         this.setVisibility(dataset);
       }
     }
@@ -164,7 +171,7 @@ public final class TimeSeriesCollectionManager {
   private void allVisible() {
     this.plot.getDataset();
     for (String key : this.datasets.keySet()) {
-      SpringFxTimeSeries dataset = this.datasets.get(key);
+      ChartSeries dataset = this.datasets.get(key);
       setVisibility(dataset, Boolean.TRUE);
     }
   }
@@ -173,7 +180,7 @@ public final class TimeSeriesCollectionManager {
    *
    * @param dataset
    */
-  private boolean getVisibility(SpringFxTimeSeries dataset) {
+  private boolean getVisibility(ChartSeries dataset) {
     String key = dataset.getKey();
     List<String> value = this.chart.visibleDatasetsProperty().getValue();
     boolean visible = value == null ? true : value.contains(key);
@@ -192,7 +199,7 @@ public final class TimeSeriesCollectionManager {
    *
    * @param dataset
    */
-  private void setVisibility(SpringFxTimeSeries dataset) {
+  private void setVisibility(ChartSeries dataset) {
     String key = dataset.getKey();
     List<String> value = this.chart.visibleDatasetsProperty().getValue();
     boolean visible = value == null ? true : value.contains(key);
@@ -205,7 +212,7 @@ public final class TimeSeriesCollectionManager {
    * @param key
    * @param visible
    */
-  private void setVisibility(SpringFxTimeSeries dataset, boolean visible) {
+  private void setVisibility(ChartSeries dataset, boolean visible) {
     int datasetId = dataset.getDatasetId();
     String key = dataset.getKey();
     TimeSeriesCollection collection = (TimeSeriesCollection) plot.getDataset(datasetId);
@@ -219,9 +226,9 @@ public final class TimeSeriesCollectionManager {
   static class JfcSeriesBuilder {
 
     private final TimeSeries jfcSeries;
-    private final SpringFxTimeSeries dataset;
+    private final ChartSeries dataset;
 
-    JfcSeriesBuilder(SpringFxTimeSeries dataset, String seriesId) {
+    JfcSeriesBuilder(ChartSeries dataset, String seriesId) {
       this.jfcSeries = new TimeSeries(seriesId);
       this.dataset = dataset;
     }

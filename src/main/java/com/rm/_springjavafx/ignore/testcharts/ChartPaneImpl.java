@@ -1,9 +1,9 @@
 package com.rm._springjavafx.ignore.testcharts;
 
 import com.rm.springjavafx.FxmlInitializer;
-import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.annotations.FxAttach;
 import com.rm.springjavafx.annotations.FxController;
+import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.charts.timeseries.TimeSeriesChart;
 import com.rm.springjavafx.charts.timeseries.TimeSeriesChartPane;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
- *
+ *  
  * @author Ricardo Marquez
  */
 @Component

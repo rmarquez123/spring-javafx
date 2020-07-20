@@ -69,6 +69,7 @@ public class FxButtonProcessor implements InitializingBean, NodeProcessor {
     }
     handler = (evt) -> {
       try {
+        onAction.setAccessible(true);
         onAction.invoke(parentBean, evt);
       } catch (Exception ex) {
         throw new RuntimeException(ex);

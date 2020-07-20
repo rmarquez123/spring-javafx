@@ -35,6 +35,7 @@ public abstract class XYChartPane implements InitializingBean {
   private final Property<List<String>> visibleDatasetsProperty = new SimpleObjectProperty();
   private final Property<List<String>> datasetsProperty = new SimpleObjectProperty();
   private final XYDataSetGroup[] datasetgroups;
+  private final Property<ChartViewer> viewerProperty = new SimpleObjectProperty<>();
 
   /**
    *
@@ -44,11 +45,11 @@ public abstract class XYChartPane implements InitializingBean {
     this.datasetgroups = chart.datasetgroups();
     this.plot = new XYPlot();
     this.plot.setOrientation(chart.orientation().toJFreeOrientation());;
-    
+
     NumberAxis domainAxis = new NumberAxis();
     domainAxis.setAutoRange(true);
     domainAxis.setAutoRangeIncludesZero(false);
-    
+
     this.plot.setDomainAxis(domainAxis);
     NumberAxis numberAxis = this.getRangeAxis();
     numberAxis.setAutoRange(true);
@@ -128,8 +129,13 @@ public abstract class XYChartPane implements InitializingBean {
       ChartViewer viewer = this.getChart();
       this.chartPane.getChildren().clear();
       SpringFxUtils.setNodeOnRefPane(this.chartPane, viewer);
+      this.viewerProperty.setValue(viewer);
     });
     this.postInit();
+  }
+
+  public ReadOnlyProperty<ChartViewer> viewerProperty() {
+    return this.viewerProperty;
   }
 
   /**

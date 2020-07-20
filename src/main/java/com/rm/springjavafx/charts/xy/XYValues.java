@@ -56,4 +56,35 @@ public class XYValues implements Iterable<XYValue>{
     return this.values.get(i1).getY();
   }
   
+  /**
+   * 
+   * @param i1
+   * @return 
+   */
+  public Object getUserObj(int i1) {
+    return this.values.get(i1).getUserObj();
+  }
+
+  /**
+   * 
+   * @return 
+   */
+  public double maxX() {
+    double result = this.values.stream()
+      .mapToDouble(i->i.getX().doubleValue())
+      .max()
+      .orElse(Double.NaN);
+    return result;
+  }
+  
+
+
+  public double maxY() {
+    double result = this.values.stream()
+      .mapToDouble(i->i.getY().doubleValue())
+      .max()
+      .orElse(Double.NaN);
+    return result;
+  }
+  
 }

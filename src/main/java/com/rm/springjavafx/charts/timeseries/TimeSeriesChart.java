@@ -37,5 +37,12 @@ public @interface TimeSeriesChart {
    * @return
    */
   int datasets();
+
+  
+  /**
+   * 
+   * @return 
+   */
+  public String clickId() default "";
   
 }

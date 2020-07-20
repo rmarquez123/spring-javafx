@@ -11,10 +11,15 @@ import com.rm.springjavafx.charts.xy.XYDataSet;
 import common.bindings.RmBindings;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.fx.ChartViewer;
+import org.jfree.chart.fx.interaction.ChartMouseEventFX;
+import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -103,7 +108,44 @@ public class XYChartAnnotationHandler implements InitializingBean, AnnotationHan
       }
       Node node = this.createChart(bean);
       SpringFxUtils.setNodeOnRefPane(refPane, node);
+      this.initClickHandler(bean);
     }
+  }
+
+  /**
+   *
+   * @param bean
+   * @throws BeansException
+   */
+  private void initClickHandler(Object bean) throws BeansException {
+    String clickId = bean.getClass().getDeclaredAnnotation(XYChart.class).clickId();
+    Consumer<Object> clicker;
+    if (!clickId.isEmpty()
+      && (clicker = (Consumer<Object>) this.appContext.getBean(clickId)) != null) {
+      ((XYChartPane) bean).viewerProperty().addListener((obs, old, change) -> {
+        this.addChartMouseListener(change, clicker);
+      });
+      ChartViewer viewer = ((XYChartPane) bean).viewerProperty().getValue();
+      if (viewer != null) {
+        this.addChartMouseListener(viewer, clicker);
+      }
+    }
+  }
+
+  private void addChartMouseListener(ChartViewer change, Consumer<Object> clicker) {
+    change.addChartMouseListener(new ChartMouseListenerFX() {
+      @Override
+      public void chartMouseClicked(ChartMouseEventFX evt) {
+        if (evt.getEntity() instanceof XYItemEntity) {
+          XYItemEntity entity = (XYItemEntity) evt.getEntity();
+          clicker.accept(entity);
+        }
+      }
+
+      @Override
+      public void chartMouseMoved(ChartMouseEventFX event) {
+      }
+    });
   }
 
   /**
@@ -174,11 +216,11 @@ public class XYChartAnnotationHandler implements InitializingBean, AnnotationHan
   private String getChartId(Object b) {
     return b.getClass().getDeclaredAnnotation(XYChart.class).id();
   }
-  
+
   /**
-   * 
+   *
    * @param bean
-   * @return 
+   * @return
    */
   private Node createChart(Object bean) {
     ChartViewer chartView = new ChartViewer();

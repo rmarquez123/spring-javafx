@@ -11,10 +11,15 @@ import com.rm.springjavafx.charts.timeseries.TimeSeriesDataset;
 import common.bindings.RmBindings;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.fx.ChartViewer;
+import org.jfree.chart.fx.interaction.ChartMouseEventFX;
+import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -103,7 +108,44 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
       }
       Node node = this.createChart(bean);
       SpringFxUtils.setNodeOnRefPane(refPane, node);
+      this.initClickHandler(bean);
     }
+  }
+
+  /**
+   *
+   * @param bean
+   * @throws BeansException
+   */
+  private void initClickHandler(Object bean) throws BeansException {
+    String clickId = bean.getClass().getDeclaredAnnotation(TimeSeriesChart.class).clickId();
+    Consumer<Object> clicker;
+    if (!clickId.isEmpty()
+      && (clicker = (Consumer<Object>) this.appContext.getBean(clickId)) != null) {
+      ((TimeSeriesChartPane) bean).viewerProperty().addListener((obs, old, change) -> {
+        this.addChartMouseListener(change, clicker);
+      });
+      ChartViewer viewer = ((TimeSeriesChartPane) bean).viewerProperty().getValue();
+      if (viewer != null) {
+        this.addChartMouseListener(viewer, clicker);
+      }
+    }
+  }
+
+  private void addChartMouseListener(ChartViewer change, Consumer<Object> clicker) {
+    change.addChartMouseListener(new ChartMouseListenerFX() {
+      @Override
+      public void chartMouseClicked(ChartMouseEventFX evt) {
+        if (evt.getEntity() instanceof XYItemEntity) {
+          XYItemEntity entity = (XYItemEntity) evt.getEntity();
+          clicker.accept(entity);
+        }
+      }
+
+      @Override
+      public void chartMouseMoved(ChartMouseEventFX event) {
+      }
+    });
   }
 
   /**
@@ -124,7 +166,8 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
           throw new RuntimeException(
             String.format("timeseries dataset '%s' is invalid", beanId), ex);
         }
-        TimeSeriesDataset annotation = value.getClass().getDeclaredAnnotation(TimeSeriesDataset.class);
+
+        TimeSeriesDataset annotation = ((SpringFxTimeSeries) value).getConfiguration();
         Object chartBean = chartBeans.values().stream()
           .filter((b) -> getChartId(b).equals(annotation.chart()))
           .findFirst()
@@ -134,6 +177,7 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
             TimeSeriesChartPane timeSeriesChart = (TimeSeriesChartPane) chartBean;
             TimeSeriesCollectionManager manager = new TimeSeriesCollectionManager(timeSeriesChart);
             managers.put(annotation.chart(), manager);
+            timeSeriesChart.setManager(manager);
           }
           TimeSeriesCollectionManager manager = managers.get(annotation.chart());
           manager.addDataSet(seriesDataset);
@@ -174,11 +218,11 @@ public class TimeSeriesChartAnnotationHandler implements InitializingBean, Annot
   private String getChartId(Object b) {
     return b.getClass().getDeclaredAnnotation(TimeSeriesChart.class).id();
   }
-  
+
   /**
-   * 
+   *
    * @param bean
-   * @return 
+   * @return
    */
   private Node createChart(Object bean) {
     ChartViewer chartView = new ChartViewer();

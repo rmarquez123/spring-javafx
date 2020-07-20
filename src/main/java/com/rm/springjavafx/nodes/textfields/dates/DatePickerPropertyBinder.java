@@ -83,9 +83,10 @@ public class DatePickerPropertyBinder {
    */
   private void doSingleLayerBinding() {
     Property<ZonedDateTime> property = (Property<ZonedDateTime>) parentBean;
+    ZonedDateTime value = property.getValue();
     RmBindings.bindObject(property,
       this::mapDatePickerToDateTime, datetimepicker.dateTimeValueProperty());
-
+    this.datetimepicker.setDateTimeValue(value.toLocalDateTime());
   }
 
   /**

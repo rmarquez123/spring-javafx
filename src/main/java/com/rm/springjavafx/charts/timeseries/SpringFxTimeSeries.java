@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
  *
  * @author Ricardo Marquez
  */
-public class SpringFxTimeSeries {
+public class SpringFxTimeSeries implements ChartSeries {
 
   private final int datasetId;
   private final String name;
@@ -25,12 +25,23 @@ public class SpringFxTimeSeries {
   private final Property<TimeSeries<?>> seriesProperty = new SimpleObjectProperty<>();
   private final Property<Function<TimeStepValue<?>, Double>> valueAccessorProperty = new SimpleObjectProperty<>();
   private final Color lineColor;
+  private TimeSeriesDataset configuration;
 
   /**
    *
    */
   public SpringFxTimeSeries() {
-    TimeSeriesDataset conf = this.getClass().getDeclaredAnnotation(TimeSeriesDataset.class);
+    this.configuration = this.getClass().getDeclaredAnnotation(TimeSeriesDataset.class);
+    this.name = this.configuration.name();
+    this.datasetId = this.configuration.dataset();
+    this.lineColor = Color.web(this.configuration.lineColorHex());
+  }
+  
+  /**
+   *
+   */
+  public SpringFxTimeSeries(TimeSeriesDataset conf) {
+    this.configuration = conf;
     this.name = conf.name();
     this.datasetId = conf.dataset();
     this.lineColor = Color.web(conf.lineColorHex());
@@ -39,6 +50,7 @@ public class SpringFxTimeSeries {
   /**
    *
    */
+  @Override
   public void validate() throws Exception {
     Objects.requireNonNull(this.valueAccessorProperty.getValue(), "value accesor cannot be null");
   }
@@ -46,6 +58,7 @@ public class SpringFxTimeSeries {
   /**
    *
    */
+  @Override
   public Color getLineColor() {
     return lineColor;
   }
@@ -53,6 +66,7 @@ public class SpringFxTimeSeries {
   /**
    *
    */
+  @Override
   public java.awt.Color getLineColorAwt() {
     float r = new Double(this.lineColor.getRed()).floatValue();
     float g = new Double(this.lineColor.getGreen()).floatValue();
@@ -64,6 +78,7 @@ public class SpringFxTimeSeries {
    * 
    * @return 
    */
+  @Override
   public Shape getShape() {
     double radius = 4;
     Ellipse2D e =new Ellipse2D.Double(-radius/2., -radius/2., radius, radius);
@@ -73,6 +88,7 @@ public class SpringFxTimeSeries {
   /**
    *
    */
+  @Override
   public String getKey() {
     return name;
   }
@@ -81,13 +97,15 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
-  int getDatasetId() {
+  @Override
+  public int getDatasetId() {
     return this.datasetId;
   }
 
   /**
    *
    */
+  @Override
   public void setTimeSeries(TimeSeries<?> timeseries) {
     this.seriesProperty.setValue(timeseries);
   }
@@ -96,6 +114,7 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
+  @Override
   public ReadOnlyProperty<TimeSeries<?>> seriesProperty() {
     return this.seriesProperty;
   }
@@ -104,6 +123,7 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
+  @Override
   public TimeSeries<?> getSeries() {
     return seriesProperty.getValue();
   }
@@ -112,6 +132,7 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
+  @Override
   public Property<Function<TimeStepValue<?>, Double>> valueAccessorProperty() {
     return this.valueAccessorProperty;
   }
@@ -120,7 +141,8 @@ public class SpringFxTimeSeries {
    *
    * @return
    */
-  Function<TimeStepValue<?>, Double> getValueAccessor() {
+  @Override
+  public Function<TimeStepValue<?>, Double> getValueAccessor() {
     return this.valueAccessorProperty.getValue();
   }
 
@@ -128,7 +150,16 @@ public class SpringFxTimeSeries {
    * 
    * @return 
    */
-  Stroke getLineStroke() {
+  @Override
+  public Stroke getLineStroke() {
     return new BasicStroke(2); 
+  }
+
+  /**
+   * 
+   * @return 
+   */
+  public TimeSeriesDataset getConfiguration() {
+    return this.configuration;
   }
 }

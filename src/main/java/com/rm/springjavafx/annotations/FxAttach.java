@@ -15,5 +15,6 @@ public @interface FxAttach {
 
   String fxml();
 
+  
   String id();
 }

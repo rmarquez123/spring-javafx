@@ -36,6 +36,7 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
   private final XYPlot plot;
   private final Property<List<String>> visibleDatasetsProperty = new SimpleObjectProperty();
   private final Property<List<String>> datasetsProperty = new SimpleObjectProperty();
+  private final Property<ChartViewer> viewerProperty = new SimpleObjectProperty<>();
 
   /**
    *
@@ -55,7 +56,7 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
     numberAxis.setAutoRangeIncludesZero(false);
     numberAxis.setAutoRangeStickyZero(false);
     this.plot.setRangeAxes(new ValueAxis[]{numberAxis});
-    
+
     StandardXYToolTipGenerator ttg = new StandardXYToolTipGenerator();
     DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
     this.plot.setRenderer(renderer);
@@ -114,8 +115,13 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
       ChartViewer viewer = this.getChart();
       this.chartPane.getChildren().clear();
       SpringFxUtils.setNodeOnRefPane(this.chartPane, viewer);
+      this.viewerProperty.setValue(viewer);
     });
     this.postInit();
+  }
+
+  public ReadOnlyProperty<ChartViewer> viewerProperty() {
+    return this.viewerProperty;
   }
 
   /**
@@ -203,13 +209,20 @@ public abstract class TimeSeriesChartPane implements InitializingBean {
     }
 
   }
-  
+
   /**
-   * 
+   *
    * @param i
-   * @return 
+   * @return
    */
   protected String getLabel(int i) {
     return null;
+  }
+
+  /**
+   *
+   * @param manager
+   */
+  public void setManager(TimeSeriesCollectionManager manager) {
   }
 }

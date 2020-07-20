@@ -5,7 +5,6 @@ import com.rm.springjavafx.charts.xy.datasets.JFreeIntervalXYDataSet;
 import java.awt.BasicStroke;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
@@ -17,18 +16,19 @@ public enum PlotType {
   MARKER_ONLY {
     @Override
     void setSeriesRenderer(RenderArguments args) {
-      XYDotRenderer renderer = (XYDotRenderer) args.renderer;
+      DefaultXYItemRenderer renderer = (DefaultXYItemRenderer) args.renderer;
       renderer.setSeriesPaint(args.seriesIndex, args.dataset.getLineColorAwt(), true);
       renderer.setSeriesStroke(args.seriesIndex, new BasicStroke(0), true);
       renderer.setSeriesShape(args.seriesIndex, args.dataset.getShape(), true);
-      renderer.setDotWidth(10);
-      renderer.setDotHeight(10);
+      renderer.setSeriesLinesVisible(args.seriesIndex, Boolean.FALSE);
+//      renderer.setDotWidth((int) args.dataset.getShape().getBounds2D().getWidth());
+//      renderer.setDotHeight((int) args.dataset.getShape().getBounds2D().getHeight());
       
     }
 
     @Override
     XYItemRenderer getRenderer() {
-      return new XYDotRenderer();
+      return new DefaultXYItemRenderer();
     }
     @Override
     XYDataset getDataset(XYDataSetGroup args) {

@@ -43,5 +43,12 @@ public @interface XYChart {
    * @return 
    */
   FxPlotOrientation orientation() default FxPlotOrientation.VERTICAL;
+  
+  
+  /**
+   * 
+   * @return 
+   */
+  String clickId() default "";
 
 }

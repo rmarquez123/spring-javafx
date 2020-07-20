@@ -2,8 +2,10 @@ package com.rm.springjavafx.nodes.combobox;
 
 import com.rm.springjavafx.nodes.NodeProcessor;
 import com.rm.springjavafx.nodes.NodeProcessorFactory;
+import common.bindings.RmBindings;
 import java.lang.annotation.Annotation;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.scene.control.ComboBox;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +57,15 @@ public class ComboBoxProcessor implements InitializingBean, NodeProcessor {
     String[] beanId = conf.beanId();
     ComboBoxPropertyBinder binder = new ComboBoxPropertyBinder(combobox, beanId, bean);
     binder.bind();
-    
     String[] listref = conf.listRef();
-    ObservableList list = (ObservableList) this.appcontext.getBean(listref[0]); 
-    combobox.setItems(list);
+    Object collection = this.appcontext.getBean(listref[0]);
+    if (collection instanceof ObservableList) {
+      ObservableList list = (ObservableList) collection;
+      RmBindings.bindCollections(combobox.getItems(), list); 
+    } else if (collection instanceof ObservableSet) {
+      RmBindings.bindCollections(combobox.getItems(), (ObservableSet) collection);
+    } else {
+      throw new RuntimeException();
+    }
   }
 }
