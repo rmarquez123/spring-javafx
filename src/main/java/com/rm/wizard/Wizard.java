@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.rm.wizard;
 
 import com.rm.springjavafx.FxmlInitializer;
@@ -118,7 +113,7 @@ public abstract class Wizard implements Initializable, PopupContent {
   /**
    *
    */
-  protected void updateContent() {
+  public void updateContent() {
     AbstractSettingPanel current = this.currentPanel.getValue();
     this.contentPane.getChildren().clear();
     if (current != null) {

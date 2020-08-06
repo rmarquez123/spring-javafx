@@ -6,6 +6,7 @@ import com.rm.springjavafx.nodes.TextFormatterPropertyBinder;
 import java.lang.annotation.Annotation;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParsePosition;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.util.converter.NumberStringConverter;
@@ -53,7 +54,19 @@ public class NumericTextFieldProcessor implements NodeProcessor, InitializingBea
     }
     TextField textfield = (TextField) node;
     NumericTextField conf = (NumericTextField) annotation;
-    NumberFormat numberFormat = new DecimalFormat(conf.format());
+    NumberFormat numberFormat;
+    if (conf.format().trim().equals("#")) {
+      numberFormat = new DecimalFormat(conf.format().trim()) {  
+        @Override
+        public Number parse(String text, ParsePosition pos) {
+          Number parse = super.parse(text, pos);
+          return parse == null ? null : parse.intValue();
+        }
+      };
+      numberFormat.setParseIntegerOnly(true);
+    } else {
+      numberFormat = new DecimalFormat(conf.format().trim()); 
+    }
     NumberStringConverter converter = new NumberStringConverter(numberFormat);
     TextFormatter<Number> formatter = new TextFormatter<>(converter);
     textfield.setTextFormatter(formatter);
