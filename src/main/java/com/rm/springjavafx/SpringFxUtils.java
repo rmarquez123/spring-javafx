@@ -252,10 +252,8 @@ public final class SpringFxUtils {
             }
           }
         }
-
       } else if (node instanceof Parent) {
         T child = getChildByID((Parent) node, id);
-
         if (child != null) {
           return child;
         }

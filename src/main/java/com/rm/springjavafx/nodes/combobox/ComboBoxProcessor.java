@@ -65,7 +65,7 @@ public class ComboBoxProcessor implements InitializingBean, NodeProcessor {
     } else if (collection instanceof ObservableSet) {
       RmBindings.bindCollections(combobox.getItems(), (ObservableSet) collection);
     } else {
-      throw new RuntimeException();
+      throw new RuntimeException("collection is not an observable list or observable set.");
     }
   }
 }

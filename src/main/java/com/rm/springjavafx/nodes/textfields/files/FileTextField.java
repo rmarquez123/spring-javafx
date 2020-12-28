@@ -14,13 +14,36 @@ import javafx.geometry.Pos;
 @Target(ElementType.FIELD)
 public @interface FileTextField {
   
+  /**
+   * 
+   * @return 
+   */
   String[] beanId() default "";
   
+  /**
+   * 
+   * @return 
+   */
   String buttonRef();
   
   
+  /**
+   * 
+   * @return 
+   */
   Pos alignment() default Pos.CENTER_LEFT;
   
+  /**
+   * 
+   * 
+   * @return 
+   */
+  String[] extensions() default {};
   
+  /**
+   * 
+   * @return 
+   */
+  String[] extensionNames() default {};
   
 }

@@ -86,7 +86,11 @@ public class DatePickerPropertyBinder {
     ZonedDateTime value = property.getValue();
     RmBindings.bindObject(property,
       this::mapDatePickerToDateTime, datetimepicker.dateTimeValueProperty());
-    this.datetimepicker.setDateTimeValue(value.toLocalDateTime());
+    property.addListener((a, b, c)->{
+      this.datetimepicker.setDateTimeValue(c == null ? null : c.toLocalDateTime());
+    });
+    this.datetimepicker.setDateTimeValue(value == null ? null : value.toLocalDateTime());
+    
   }
 
   /**

@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.text.DecimalFormat;
 import javafx.geometry.Pos;
 
 /**
@@ -15,8 +16,9 @@ import javafx.geometry.Pos;
 public @interface NumericTextField {
 
   /**
-   * The number format.  For example '####.00'
+   * The number format.  For example '####.00'. Use # for integer values. 
    * @return
+   * @see DecimalFormat
    */
   String format();
 

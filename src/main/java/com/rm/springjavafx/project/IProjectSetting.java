@@ -9,7 +9,7 @@ import java.io.Serializable;
 public interface IProjectSetting {
 
   /**
-   * 
+   *
    * @return
    */
   Serializable serialize();

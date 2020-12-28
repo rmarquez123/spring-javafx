@@ -208,6 +208,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
             + "fxml = " + fxml
             + ", parent = " + parent
             + ", id = " + id
+            + ", bean = " + bean
             + "}");
         }
         setChildNodeToFieldValue(field, bean, child);
