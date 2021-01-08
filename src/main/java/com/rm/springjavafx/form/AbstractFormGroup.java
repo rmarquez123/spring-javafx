@@ -1,5 +1,6 @@
 package com.rm.springjavafx.form;
 
+import com.rm.springjavafx.SpringFxUtils;
 import common.db.RecordValue;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -209,7 +210,7 @@ public abstract class AbstractFormGroup {
    * @return
    */
   private List<FormItem> createFormItems(RecordValue r) {
-    Field[] fields = this.getClass().getDeclaredFields();
+    Field[] fields = SpringFxUtils.getFields(this);
     List<FormItem> items = new ArrayList<>();
     for (Field field : fields) {
       FxFormItem fxFormItem = field.getDeclaredAnnotation(FxFormItem.class);

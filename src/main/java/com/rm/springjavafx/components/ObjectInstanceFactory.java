@@ -11,6 +11,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -51,7 +52,7 @@ public class ObjectInstanceFactory implements FactoryBean<Object>, InitializingB
     constructor.setAccessible(true);
     Object result = constructor.newInstance(this.constructorArgs.toArray(new Object[]{}));
     for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
-      Field field = clazz.getDeclaredField(entry.getKey()); 
+      Field field = ReflectionUtils.findField(clazz, entry.getKey()); 
       field.setAccessible(true);
       field.set(result, entry.getValue());
     }

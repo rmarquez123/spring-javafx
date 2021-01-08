@@ -4,6 +4,7 @@ import common.bindings.RmBindings;
 import java.lang.reflect.Field;
 import javafx.beans.property.Property;
 import javafx.scene.control.CheckBox;
+import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -45,7 +46,7 @@ public class CheckBoxPropertyBinder {
       beanProperty.addListener((obs, old, change) -> {
         if (old != null) {
           try {
-            Field f = old.getClass().getDeclaredField(beanId[1]);
+            Field f = ReflectionUtils.findField(old.getClass(), beanId[1]);
             f.setAccessible(true);
             Property<Number> property = (Property<Number>) f.get(old);
             property.unbind();
@@ -62,7 +63,7 @@ public class CheckBoxPropertyBinder {
       binder.bindToFormatter(beanProperty.getValue());
     } else {
       try {
-        Field f = parentBean.getClass().getDeclaredField(beanId[1]);
+        Field f = ReflectionUtils.findField(parentBean.getClass(), beanId[1]);
         Property<Boolean> property = (Property<Boolean>) f.get(parentBean);
         RmBindings.bind1To2(checkbox.selectedProperty(), property);
       } catch (Exception ex) {
@@ -100,7 +101,7 @@ public class CheckBoxPropertyBinder {
      */
     private void bindToFormatter(Object change) {
       try {
-        Field f = change.getClass().getDeclaredField(this.beanId[1]);
+        Field f = ReflectionUtils.findField(change.getClass(), this.beanId[1]);
         f.setAccessible(true);
         Property<Boolean> property;
         if (this.parentbean instanceof Property) {

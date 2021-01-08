@@ -2,6 +2,7 @@ package com.rm.springjavafx;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -21,8 +22,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ReflectionUtils;
 
 public final class SpringFxUtils {
 
@@ -92,7 +93,7 @@ public final class SpringFxUtils {
       try {
         String[] parts = beanId.split("#");
         Object parent = appContext.getBean(parts[0]);
-        Field field = parent.getClass().getDeclaredField(parts[1]);
+        Field field = ReflectionUtils.findField(parent.getClass(), parts[1]);
         field.setAccessible(true);
         valueProperty = (Property<?>) field.get(parent);
       } catch (Exception ex) {
@@ -302,9 +303,9 @@ public final class SpringFxUtils {
    * @return
    */
   public static Field[] getFields(Object bean) {
-    Field[] fields = bean.getClass().getFields();
-    Field[] declared = bean.getClass().getDeclaredFields();
-    Field[] a = ArrayUtils.addAll(fields, declared);
-    return a;
+    List<Field> list = new ArrayList<>();
+    ReflectionUtils.doWithFields(bean.getClass(), list::add);
+    Field[] result = list.toArray(new Field[]{});
+    return result;
   }
 }

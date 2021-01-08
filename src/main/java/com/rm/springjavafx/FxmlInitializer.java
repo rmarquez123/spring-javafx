@@ -155,10 +155,6 @@ public class FxmlInitializer implements InitializingBean {
           fxControllers.put(fxController.fxml(), value); 
         }
       }
-//      Map<String, Object> fxControllers = beans.values().stream()
-//        .filter((v) -> !v.getClass().getDeclaredAnnotation(FxController.class).fxml().isEmpty())
-//        .collect(Collectors.toMap((v) -> v.getClass().getDeclaredAnnotation(FxController.class).fxml(), (v) -> v));
-
       for (String fxml : this.fxmlList) {
         if (!this.rootNodes.containsKey(fxml)) {
           URL resource = classLoader.getResource(fxml);

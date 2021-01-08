@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import org.springframework.util.ReflectionUtils;
 import tornadofx.control.DateTimePicker;
 
 /**
@@ -51,7 +52,7 @@ public class DatePickerPropertyBinder {
       beanProperty.addListener((obs, old, change) -> {
         if (old != null) {
           try {
-            Field f = old.getClass().getDeclaredField(beanId[1]);
+            Field f = ReflectionUtils.findField(old.getClass(), beanId[1]);
             f.setAccessible(true);
             Property<Number> property = (Property<Number>) f.get(old);
             property.unbind();
@@ -68,7 +69,7 @@ public class DatePickerPropertyBinder {
       binder.bindToFormatter(beanProperty.getValue());
     } else {
       try {
-        Field f = parentBean.getClass().getDeclaredField(beanId[1]);
+        Field f = ReflectionUtils.findField(parentBean.getClass(), beanId[1]);
         Property<ZonedDateTime> property = (Property<ZonedDateTime>) f.get(parentBean);
         RmBindings.bindObject(property, this::mapDatePickerToDateTime, datetimepicker.valueProperty());
 
@@ -121,7 +122,7 @@ public class DatePickerPropertyBinder {
      */
     private void bindToFormatter(Object change) {
       try {
-        Field f = change.getClass().getDeclaredField(this.host.beanId[1]);
+        Field f = ReflectionUtils.findField(change.getClass(), this.host.beanId[1]);
         f.setAccessible(true);
         Property<ZonedDateTime> property;
         if (this.host.parentBean instanceof Property) {

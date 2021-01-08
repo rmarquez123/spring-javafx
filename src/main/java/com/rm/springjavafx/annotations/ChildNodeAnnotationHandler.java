@@ -10,6 +10,7 @@ import com.rm.springjavafx.nodes.NodeProcessor;
 import com.rm.springjavafx.nodes.NodeProcessorFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.function.Consumer;
 import javafx.scene.Parent;
@@ -30,9 +31,9 @@ import org.springframework.stereotype.Component;
 public class ChildNodeAnnotationHandler implements InitializingBean {
 
   private static FxmlInitializer fxmlInitializer;
-  
+
   private static NodeProcessorFactory nodeProcessorFactory;
-    
+
   @Autowired
   private ApplicationContext appContext;
 
@@ -43,7 +44,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
   public void setFxmlInitializer(FxmlInitializer fxmlInitializer) {
     ChildNodeAnnotationHandler.fxmlInitializer = fxmlInitializer;
   }
-  
+
   @Autowired
   public void setNodeProcessorFactory(NodeProcessorFactory factory) {
     ChildNodeAnnotationHandler.nodeProcessorFactory = factory;
@@ -133,11 +134,10 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(FxController.class);
     beans.values().forEach(this::setBeanChildNode);
   }
-  
-  
+
   /**
-   * 
-   * @param bean 
+   *
+   * @param bean
    */
   private void setBeanChildNode(Object bean) {
     FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
@@ -169,8 +169,14 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    * @param bean
    */
   public static void setBeanChildNodes(Parent parentArg, Object bean, Consumer<ChildNodeArgs> consumer) {
-    Field[] fields = bean.getClass().getDeclaredFields();
-    FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
+    Class<? extends Object> aClass = bean.getClass();
+    Field[] fields = SpringFxUtils.getFields(bean);
+    FxController fxController;
+    if (Modifier.isAbstract(aClass.getModifiers())) {
+      fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
+    } else {
+      fxController = aClass.getDeclaredAnnotation(FxController.class);
+    } 
     if (fxController == null) {
       throw new IllegalArgumentException(
         String.format("Bean '%s' is not annotated with '%s'", bean, FxController.class));
@@ -196,12 +202,12 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
         Object child;
         try {
           child = (Object) getChildNode(parent, id, fxml);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
           throw new RuntimeException("Error on getting child node.  Check args: {"
             + "parent = " + parent
             + ", id = " + id
             + ", fxml = " + fxml
-            + "}", ex); 
+            + "}", ex);
         }
         if (child == null) {
           throw new IllegalStateException("Child node is null.  Check args: {"
@@ -215,7 +221,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
         NodeProcessHelper nodeProcessor // 
           = new NodeProcessHelper(nodeProcessorFactory, bean, field, child);
         nodeProcessorFactory.getAnnotations().stream()
-          .filter((e)->field.getDeclaredAnnotation(e) != null)
+          .filter((e) -> field.getDeclaredAnnotation(e) != null)
           .forEach(nodeProcessor::processNode);
         if (consumer != null) {
           consumer.accept(new ChildNodeArgs(bean, field, child));
@@ -223,8 +229,6 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
       }
     }
   }
-  
-  
 
   /**
    *
@@ -258,8 +262,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     }
     return child;
   }
-  
-  
+
   private static class NodeProcessHelper {
 
     private final NodeProcessorFactory factory;
@@ -268,11 +271,11 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     private final Object child;
 
     /**
-     * 
+     *
      * @param factory
      * @param bean
      * @param field
-     * @param child 
+     * @param child
      */
     private NodeProcessHelper(NodeProcessorFactory factory, Object parentBean, Field field, Object child) {
       this.factory = factory;
@@ -280,10 +283,10 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
       this.field = field;
       this.child = child;
     }
-    
+
     /**
-     * 
-     * @param clazz 
+     *
+     * @param clazz
      */
     private void processNode(Class<? extends Annotation> clazz) {
       Annotation annotation = this.field.getDeclaredAnnotation(clazz);

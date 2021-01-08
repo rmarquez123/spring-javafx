@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -46,7 +47,7 @@ public class ChangeEventAnnotationHandler implements AnnotationHandler, Initiali
     Map<String, Object> beans = this.appContext.getBeansWithAnnotation(ChangeEventListener.class);
     for (Map.Entry<String, Object> entry : beans.entrySet()) {
       Object bean = entry.getValue(); 
-      Method[] methods = bean.getClass().getDeclaredMethods();
+      Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
       for (Method method : methods) {
         OnChangeEvent onChangeEventConf;
         if ((onChangeEventConf = method.getAnnotation(OnChangeEvent.class)) !=null ) {

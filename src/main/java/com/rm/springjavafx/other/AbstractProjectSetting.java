@@ -1,5 +1,6 @@
 package com.rm.springjavafx.other;
 
+import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.project.AttributeConverter;
 import com.rm.springjavafx.project.Converter;
 import com.rm.springjavafx.project.IProjectSetting;
@@ -11,6 +12,7 @@ import javafx.beans.property.Property;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -33,7 +35,7 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
      * therefore be serializable.
      */
     SerializableHashMap<String, Serializable> result = new SerializableHashMap<>();
-    Field[] fields = this.getClass().getDeclaredFields();
+    Field[] fields = SpringFxUtils.getFields(this);
     for (Field field : fields) {
       /**
        * The object value is obtained by reflection to get the values as a
@@ -121,7 +123,7 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
   private Field getField(String fieldName) {
     Field result;
     try {
-      result = this.getClass().getDeclaredField(fieldName);
+      result = ReflectionUtils.findField(this.getClass(), fieldName);
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }

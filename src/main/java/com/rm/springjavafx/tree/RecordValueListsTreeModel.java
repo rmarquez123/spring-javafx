@@ -80,8 +80,6 @@ public class RecordValueListsTreeModel implements TreeModel<RecordValue> {
       this.links.put(level, link);
     }
     this.idFields.put(level, idField);
-    recordsProperty.getClass().getGenericInterfaces();
-    recordsProperty.getClass().getGenericSuperclass();
     recordsProperty.addListener((obs, old, change) -> {
       this.setTreeNodes(level, change);
     });

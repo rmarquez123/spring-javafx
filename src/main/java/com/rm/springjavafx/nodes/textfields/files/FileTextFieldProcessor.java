@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -50,49 +51,97 @@ public class FileTextFieldProcessor implements InitializingBean, NodeProcessor {
     this.factory.addProcessor(FileTextField.class, this);
     this.fxmlInitializer.addListener((i) -> {
       this.bindButtonAction();
+      
     });
   }
-
+  
+  /**
+   * 
+   */
   private void bindButtonAction() {
     this.textfields.forEach(this::bindButtonAction);
   }
-
+  
+  /**
+   * 
+   * @param map 
+   */
   private void bindButtonAction(Map<String, Object> map) {
-
     FileTextField conf = (FileTextField) map.get("conf");
     String buttonRef = conf.buttonRef();
     if (!buttonRef.isEmpty()) {
       TextField textField = (TextField) map.get("textfield");
       TextFormatter<File> textFormatter = (TextFormatter<File>) textField.getTextFormatter();
-      Button button;
-      try {
-        Field f = map.get("parentBean").getClass()
-          .getDeclaredField(buttonRef);
-        f.setAccessible(true);
-        button = (Button) f
-          .get(map.get("parentBean"));
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
+      Button button = this.getButton(map, buttonRef);
+      FileChooser chooser = this.getFileChooser(conf);
+      button.setOnAction((e) -> this.onButtonAction(textFormatter, chooser, button));
+    }
+  }
+  
+  /**
+   * 
+   * @param textFormatter
+   * @param chooser
+   * @param button 
+   */
+  private void onButtonAction(TextFormatter<File> textFormatter, //
+    FileChooser chooser, Button button) {
+    File oldfile = textFormatter.getValue();
+    if (oldfile != null) {
+      File initialDirectory;
+      if (oldfile.isFile()) {
+        initialDirectory = oldfile.getParentFile();
+      } else {
+        initialDirectory = oldfile;
       }
-      FileChooser chooser = new FileChooser();
-      button.setOnAction((e) -> {
-        File oldfile = textFormatter.getValue();
-        if (oldfile != null) {
-          File initialDirectory;
-          if (oldfile.isFile()) {
-            initialDirectory = oldfile.getParentFile();
-          } else {
-            initialDirectory = oldfile;
-          }
-          if (initialDirectory.exists()) {
-            chooser.setInitialDirectory(initialDirectory);
-          }
-        }
-        File newfile = chooser.showOpenDialog(button.getScene().getWindow());
-        if (newfile != null) {
-          textFormatter.setValue(newfile);
-        }
-      });
+      if (initialDirectory.exists()) {
+        chooser.setInitialDirectory(initialDirectory);
+      }
+    }
+    File newfile = chooser.showOpenDialog(button.getScene().getWindow());
+    if (newfile != null) {
+      textFormatter.setValue(newfile);
+    }
+  }
+
+  private FileChooser getFileChooser(FileTextField conf) {
+    FileChooser chooser = new FileChooser();
+    this.addExtensions(conf, chooser);
+    return chooser;
+  }
+
+  /**
+   * 
+   * @param map
+   * @param buttonRef
+   * @return 
+   */
+  private Button getButton(Map<String, Object> map, String buttonRef){
+    Button button;
+    try {
+      Field f = ReflectionUtils.findField(map.get("parentBean").getClass(), buttonRef);
+      f.setAccessible(true);
+      button = (Button) f
+        .get(map.get("parentBean"));
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+    return button;
+  }
+  
+  /**
+   * 
+   * @param conf
+   * @param chooser 
+   */
+  private void addExtensions(FileTextField conf, FileChooser chooser)  {
+    if (conf.extensionNames().length != conf.extensions().length){
+      throw new RuntimeException("The number of extensions and extension names must be equal.");
+    }
+    for (int i = 0; i < conf.extensions().length; i++) {
+      FileChooser.ExtensionFilter filter = new FileChooser
+        .ExtensionFilter(conf.extensionNames()[i], conf.extensions()[i]);
+      chooser.getExtensionFilters().add(filter);
     }
   }
 

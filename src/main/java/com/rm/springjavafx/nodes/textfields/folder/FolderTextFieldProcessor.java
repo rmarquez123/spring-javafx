@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -72,8 +73,7 @@ public class FolderTextFieldProcessor implements InitializingBean, NodeProcessor
       TextFormatter<File> textFormatter = (TextFormatter<File>) textField.getTextFormatter();
       Button button;
       try {
-        Field f = map.get("parentBean").getClass()
-          .getDeclaredField(buttonRef);
+        Field f = ReflectionUtils.findField(map.get("parentBean").getClass(), buttonRef);
         f.setAccessible(true);
         button = (Button) f
           .get(map.get("parentBean"));
