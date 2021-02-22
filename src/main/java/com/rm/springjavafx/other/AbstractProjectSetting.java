@@ -35,31 +35,33 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
      * therefore be serializable.
      */
     SerializableHashMap<String, Serializable> result = new SerializableHashMap<>();
-    Field[] fields = SpringFxUtils.getFields(this);
+    Field[] fields = SpringFxUtils.getFields(this); 
     for (Field field : fields) {
       /**
        * The object value is obtained by reflection to get the values as a
        * {@linkplain Property} object then {@linkplain Property#getValue()} is called to
        * get the current value.
        */
-      Property<Object> fieldProperty = (Property<Object>) this.getFieldValue(field);
-      Object fieldValue = fieldProperty.getValue();
-
-      /**
-       * If it has a converter annotation, then the converter annotation values are used
-       * for creating the serializable. Otherwise, we expect the field value to itself be
-       * serializable.
-       */
-      Serializable serializable;
-      Converter conv;
-      if ((conv = field.getAnnotation(Converter.class)) != null) {
-        serializable = this.serializeFieldValue(conv, fieldValue);
-      } else {
-        serializable = (Serializable) fieldValue;
+      if (Property.class.isInstance(this.getFieldValue(field))) {
+        Property<Object> fieldProperty = (Property<Object>) this.getFieldValue(field);
+        Object fieldValue = fieldProperty.getValue();
+        /**
+         * If it has a converter annotation, then the converter annotation values are used
+         * for creating the serializable. Otherwise, we expect the field value to itself be
+         * serializable.
+         */
+        Serializable serializable;
+        Converter conv;
+        if ((conv = field.getAnnotation(Converter.class)) != null) {
+          serializable = this.serializeFieldValue(conv, fieldValue);
+        } else {
+          serializable = (Serializable) fieldValue;
+        }
+        if (serializable != null) {
+          result.put(field.getName(), serializable);
+        }
       }
-      if (serializable != null) {
-        result.put(field.getName(), serializable);
-      }
+      
     }
     /**
      * The hash map containing field values as entries is returned.
@@ -141,7 +143,7 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
     AttributeConverter convInstance;
     try {
       convInstance = this.getConverter(conv);
-    } catch (InstantiationException | IllegalAccessException ex) {
+    } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
     Serializable serializable = convInstance.toSerializable(fieldValue);
@@ -174,7 +176,7 @@ public abstract class AbstractProjectSetting implements IProjectSetting {
    * @throws BeansException
    * @throws InstantiationException
    */
-  private AttributeConverter getConverter(Converter conv) throws IllegalStateException, IllegalAccessException, BeansException, InstantiationException {
+  private AttributeConverter getConverter(Converter conv) throws Exception {
     Map<String, ? extends AttributeConverter> map = this.appContext.getBeansOfType(conv.converter());
     AttributeConverter converterInstance;
     if (map.isEmpty()) {
