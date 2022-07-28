@@ -1,6 +1,5 @@
 package com.rm.springjavafx.form;
 
-import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import common.bindings.RmBindings;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.skin.TableHeaderRow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;

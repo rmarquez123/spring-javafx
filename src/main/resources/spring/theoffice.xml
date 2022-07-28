@@ -19,6 +19,7 @@
           http://www.mycompany.com/schema/rm http://www.mycompany.com/schema/rm/rm.xsd
           http://www.mycompany.com/schema/fxmap http://www.mycompany.com/schema/fxmap/fxmap.xsd"  
 >  
+  
   <bean class="com.rm.springjavafx.FxmlInitializer"> 
     <property name="sceneRoot" value="fxml/Main.fxml"/>
     <property name="fxmlList"> 

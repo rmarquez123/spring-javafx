@@ -21,6 +21,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.MediaView;
 import javafx.stage.Window;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ReflectionUtils;
@@ -169,12 +170,14 @@ public final class SpringFxUtils {
     if (parent instanceof SplitPane) {
       children.addAll(((SplitPane) parent).getItems());
     }
-
+    
     if (parent instanceof TabPane) {
       ObservableList<Tab> tabs = ((TabPane) parent).getTabs();
       List<Node> n = tabs.stream().map((t) -> t.getContent()).collect(Collectors.toList());
       children.addAll(n);
     }
+    
+    
     for (Node node : children) {
       nodeId = node.getId();
       if (nodeId != null && nodeId.equals(id)) {
@@ -258,6 +261,8 @@ public final class SpringFxUtils {
         if (child != null) {
           return child;
         }
+      } else if (node instanceof MediaView) {
+        return (T) node;
       }
     }
     return null;

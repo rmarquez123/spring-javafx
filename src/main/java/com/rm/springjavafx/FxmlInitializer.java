@@ -136,7 +136,7 @@ public class FxmlInitializer implements InitializingBean {
    *
    * @param context
    */
-  public void initializeRoots(ApplicationContext context) {
+  public synchronized void initializeRoots(ApplicationContext context) {
     if (!this.isInitialized()) {
       if (this.initializing) {  
         throw new IllegalStateException("Fxml loaders are initalizing.  Add a listener instead.");

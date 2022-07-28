@@ -4,7 +4,6 @@ import com.rm.springjavafx.FxmlInitializer;
 import com.rm.springjavafx.tree.LevelCellFactory;
 import com.rm.springjavafx.tree.TreeModel;
 import com.rm.springjavafx.tree.TreeNode;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import common.bindings.RmBindings;
 import common.db.RecordValue;
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.skin.VirtualFlow;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -218,7 +218,7 @@ public class TreeTableFactory implements FactoryBean<TreeTableView>,
                 TreeTableColumnDef columnDef = cellFactories.get(0);
                 LevelCellFactory a = columnDef.getCellFactory(level);
                 RecordValue r = (RecordValue) ((TreeNode) item).getValueObject();
-                ContextMenu cm = a.getContextMenu(r);
+                ContextMenu cm = a == null ? null : a.getContextMenu(r);
                 if (cm != null) {
                   ContextMenu proxy = new ContextMenu();
                   proxy.getItems().addAll(cm.getItems().stream().map((m) -> {

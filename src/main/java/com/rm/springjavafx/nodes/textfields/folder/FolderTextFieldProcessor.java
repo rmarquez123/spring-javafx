@@ -71,20 +71,37 @@ public class FolderTextFieldProcessor implements InitializingBean, NodeProcessor
     if (!buttonRef.isEmpty()) {
       TextField textField = (TextField) map.get("textfield");
       TextFormatter<File> textFormatter = (TextFormatter<File>) textField.getTextFormatter();
-      Button button;
-      try {
-        Field f = ReflectionUtils.findField(map.get("parentBean").getClass(), buttonRef);
-        f.setAccessible(true);
-        button = (Button) f
-          .get(map.get("parentBean"));
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
-      }
+      Button button = this.getButton(map, buttonRef);
       DirectoryChooser chooser = new DirectoryChooser();
       button.setOnAction((e) -> {
         this.onButtonAction(textFormatter, chooser, button);
       });
     }
+  }
+
+  /**
+   * 
+   * @param map
+   * @param buttonRef
+   * @return 
+   */
+  private Button getButton(Map<String, Object> map, String buttonRef) {
+    Button button;
+    try {
+      Class<? extends Object> parentBeanClass = map.get("parentBean").getClass();
+      Field f = ReflectionUtils.findField(parentBeanClass, buttonRef);
+      if (f == null) {
+        throw new RuntimeException( //
+          String.format("button '%s' is not found in parent bean class '%s'", // 
+            buttonRef, parentBeanClass));
+      }
+      f.setAccessible(true);
+      button = (Button) f
+        .get(map.get("parentBean"));
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+    return button;
   }
   
   /**
@@ -121,10 +138,12 @@ public class FolderTextFieldProcessor implements InitializingBean, NodeProcessor
   @Override
   public void process(Object parentBean, Object node, Annotation annotation) {
     if (!(node instanceof TextField)) {
-      throw new IllegalArgumentException("Node is not an instance of " + TextField.class);
+      throw new IllegalArgumentException( //
+        "Node is not an instance of " + TextField.class);
     }
     if (!(annotation instanceof FolderTextField)) {
-      throw new IllegalArgumentException("Annotation is not an instance of " + FolderTextField.class);
+      throw new IllegalArgumentException(//
+        "Annotation is not an instance of " + FolderTextField.class);
     }
     TextField textfield = (TextField) node;
     FolderTextField conf = (FolderTextField) annotation;

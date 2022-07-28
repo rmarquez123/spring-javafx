@@ -6,6 +6,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -58,8 +59,11 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
   private void addDataSourceBean(Element elmnt, BeanDefinitionBuilder result, ParserContext pc) {
     String datasource = elmnt.getAttribute("datasource-ref");
     result.addPropertyValue("datasourceRef", datasource);
-    BeanDefinition datasourceBeanDef = pc.getRegistry().getBeanDefinition(datasource);
-    pc.getRegistry().registerBeanDefinition(datasource, datasourceBeanDef);
+    BeanDefinitionRegistry registry = pc.getRegistry();
+    BeanDefinition datasourceBeanDef = registry.getBeanDefinition(datasource);
+    if (!registry.containsBeanDefinition(datasource))  {
+      registry.registerBeanDefinition(datasource, datasourceBeanDef);
+    }
   } 
   
   /**
@@ -78,7 +82,7 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
           colRenderers.add(bd);
         }
       }
-    });
+    }); 
     result.addPropertyValue("columns", colRenderers);
   }
   
@@ -88,7 +92,8 @@ public class TableViewBeanDefParser extends AbstractBeanDefinitionParser {
    * @return 
    */
   private AbstractBeanDefinition getColumnDefBean(Element c) {
-    BeanDefinitionBuilder beanDefBuilder = BeanDefinitionBuilder.rootBeanDefinition(TableViewColumn.class);
+    BeanDefinitionBuilder beanDefBuilder = //
+      BeanDefinitionBuilder.rootBeanDefinition(TableViewColumn.class);
     ColumnDefBeanDefParser beanDefParser = new ColumnDefBeanDefParser();
     beanDefParser.doParse(c, beanDefBuilder);
     AbstractBeanDefinition bd = beanDefBuilder.getBeanDefinition();
