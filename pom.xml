@@ -32,10 +32,6 @@
       <artifactId>postgresql</artifactId>
       <version>42.2.5</version>
     </dependency>
-    <!--    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -184,11 +180,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <javafx.version>11</javafx.version>
-    <spring.version>5.3.7</spring.version>
-    <springboot.version>2.5.0</springboot.version>
+    <spring.version>5.3.22</spring.version>
+    <springboot.version>2.0.5.RELEASE</springboot.version>
   </properties>
   
   <build>

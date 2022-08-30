@@ -17,7 +17,7 @@ public class DefaultDbConnectionsConfiguration {
    * 
    * @return 
    */
-  @Bean(name = "defaultDbConnections")
+  @Bean(name = "_defaultDbConnections")
   public ObservableSet<DbConnection> defaultDbConnections() {
     ObservableSet<DbConnection> result = FXCollections.observableSet();
     return result;

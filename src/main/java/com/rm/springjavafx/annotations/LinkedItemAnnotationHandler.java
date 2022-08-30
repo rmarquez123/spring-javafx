@@ -65,13 +65,10 @@ public class LinkedItemAnnotationHandler implements InitializingBean, Annotation
    * @return @throws BeansException
    */
   private Map<String, LinkedItemBean> getLinkedItemBeans() {
-    Map<String, LinkedItemBean> result = this.appContext.getBeansWithAnnotation(LinkedItem.class).entrySet()
+    Map<String, LinkedItemBean> result = this.appContext //
+      .getBeansWithAnnotation(LinkedItem.class).entrySet()
       .stream()
-      .collect(Collectors.toMap((e)->e.getKey(), 
-        (e)->new LinkedItemBean(e.getValue(), 
-          e.getValue().getClass().getDeclaredAnnotation(LinkedItem.class))))
-      ;
-    
+      .collect(Collectors.toMap(e->e.getKey(), e->this.toLinkedItemBean(e)));
     Map<String, Object> configurations = appContext.getBeansWithAnnotation(Configuration.class);
     for (Object configuration : configurations.values()) {
       extractLinkedItemsFromConfiguration(configuration, result);
@@ -79,6 +76,23 @@ public class LinkedItemAnnotationHandler implements InitializingBean, Annotation
     return result;
   }
   
+  /**
+   * 
+   * @param e
+   * @return 
+   */
+  private LinkedItemBean toLinkedItemBean(Entry e) {
+    LinkedItemBean result;
+    String key = (String) e.getKey();
+    try {
+      LinkedItem linkedItem = this.appContext.findAnnotationOnBean(key, LinkedItem.class);
+      result = new LinkedItemBean(e.getValue(), linkedItem); 
+    }catch(Exception ex){
+      throw new RuntimeException( //
+        String.format("Error creating linked item bean. Check entry: ${%s}", key), ex);
+    }
+    return result;
+  }
   
   
   /**
