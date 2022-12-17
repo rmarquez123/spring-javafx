@@ -4,11 +4,15 @@ import common.bindings.RmBindings;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Ricardo Marquez
  */
+@Component
+@Lazy(false)
 public class LinkedItemsHandler {
 
   /**

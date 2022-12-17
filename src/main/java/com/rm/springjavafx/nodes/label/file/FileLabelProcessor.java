@@ -1,13 +1,15 @@
-package com.rm.springjavafx.nodes.label;
+package com.rm.springjavafx.nodes.label.file;
 
 import com.rm.springjavafx.nodes.NodeProcessor;
 import com.rm.springjavafx.nodes.NodeProcessorFactory;
 import com.rm.springjavafx.nodes.TextFormatterPropertyBinder;
+import common.bindings.ObjectConverter;
 import common.bindings.RmBindings;
+import java.io.File;
 import java.lang.annotation.Annotation;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextFormatter;
-import javafx.util.converter.DefaultStringConverter;
+import javafx.util.StringConverter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Lazy(false)
-public class StringLabelProcessor implements NodeProcessor, InitializingBean {
+public class FileLabelProcessor implements NodeProcessor, InitializingBean {
 
   @Autowired
   private NodeProcessorFactory factory;
@@ -34,7 +36,7 @@ public class StringLabelProcessor implements NodeProcessor, InitializingBean {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    this.factory.addProcessor(StringLabel.class, this);
+    this.factory.addProcessor(FileLabel.class, this);
   }
 
   /**
@@ -47,17 +49,37 @@ public class StringLabelProcessor implements NodeProcessor, InitializingBean {
     if (!(node instanceof Label)) {
       throw new IllegalArgumentException("Node is not an instance of " + Label.class);
     }
-    if (!(annotation instanceof StringLabel)) {
-      throw new IllegalArgumentException("Annotation is not an instance of " + StringLabel.class);
+    if (!(annotation instanceof FileLabel)) {
+      throw new IllegalArgumentException("Annotation is not an instance of " + FileLabel.class);
     }
     Label label = (Label) node;
-    StringLabel conf = (StringLabel) annotation;
-    TextFormatter<String> formatter = new TextFormatter<>(new DefaultStringConverter());
-    RmBindings.bind1To2(label.textProperty(), formatter.valueProperty());
+    FileLabel conf = (FileLabel) annotation;
+    TextFormatter<File> formatter = new TextFormatter<>(new StringConverter<File>() {
+      @Override
+      public String toString(File object) {
+        return object == null ? null: object.getAbsolutePath();
+      }
+
+      @Override
+      public File fromString(String string) {
+        return (string == null || string.isEmpty()) ? null : new File(string); 
+      }
+    });
+    RmBindings.bind1To2(label.textProperty(), formatter.valueProperty(), new ObjectConverter<String, File>() {
+      @Override
+      public File toObject(String reference) {
+        return formatter.getValueConverter().fromString(reference);
+      }
+
+      @Override
+      public String fromObject(File reference) {
+        return formatter.getValueConverter().toString(reference); 
+      }
+    });
     label.setAlignment(conf.alignment());
     if (conf.beanId().length != 0) {
       Object bean = this.appcontext.getBean(conf.beanId()[0]);
-      TextFormatterPropertyBinder<String> propertyBinder //
+      TextFormatterPropertyBinder<File> propertyBinder //
         = new TextFormatterPropertyBinder<>(formatter, conf.beanId(), bean);
       propertyBinder.bind();
     }

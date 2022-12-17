@@ -18,13 +18,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Lazy(false)
-public class SpinnerProcessor  implements InitializingBean, NodeProcessor {
+public class SpinnerProcessor implements InitializingBean, NodeProcessor {
+
   @Autowired
   private NodeProcessorFactory factory;
 
   @Autowired
   private ApplicationContext appcontext;
-  
+
   @Override
   public void afterPropertiesSet() throws Exception {
     this.factory.addProcessor(SpinnerConf.class, this);
@@ -32,7 +33,7 @@ public class SpinnerProcessor  implements InitializingBean, NodeProcessor {
 
   @Override
   public void process(Object parentBean, Object node, Annotation annotation) {
-    
+
     if (!(node instanceof Spinner)) {
       throw new IllegalArgumentException("Node is not an instance of " + Spinner.class);
     }
@@ -45,15 +46,18 @@ public class SpinnerProcessor  implements InitializingBean, NodeProcessor {
     Property bean = (Property) this.appcontext.getBean(conf.beanId()[0]);
     combobox.setEditable(true);
     combobox.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(conf.min(), conf.max()));
-    
-    combobox.valueProperty().addListener((obs, old, change)->{
-      bean.setValue(change);
+
+    combobox.valueProperty().addListener((obs, old, change) -> {
+      Object safeValue = change == null ? Integer.MIN_VALUE : change;
+      bean.setValue(safeValue);
     });
-    bean.addListener((obs, old, change)->{
-      combobox.getValueFactory().setValue(change);
+    bean.addListener((obs, old, change) -> {
+      Object safeValue = change == null ? Integer.MIN_VALUE : change;
+      combobox.getValueFactory().setValue(safeValue);
     });
-    combobox.getValueFactory().setValue(bean.getValue());
-    
+    Object safeValue = bean.getValue() == null ? Integer.MIN_VALUE : bean.getValue();
+    combobox.getValueFactory().setValue(safeValue);
+
   }
-  
+
 }

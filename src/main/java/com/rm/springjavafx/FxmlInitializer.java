@@ -149,8 +149,7 @@ public class FxmlInitializer implements InitializingBean {
       Map<String, Object> beans = this.context.getBeansWithAnnotation(FxController.class);
       Map<String, Object> fxControllers = new HashMap<>();
       for (Object value : beans.values()) {
-        FxController fxController = SpringFxUtils.getAnnotation(value, FxController.
-          class); 
+        FxController fxController = SpringFxUtils.getAnnotation(value, FxController.class); 
         if (!fxController.fxml().isEmpty()) {
           fxControllers.put(fxController.fxml(), value); 
         }
@@ -193,6 +192,8 @@ public class FxmlInitializer implements InitializingBean {
       for (Consumer<FxmlInitializer> listener : this.listeners) {
         listener.accept(this);
       }
+      Map<String, FxmlInitializerListener> bs = this.context.getBeansOfType(FxmlInitializerListener.class);
+      bs.forEach((a,b)->b.onInitialized());
     }
   }
 
