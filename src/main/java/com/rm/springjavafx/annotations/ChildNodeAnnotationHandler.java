@@ -8,11 +8,15 @@ import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.annotations.childnodes.ChildNodeArgs;
 import com.rm.springjavafx.nodes.NodeProcessor;
 import com.rm.springjavafx.nodes.NodeProcessorFactory;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.Map;
 import java.util.function.Consumer;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeansException;
@@ -139,16 +143,53 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    *
    * @param bean
    */
-  private void setBeanChildNode(Object bean) {
-    FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
+  public void setBeanChildNode(Object bean) {
+    this.setBeanChildNode(bean, false);
+  }
+
+  /**
+   *
+   * @param controller
+   */
+  public Node setBeanChildNode(Object controller, boolean newRoot) {
+    FxController fxController = controller.getClass().getDeclaredAnnotation(FxController.class);
     String fxml = fxController.fxml();
-    Parent parent = fxmlInitializer.getRoot(fxml);
+    Parent parent = this.getParent(fxml, newRoot);
     try {
-      setBeanChildNodes(parent, bean, this::handleField);
+      setBeanChildNodes(parent, controller, this::handleField);
     } catch (Exception ex) {
-      String message = String.format("Error creating child nodes for bean '%s'", bean.getClass().getName());
+      String message = String.format( //
+        "Error creating child nodes for bean '%s'", controller.getClass().getName());
       throw new RuntimeException(message, ex);
     }
+    return (Node) parent; 
+  }
+  
+  /**
+   * 
+   * @param newRoot
+   * @param fxml
+   * @return
+   * @throws RuntimeException 
+   */
+  private Parent getParent(String fxml, boolean newRoot)  {
+    Parent parent;
+    if (!newRoot) {
+      parent = fxmlInitializer.getRoot(fxml);
+    } else {
+      URL resource = this.getClass().getClassLoader().getResource(fxml);
+      if (resource == null) {
+        throw new IllegalStateException( //
+          String.format("Resource '%s' does not exists", fxml));
+      }
+      FXMLLoader loader = new FXMLLoader(resource);
+      try { 
+        parent = loader.load();
+      } catch (IOException ex) {
+        throw new RuntimeException(ex); 
+      }
+    }
+    return parent;
   }
 
   /**
@@ -176,7 +217,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
       fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
     } else {
       fxController = aClass.getDeclaredAnnotation(FxController.class);
-    } 
+    }
     if (fxController == null) {
       throw new IllegalArgumentException(
         String.format("Bean '%s' is not annotated with '%s'", bean, FxController.class));
@@ -277,7 +318,8 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
      * @param field
      * @param child
      */
-    private NodeProcessHelper(NodeProcessorFactory factory, Object parentBean, Field field, Object child) {
+    private NodeProcessHelper(NodeProcessorFactory factory, 
+      Object parentBean, Field field, Object child) {
       this.factory = factory;
       this.parentBean = parentBean;
       this.field = field;

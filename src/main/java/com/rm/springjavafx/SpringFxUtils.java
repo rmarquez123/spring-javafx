@@ -1,5 +1,6 @@
 package com.rm.springjavafx;
 
+import common.RmExceptions;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -103,6 +104,35 @@ public final class SpringFxUtils {
     }
     return valueProperty;
   }
+  
+  
+  /**
+   * 
+   * @param appContext
+   * @param beanId
+   * @return 
+   */
+  public static ObservableList getValueObservableList(ApplicationContext appContext, String beanId) {
+    ObservableList<?> valueProperty;
+    if (!beanId.contains("#")) {
+      try {
+        valueProperty = (ObservableList<?>) appContext.getBean(beanId);
+      } catch(Exception ex) {
+        throw RmExceptions.create(ex, "Error getting bean '%s' ", beanId);
+      }
+    } else {
+      try {
+        String[] parts = beanId.split("#");
+        Object parent = appContext.getBean(parts[0]);
+        Field field = ReflectionUtils.findField(parent.getClass(), parts[1]);
+        field.setAccessible(true);
+        valueProperty = (ObservableList<?>) field.get(parent);
+      } catch (Exception ex) {
+        throw new RuntimeException("Error parsing observablelist from beanId : '" + beanId + "'", ex);
+      }
+    }
+    return valueProperty;
+  }
 
   /**
    * Find a {@link Node} within a {@link Parent} by it's ID.
@@ -156,9 +186,15 @@ public final class SpringFxUtils {
     }
     if (parent instanceof ScrollPane) {
       Node content = ((ScrollPane) parent).getContent();
-      Object result = getChildByID((Parent) content, id);
-      if (result != null) {
-        return (T) result;
+
+      if (content != null) {
+        if (id.equals(content.getId())) {
+          return (T) content;
+        }
+        Object result = getChildByID((Parent) content, id);
+        if (result != null) {
+          return (T) result;
+        }
       }
     }
 
@@ -170,14 +206,13 @@ public final class SpringFxUtils {
     if (parent instanceof SplitPane) {
       children.addAll(((SplitPane) parent).getItems());
     }
-    
+
     if (parent instanceof TabPane) {
       ObservableList<Tab> tabs = ((TabPane) parent).getTabs();
       List<Node> n = tabs.stream().map((t) -> t.getContent()).collect(Collectors.toList());
       children.addAll(n);
     }
-    
-    
+
     for (Node node : children) {
       nodeId = node.getId();
       if (nodeId != null && nodeId.equals(id)) {
@@ -277,7 +312,7 @@ public final class SpringFxUtils {
         return (T) item;
       }
       if (item instanceof Menu) {
-        T child = getChildByIDFromMenuItems(((Menu) item).getItems(), id); 
+        T child = getChildByIDFromMenuItems(((Menu) item).getItems(), id);
         if (child != null) {
           return child;
         }

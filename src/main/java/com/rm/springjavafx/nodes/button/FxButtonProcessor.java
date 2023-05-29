@@ -50,7 +50,10 @@ public class FxButtonProcessor implements InitializingBean, NodeProcessor {
     } else if (!conf.onActionPopup().isEmpty()) {
       handler = this.onPopupActionHandler(button, conf);
     } else {
-      throw new RuntimeException();
+      throw new RuntimeException(
+        String.format("Error on configuring bean '%s' with '%s' annotation. "
+        + "Please define either '%s' or '%s' configuration", 
+          button.getId(), FxButton.class, "action method", "popup"));
     }
     button.setOnAction(handler::accept);
   }

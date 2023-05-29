@@ -41,7 +41,17 @@ public class FxmlInitializer implements InitializingBean {
    */
   public FxmlInitializer() {
   }
-
+  
+  /**
+   * 
+   * @return 
+   */
+  public ApplicationContext getContext() {
+    return context;
+  }
+  
+  
+  
   /**
    *
    * @param handler
@@ -172,7 +182,8 @@ public class FxmlInitializer implements InitializingBean {
           try {
             root = loader.load();
           } catch (Exception ex) {
-            throw new RuntimeException("Error loading fxml from resource.  Check args : {"
+            throw new RuntimeException( //
+              "Error loading fxml from resource.  Check args : {"
               + "fxml = " + fxml
               + "}", ex);
           }
