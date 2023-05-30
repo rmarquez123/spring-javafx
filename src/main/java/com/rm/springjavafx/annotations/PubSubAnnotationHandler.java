@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Lazy(false)
-public class BinderAnnotationHandler implements InitializingBean {
+public class PubSubAnnotationHandler implements InitializingBean {
 
   @Autowired
   private FxmlInitializer fxmlInitializer;
@@ -39,7 +40,7 @@ public class BinderAnnotationHandler implements InitializingBean {
     Map<String, Object> components = this.getComponents();
     for (Map.Entry<String, Object> object : components.entrySet()) {
       Object component = object.getValue();
-      String beanname = object.getKey(); 
+      String beanname = object.getKey();
       if (this.isFxController(component)) {
         this.fxmlInitializer.addListener(i -> this.bindMethods(beanname, component));
       } else {
@@ -110,10 +111,11 @@ public class BinderAnnotationHandler implements InitializingBean {
     Method method, // 
     Object component, String[] dependencies) {
     Property[] properties = new Property[dependencies.length];
+    PropertyAccessor accessor = new PropertyAccessor(getContext(), component);
     for (int i = 0; i < dependencies.length; i++) {
       String dependency = dependencies[i];
       try {
-        properties[i] = SpringFxUtils.getValueProperty(getContext(), dependency);
+        properties[i] = accessor.getValueProperty(dependency);
       } catch (Exception ex) {
         RmExceptions.throwException(ex,
           "Error on getting dependency '%s' for component '%s'", dependency, component);
@@ -142,41 +144,41 @@ public class BinderAnnotationHandler implements InitializingBean {
   /**
    *
    * @param method
-   * @param component
+   * @param bean
    */
-  private void invokeMethod(Method method, Object component) {
-    Publish binds = method.getDeclaredAnnotation(Publish.class);
-    if (binds != null) {
-      invokeMethod(binds, method, component);
+  private void invokeMethod(Method method, Object bean) {
+    Publish publishdefinition = method.getDeclaredAnnotation(Publish.class);
+    if (publishdefinition != null) {
+      invokeMethod(bean, method, publishdefinition);
     } else {
       try {
-        method.invoke(component);
+        method.invoke(bean);
       } catch (Exception ex) {
         throw RmExceptions.create(ex,
-          "Error invoking method : '%s' from component '%s;", method.getName(), component.getClass());
+          "Error invoking method : '%s' from component '%s;", method.getName(), bean.getClass());
       }
     }
   }
 
   /**
    *
-   * @param binds
+   * @param publishdefintion
    * @param method
-   * @param component
+   * @param bean
    */
-  private void invokeMethod(Publish binds, Method method, Object component) {
+  private void invokeMethod(Object bean, Method method, Publish publishdefintion) {
     try {
-      if (binds.thread() == Publish.Thread.NEW // 
-        || binds.thread() == Publish.Thread.NEW_THEN_JFXPLATFORM) {
-        this.runOnThread(binds, method, component);
+      if (publishdefintion.thread() == Publish.Thread.NEW // 
+        || publishdefintion.thread() == Publish.Thread.NEW_THEN_JFXPLATFORM) {
+        this.runOnThread(bean, method, publishdefintion);
       } else {
         try {
-          Object value = method.invoke(component);
-          this.setValue(binds, value);
+          Object value = method.invoke(bean);
+          this.setValue(bean, publishdefintion, value);
         } catch (Exception ex) {
           throw RmExceptions
             .create(ex, "Error invoking method '%s' on component '%s", //
-              method.getName(), component.getClass());
+              method.getName(), bean.getClass());
         }
 
       }
@@ -187,24 +189,24 @@ public class BinderAnnotationHandler implements InitializingBean {
 
   /**
    *
-   * @param binds
+   * @param publishdefintion
    * @param method
-   * @param component
+   * @param bean
    * @throws BeansException
    */
-  private void runOnThread(Publish binds, Method method, Object component) {
-    Property<Boolean> processFlag = getProcessFlag(binds);
+  private void runOnThread(Object bean, Method method, Publish publishdefintion) {
+    Property<Boolean> processFlag = getProcessFlag(publishdefintion);
     if (processFlag.getValue()) {
       return;
     }
     processFlag.setValue(true);
     new Thread(() -> {
       try {
-        Object value = method.invoke(component);
-        if (binds.thread() == Publish.Thread.NEW_THEN_JFXPLATFORM) {
-          this.setValueOnPlatformThread(binds, value);
+        Object value = method.invoke(bean);
+        if (publishdefintion.thread() == Publish.Thread.NEW_THEN_JFXPLATFORM) {
+          this.setValueOnPlatformThread(bean, publishdefintion, value);
         } else {
-          this.setValue(binds, value);
+          this.setValue(bean, publishdefintion, value);
         }
       } catch (Exception ex) {
         throw new RuntimeException(ex);
@@ -213,15 +215,15 @@ public class BinderAnnotationHandler implements InitializingBean {
       }
     }).start();
   }
-  
+
   /**
-   * 
+   *
    * @param binds
-   * @param value 
+   * @param value
    */
-  private void setValueOnPlatformThread(Publish binds, Object value) {
+  private void setValueOnPlatformThread(Object bean, Publish binds, Object value) {
     Platform.runLater(() -> {
-      this.setValue(binds, value);
+      this.setValue(bean, binds, value);
     });
   }
 
@@ -246,10 +248,11 @@ public class BinderAnnotationHandler implements InitializingBean {
    * @param binds
    * @param value
    */
-  private void setValue(Publish binds, Object value) {
+  private void setValue(Object bean, Publish binds, Object value) {
+    PropertyAccessor accessor = new PropertyAccessor(this.getContext(), bean);
     switch (binds.type()) {
       case PROPERTIES: {
-        Property p = SpringFxUtils.getValueProperty(this.getContext(), binds.value());
+        Property p = accessor.getValueProperty(binds.value());
         p.setValue(value);
         break;
       }
