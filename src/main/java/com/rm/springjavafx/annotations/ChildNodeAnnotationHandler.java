@@ -8,6 +8,7 @@ import com.rm.springjavafx.annotations.childnodes.ChildNode;
 import com.rm.springjavafx.annotations.childnodes.ChildNodeArgs;
 import com.rm.springjavafx.nodes.NodeProcessor;
 import com.rm.springjavafx.nodes.NodeProcessorFactory;
+import common.RmExceptions;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -18,6 +19,10 @@ import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.stage.Window;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -97,6 +102,11 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    */
   private void readyBeanAndChildFxmls(Object bean) throws RuntimeException {
     FxController fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
+    if (fxController == null) {
+      throw RmExceptions.create( //
+        "Could not find controller annotation for bean '%s'",
+        bean.getClass());
+    }
     String parentFxml = fxController.fxml();
     if (!parentFxml.isEmpty()) {
       addFxml(parentFxml);
@@ -152,7 +162,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    * @param controller
    */
   public Node setBeanChildNode(Object controller, boolean newRoot) {
-    FxController fxController = controller.getClass().getDeclaredAnnotation(FxController.class);
+    FxController fxController = SpringFxUtils.getAnnotation(controller, FxController.class);
     String fxml = fxController.fxml();
     Parent parent = this.getParent(fxml, newRoot);
     try {
@@ -162,17 +172,18 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
         "Error creating child nodes for bean '%s'", controller.getClass().getName());
       throw new RuntimeException(message, ex);
     }
-    return (Node) parent; 
+
+    return parent;
   }
-  
+
   /**
-   * 
+   *
    * @param newRoot
    * @param fxml
    * @return
-   * @throws RuntimeException 
+   * @throws RuntimeException
    */
-  private Parent getParent(String fxml, boolean newRoot)  {
+  private Parent getParent(String fxml, boolean newRoot) {
     Parent parent;
     if (!newRoot) {
       parent = fxmlInitializer.getRoot(fxml);
@@ -183,10 +194,10 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
           String.format("Resource '%s' does not exists", fxml));
       }
       FXMLLoader loader = new FXMLLoader(resource);
-      try { 
+      try {
         parent = loader.load();
       } catch (IOException ex) {
-        throw new RuntimeException(ex); 
+        throw new RuntimeException(ex);
       }
     }
     return parent;
@@ -210,65 +221,42 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
    * @param bean
    */
   public static void setBeanChildNodes(Parent parentArg, Object bean, Consumer<ChildNodeArgs> consumer) {
-    Class<? extends Object> aClass = bean.getClass();
+    FieldsProcessor processor = new FieldsProcessor(bean, parentArg, consumer);
     Field[] fields = SpringFxUtils.getFields(bean);
+    processor.processFields(fields);
+    String contextmenuid = getFxControllerDefinition(bean).contextMenu();
+    if (!contextmenuid.isEmpty()) {
+      if (parentArg == null) {
+        throw new RuntimeException();
+      }
+      ContextMenu contextmenu = (ContextMenu) fxmlInitializer.getContext().getBean(contextmenuid);
+      if (parentArg instanceof Control) {
+        ((Control) parentArg).setContextMenu(contextmenu);
+      } else {
+        parentArg.setOnContextMenuRequested((ContextMenuEvent event) -> {
+          double screenX = event.getScreenX();
+          double screenY = event.getScreenY();
+          Window window = parentArg.getScene().getWindow();
+          contextmenu.setUserData(bean);
+          contextmenu.show(window, screenX, screenY);
+        });
+      }
+    }
+  }
+
+  private static FxController getFxControllerDefinition(Object bean) {
     FxController fxController;
+    Class<? extends Object> aClass = bean.getClass();
     if (Modifier.isAbstract(aClass.getModifiers())) {
       fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
     } else {
-      fxController = aClass.getDeclaredAnnotation(FxController.class);
+      fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
     }
     if (fxController == null) {
       throw new IllegalArgumentException(
         String.format("Bean '%s' is not annotated with '%s'", bean, FxController.class));
     }
-    for (Field field : fields) {
-      ChildNode childNode = field.getDeclaredAnnotation(ChildNode.class);
-      if (childNode != null) {
-        String fxml = null;
-        Parent parent;
-        if (!childNode.fxml().isEmpty()) {
-          fxml = childNode.fxml();
-          parent = fxmlInitializer.getRoot(fxml);
-        } else if (parentArg == null) {
-          fxml = childNode.fxml();
-          if (fxml.isEmpty()) {
-            fxml = fxController.fxml();
-          }
-          parent = fxmlInitializer.getRoot(fxml);
-        } else {
-          parent = parentArg;
-        }
-        String id = childNode.id();
-        Object child;
-        try {
-          child = (Object) getChildNode(parent, id, fxml);
-        } catch (Exception ex) {
-          throw new RuntimeException("Error on getting child node.  Check args: {"
-            + "parent = " + parent
-            + ", id = " + id
-            + ", fxml = " + fxml
-            + "}", ex);
-        }
-        if (child == null) {
-          throw new IllegalStateException("Child node is null.  Check args: {"
-            + "fxml = " + fxml
-            + ", parent = " + parent
-            + ", id = " + id
-            + ", bean = " + bean
-            + "}");
-        }
-        setChildNodeToFieldValue(field, bean, child);
-        NodeProcessHelper nodeProcessor // 
-          = new NodeProcessHelper(nodeProcessorFactory, bean, field, child);
-        nodeProcessorFactory.getAnnotations().stream()
-          .filter((e) -> field.getDeclaredAnnotation(e) != null)
-          .forEach(nodeProcessor::processNode);
-        if (consumer != null) {
-          consumer.accept(new ChildNodeArgs(bean, field, child));
-        }
-      }
-    }
+    return fxController;
   }
 
   /**
@@ -304,6 +292,74 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
     return child;
   }
 
+  public static class FieldsProcessor {
+
+    private final Object bean;
+    private final Class<? extends Object> aClass;
+    private final FxController fxController;
+    private Parent parentArg;
+    private Consumer<ChildNodeArgs> consumer;
+
+    private FieldsProcessor(Object bean, Parent parentArg, Consumer<ChildNodeArgs> consumer) {
+      this.bean = bean;
+      this.aClass = bean.getClass();
+      this.fxController = getFxControllerDefinition(bean);
+      this.parentArg = parentArg;
+      this.consumer = consumer;
+    }
+
+    private void processFields(Field[] fields) {
+      for (Field field : fields) {
+        ChildNode childNode = field.getDeclaredAnnotation(ChildNode.class);
+        if (childNode != null) {
+          String fxml = null;
+          Parent parent;
+          if (!childNode.fxml().isEmpty()) {
+            fxml = childNode.fxml();
+            parent = fxmlInitializer.getRoot(fxml);
+          } else if (parentArg == null) {
+            fxml = childNode.fxml();
+            if (fxml.isEmpty()) {
+              fxml = this.fxController.fxml();
+            }
+            parent = fxmlInitializer.getRoot(fxml);
+          } else {
+            parent = parentArg;
+          }
+          String id = childNode.id();
+          Object child;
+          try {
+            child = (Object) getChildNode(parent, id, fxml);
+          } catch (Exception ex) {
+            throw new RuntimeException("Error on getting child node.  Check args: {"
+              + "parent = " + parent
+              + ", id = " + id
+              + ", fxml = " + fxml
+              + "}", ex);
+          }
+          if (child == null) {
+            throw new IllegalStateException("Child node is null.  Check args: {"
+              + "fxml = " + fxml
+              + ", parent = " + parent
+              + ", id = " + id
+              + ", bean = " + bean
+              + "}");
+          }
+          setChildNodeToFieldValue(field, bean, child);
+          NodeProcessHelper nodeProcessor // 
+            = new NodeProcessHelper(nodeProcessorFactory, bean, field, child);
+          nodeProcessorFactory.getAnnotations().stream()
+            .filter((e) -> field.getDeclaredAnnotation(e) != null)
+            .forEach(nodeProcessor::processNode);
+          if (consumer != null) {
+            consumer.accept(new ChildNodeArgs(bean, field, child));
+          }
+        }
+      }
+    }
+
+  }
+
   private static class NodeProcessHelper {
 
     private final NodeProcessorFactory factory;
@@ -318,7 +374,7 @@ public class ChildNodeAnnotationHandler implements InitializingBean {
      * @param field
      * @param child
      */
-    private NodeProcessHelper(NodeProcessorFactory factory, 
+    private NodeProcessHelper(NodeProcessorFactory factory,
       Object parentBean, Field field, Object child) {
       this.factory = factory;
       this.parentBean = parentBean;

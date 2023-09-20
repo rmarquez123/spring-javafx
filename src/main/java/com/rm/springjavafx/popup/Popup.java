@@ -237,4 +237,11 @@ public class Popup {
       this.alert.initModality(Modality.WINDOW_MODAL);
     }
   }
+
+  /**
+   * 
+   */
+  public void close() {
+    this.showProperty.set(false);
+  }
 }

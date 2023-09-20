@@ -2,6 +2,7 @@ package com.rm.springjavafx.annotations;
 
 import com.rm.springjavafx.AnnotationHandler;
 import com.rm.springjavafx.FxmlInitializer;
+import com.rm.springjavafx.SpringFxUtils;
 import com.rm.springjavafx.popup.Popup;
 import com.rm.springjavafx.popup.PopupContent;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
   public void readyFxmls() {
     Map<String, Object> beans = appContext.getBeansWithAnnotation(PopupComponent.class);
     for (Object bean : beans.values()) {
-      FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
+      FxController fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
       String fxml = fxController.fxml();
       if (this.getClass().getClassLoader().getResource(fxml) == null) {
         throw new IllegalStateException("Fxml does not exist: '" + fxml + "'");
@@ -72,9 +73,9 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
     for (Map.Entry<String, Object> entry : beans.entrySet()) {
       Object bean = entry.getValue();
 
-      FxController fxController = bean.getClass().getDeclaredAnnotation(FxController.class);
-      PopupComponent p = bean.getClass().getDeclaredAnnotation(PopupComponent.class);
-
+      FxController fxController = SpringFxUtils.getAnnotation(bean, FxController.class);
+      PopupComponent p = SpringFxUtils.getAnnotation(bean, PopupComponent.class);
+      
       String fxml = fxController.fxml();
       Parent node = this.fxmlInitializer.getRoot(fxml);
       registerBean(node, bean, p.id());

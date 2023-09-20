@@ -8,16 +8,16 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,7 +26,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Lazy(false)
-public class PubSubAnnotationHandler implements InitializingBean {
+@DependsOn("injectHandler")
+@PostInject
+public class PubSubAnnotationHandler {
 
   @Autowired
   private FxmlInitializer fxmlInitializer;
@@ -35,17 +37,18 @@ public class PubSubAnnotationHandler implements InitializingBean {
    *
    * @throws Exception
    */
-  @Override
-  public void afterPropertiesSet() throws Exception {
+  @PostInjectHandler
+  public void handlePubSubAnnotations() throws Exception {
     Map<String, Object> components = this.getComponents();
     for (Map.Entry<String, Object> object : components.entrySet()) {
       Object component = object.getValue();
       String beanname = object.getKey();
-      if (this.isFxController(component)) {
-        this.fxmlInitializer.addListener(i -> this.bindMethods(beanname, component));
-      } else {
-        this.bindMethods(beanname, component);
+      Scope scope = SpringFxUtils.getAnnotation(component, Scope.class);
+      component.getClass().getAnnotation(Scope.class);
+      if (scope != null && scope.value().equals("prototype")) {
+        continue;
       }
+      this.fxmlInitializer.addListener(i -> this.bindMethods(beanname, component));
     }
   }
 
@@ -54,19 +57,7 @@ public class PubSubAnnotationHandler implements InitializingBean {
    * @param component
    * @return
    */
-  private boolean isFxController(Object component) {
-    Class<? extends Object> componentClass = component.getClass();
-    FxController annotation = componentClass.getDeclaredAnnotation(FxController.class);
-    boolean result = annotation != null;
-    return result;
-  }
-
-  /**
-   *
-   * @param component
-   * @return
-   */
-  private void bindMethods(String beanname, Object component) {
+  public void bindMethods(String beanname, Object component) {
     Method[] methods = component.getClass().getMethods();
     for (Method method : methods) {
       Subscribe subscribeAttrs = method.getAnnotation(Subscribe.class);
@@ -133,9 +124,12 @@ public class PubSubAnnotationHandler implements InitializingBean {
    */
   private void bindMethodInvocationWithList(Method method, Object component, String[] dependencies) {
     ObservableList[] properties = new ObservableList[dependencies.length];
+    PropertyAccessor accessor = new PropertyAccessor(this.getContext(), component);
+
     for (int i = 0; i < dependencies.length; i++) {
       String dependency = dependencies[i];
-      properties[i] = SpringFxUtils.getValueObservableList(getContext(), dependency);
+      properties[i] = accessor.getOvervableList(dependency);
+
     }
     RmBindings.bindActionOnAnyChange(() -> invokeMethod(method, component), properties);
     this.invokeMethod(method, component);
@@ -257,7 +251,7 @@ public class PubSubAnnotationHandler implements InitializingBean {
         break;
       }
       case LIST: {
-        ObservableList p = SpringFxUtils.getValueObservableList(this.getContext(), binds.value());
+        ObservableList p = accessor.getOvervableList(binds.value());
         p.clear();
         p.setAll((Collection) value);
         break;

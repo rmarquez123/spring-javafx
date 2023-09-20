@@ -10,12 +10,9 @@ import java.lang.annotation.Target;
  *
  * @author Ricardo Marquez
  */
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface FxController {
-
-  public String fxml() default "";
+@Inherited
+public @interface Injectable {
   
-  public String contextMenu() default "";
 }

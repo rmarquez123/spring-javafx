@@ -1,7 +1,6 @@
-package com.rm.springjavafx.annotations;
+package com.rm.springjavafx.nodes.textarea;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -10,12 +9,13 @@ import java.lang.annotation.Target;
  *
  * @author Ricardo Marquez
  */
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface FxController {
+@Target(ElementType.FIELD)
+public @interface FxTextArea {
 
-  public String fxml() default "";
-  
-  public String contextMenu() default "";
+  /**
+   *
+   * @return
+   */
+  String[] beanId() default "";
 }

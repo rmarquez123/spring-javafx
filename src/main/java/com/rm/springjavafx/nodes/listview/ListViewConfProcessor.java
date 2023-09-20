@@ -61,13 +61,13 @@ public class ListViewConfProcessor implements InitializingBean, NodeProcessor {
     if (!(collections instanceof Collection)) {
       throw new IllegalArgumentException();
     }
+    ObservableList items = listview.getItems();
     if (collections instanceof ObservableSet) {
-      RmBindings.bindCollections(listview.getItems(), (ObservableSet) collections);
+      RmBindings.bindCollections(items, (ObservableSet) collections);
     }
     
     if (collections instanceof ObservableList) {
-      throw new IllegalArgumentException();
-//      RmBindings.bindCollections(listview.getItems(), (ObservableList) collections);
+      RmBindings.bindCollections(items, (ObservableList) collections);
     }
     
     this.bindSelection(conf, listview);

@@ -171,7 +171,6 @@ public class FxmlInitializer implements InitializingBean {
             throw new IllegalStateException(String.format("Resource '%s' does not exists", fxml)); 
           }
           FXMLLoader loader = new FXMLLoader(resource);
-          
           if (fxControllers.containsKey(fxml)) {
             Object controller = fxControllers.get(fxml);
             loader.setController(controller);
@@ -243,11 +242,11 @@ public class FxmlInitializer implements InitializingBean {
   /**
    *
    * @param fxml
-   * @param fxmlId
+   * @param childId
    * @return
    * @throws java.lang.IllegalAccessException
    */
-  public Node getNode(String fxml, String fxmlId) throws IllegalAccessException {
+  public Node getNode(String fxml, String childId) throws IllegalAccessException {
     if (!this.isInitialized()) {
       throw new IllegalAccessException("Attempting to get node without initializing");
     }
@@ -256,11 +255,11 @@ public class FxmlInitializer implements InitializingBean {
       throw new IllegalArgumentException("Invalid fmxl file : '" + fxml + "'");
     }
     root.getChildrenUnmodifiable().get(0).getId();
-    Object result = SpringFxUtils.getChildByID(root, fxmlId);
+    Object result = SpringFxUtils.getChildByID(root, childId);
     if (result == null) {
       throw new IllegalArgumentException("Component not found. Check args : {"
         + "fxml = " + fxml
-        + ", fxmlId = " + fxmlId
+        + ", childId = " + childId
         + "}");
     }
     return (Node) result;

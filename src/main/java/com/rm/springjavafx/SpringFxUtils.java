@@ -90,7 +90,11 @@ public final class SpringFxUtils {
   public static Property<?> getValueProperty(ApplicationContext appContext, String beanId) {
     Property<?> valueProperty;
     if (!beanId.contains("#")) {
-      valueProperty = (Property<?>) appContext.getBean(beanId);
+      try {
+        valueProperty = (Property<?>) appContext.getBean(beanId);
+      } catch (Exception ex) {
+        throw RmExceptions.create(ex, "Error accessing bean '%s'", beanId);
+      }
     } else {
       try {
         String[] parts = beanId.split("#");
@@ -104,20 +108,19 @@ public final class SpringFxUtils {
     }
     return valueProperty;
   }
-  
-  
+
   /**
-   * 
+   *
    * @param appContext
    * @param beanId
-   * @return 
+   * @return
    */
   public static ObservableList getValueObservableList(ApplicationContext appContext, String beanId) {
     ObservableList<?> valueProperty;
     if (!beanId.contains("#")) {
       try {
         valueProperty = (ObservableList<?>) appContext.getBean(beanId);
-      } catch(Exception ex) {
+      } catch (Exception ex) {
         throw RmExceptions.create(ex, "Error getting bean '%s' ", beanId);
       }
     } else {
@@ -184,6 +187,7 @@ public final class SpringFxUtils {
         }
       }
     }
+
     if (parent instanceof ScrollPane) {
       Node content = ((ScrollPane) parent).getContent();
 
@@ -211,6 +215,9 @@ public final class SpringFxUtils {
       ObservableList<Tab> tabs = ((TabPane) parent).getTabs();
       List<Node> n = tabs.stream().map((t) -> t.getContent()).collect(Collectors.toList());
       children.addAll(n);
+    }
+    if (parent instanceof ButtonBar) {
+      children.addAll(((ButtonBar) parent).getButtons());
     }
 
     for (Node node : children) {
