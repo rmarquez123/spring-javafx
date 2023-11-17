@@ -23,7 +23,6 @@ public class CacheInterceptor implements Interceptor {
    */
   @EventListener 
   public void onEvent(DataStoreEvent event) {
-    System.out.println("Clearing cache");
     this.cache.clear();
   }
   /**

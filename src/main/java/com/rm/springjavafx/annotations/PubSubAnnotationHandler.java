@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -48,17 +49,21 @@ public class PubSubAnnotationHandler {
       if (scope != null && scope.value().equals("prototype")) {
         continue;
       }
-      this.fxmlInitializer.addListener(i -> this.bindMethods(beanname, component));
+      this.fxmlInitializer.addListener(i -> this.bindMethodsWithSubscribeAnnotation(beanname, component));
     }
   }
 
   /**
+   * This method will bind listening methods that are annotated with
+   * {@linkplain  Subscribe}.
    *
    * @param component
    * @return
    */
-  public void bindMethods(String beanname, Object component) {
-    Method[] methods = component.getClass().getMethods();
+  public void bindMethodsWithSubscribeAnnotation(String beanname, Object component) {
+
+    Class<?> originalClass = AopProxyUtils.ultimateTargetClass(component);
+    Method[] methods = originalClass.getMethods();
     for (Method method : methods) {
       Subscribe subscribeAttrs = method.getAnnotation(Subscribe.class);
       if (subscribeAttrs == null) {

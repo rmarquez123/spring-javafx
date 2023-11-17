@@ -147,7 +147,7 @@ public class Popup {
   /**
    *
    */
-  public void show() {
+  public synchronized void show() {
     Stage alertWindow = this.getAlert();
     if (!alertWindow.isShowing()) {
       alertWindow.showAndWait();
@@ -222,7 +222,7 @@ public class Popup {
     AnchorPane.setRightAnchor(contentNode, 0.0);
     AnchorPane.setTopAnchor(contentNode, 0.0);
     this.alert = new Stage();
-    this.alert.setTitle(this.titleProperty.getValue());
+    this.alert.titleProperty().bind(this.titleProperty);
     this.alert.setScene(dialogScene);
     this.setModality();
   }

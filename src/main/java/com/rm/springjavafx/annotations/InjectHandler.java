@@ -46,8 +46,12 @@ public class InjectHandler implements FxmlInitializerListener {
   }
 
   /**
+   * Will scan bean for field annotations with {@linkplain Inject} annotation for each
+   * will set the bean value to the field. Note that the scanning requires the fields to
+   * be public fields.
    *
    * @param bean
+   * @see #processBeanMethods(java.lang.Object) for similar but with methods. 
    * @throws SecurityException
    */
   public void processBeanFields(Object bean) {
@@ -74,11 +78,11 @@ public class InjectHandler implements FxmlInitializerListener {
       this.processBeanMethods(bean);
     }
   }
-  
+
   /**
-   * 
+   *
    * @param bean
-   * @throws SecurityException 
+   * @throws SecurityException
    */
   public void processBeanMethods(Object bean) throws SecurityException {
     Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(bean.getClass());
@@ -117,7 +121,7 @@ public class InjectHandler implements FxmlInitializerListener {
    * @param bean
    * @throws RuntimeException
    */
-  private void processField(Field field, Object bean) throws RuntimeException {
+  private void processField(Field field, Object bean) {
     try {
       Object property = this.getProperty(field, bean);
       field.setAccessible(true);

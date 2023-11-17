@@ -78,7 +78,6 @@ public class TextFieldsExample implements InitializingBean {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    System.out.println("initialized ...");
     this.fxmlInitializer.addListener((i) -> {
       this.listview.setCellFactory(this::getCell);
       RmBindings.bindActionOnAnyChange(() -> {
@@ -118,10 +117,6 @@ public class TextFieldsExample implements InitializingBean {
    */
   @OnChangeEvent(bean = "mutable.selected.record")
   public void onStringPropertyChange(Object obs, RecordObservable old, RecordObservable change) {
-    System.out.println("stringProperty = " + change);  
+    
   }
-  
-  
-  
-  
 }

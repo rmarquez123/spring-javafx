@@ -83,7 +83,9 @@ public class ListViewConfProcessor implements InitializingBean, NodeProcessor {
     if (!conf.selectedref().isEmpty()) {
       Property selectedProperty = this.appcontext.getBean(conf.selectedref(), Property.class);
       listview.getSelectionModel().selectedItemProperty().addListener((obs, old, change)->{
-        selectedProperty.setValue(change);
+        if (listview.getItems().contains(change) ) {
+          selectedProperty.setValue(change);
+        }
       });
       
       selectedProperty.addListener((obs, old, change)->{

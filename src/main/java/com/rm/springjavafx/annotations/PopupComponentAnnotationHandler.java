@@ -78,6 +78,8 @@ public class PopupComponentAnnotationHandler implements AnnotationHandler, Initi
       
       String fxml = fxController.fxml();
       Parent node = this.fxmlInitializer.getRoot(fxml);
+      String css = "com/sun/javafx/scene/control/skin/caspian/caspian.css";
+      node.getStylesheets().add(css);
       registerBean(node, bean, p.id());
     }
   }

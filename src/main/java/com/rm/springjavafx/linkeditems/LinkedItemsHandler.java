@@ -80,7 +80,6 @@ public class LinkedItemsHandler {
     void linkValue() {
       T value = property.getValue();
       if (value != null && !this.reference.contains(value)) {
-        System.out.println("adding value");
         this.reference.add(value);
       }
     }
